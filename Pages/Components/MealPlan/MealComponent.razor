@@ -1,0 +1,56 @@
+﻿<MudStack>
+    <MudPaper Class="pa-4">
+        <MudStack>
+            <MudPaper Class="d-flex justify-space-between flex-grow-1 gap-4" Elevation="0">
+                <div class="col-auto text-dark-gray text-large text-strong wrap_or_truncate ">@Mealtype</div>
+                <MudIconButton Size="Size.Small" Icon="@Icons.Filled.Autorenew" />
+            </MudPaper>
+            <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@total</div>
+        </MudStack>
+        <MudList>
+
+            @foreach (var recipes in Recipes)
+            {
+                <MudListItem>
+                  <RecipeComponent Name=@recipes.Name></RecipeComponent>
+                </MudListItem>
+            } 
+        </MudList>
+    </MudPaper>
+
+    
+</MudStack>
+
+@code {
+    [Parameter]
+    public string? Mealtype { get; set; }
+
+    public int total { get; set; }
+
+    private List<Recipe> Recipes = new(){
+        new Recipe{ Name = "Pan tostado", Calories = 160 },
+        new Recipe{ Name = "Pizza", Calories = 300}
+    };
+
+    public class Recipe
+    {
+        public string? Name { get; set; }
+        public int Calories { get; set; }
+
+    }
+
+ 
+    public void caloriesSum(List<Recipe> Recipes)
+    {
+        foreach(var recipe in Recipes){
+            total = total + recipe.Calories;
+        }
+
+    }
+
+    protected override void OnInitialized()
+    {
+        caloriesSum(Recipes);
+    }
+  
+}

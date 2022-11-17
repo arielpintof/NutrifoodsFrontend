@@ -1,0 +1,16 @@
+﻿<div class="justify-content-start d-flex mr-0">
+    <div class="d-flex mr-3">
+        <MudAvatar Square="true" Variant="Variant.Outlined">
+            <MudIcon Icon="@Icons.Filled.Image" />
+        </MudAvatar>
+    </div>
+    
+    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@Name</div>
+    
+</div>
+
+@code {
+    [Parameter]
+    public string? Name { get; set; }
+
+}

@@ -1,0 +1,66 @@
+﻿@page "/Distribution"
+
+<MudPaper Class="pa-4">
+    <div class="d-flex justify-center mb-5">
+        <MudText>Distribución de macronutrientes</MudText>
+    </div>
+    <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="200px" Height="200px" />
+    <MudList>
+        <MudListItem Class="d-flex">
+            <MudContainer>
+                <div class="d-flex justify-space-between">
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Energía</div>
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@energy</div>
+                </div>
+            </MudContainer>
+        </MudListItem>
+        <MudListItem>
+            <MudContainer>
+                <div class="d-flex justify-space-between">
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Carbohidratos</div>
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@data.ElementAt(1)</div>
+                </div>
+            </MudContainer>
+        </MudListItem>
+        <MudListItem>
+            <MudContainer>
+                <div class="d-flex justify-space-between">
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Proteínas</div>
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@data.ElementAt(0)</div>
+                </div>
+            </MudContainer>
+
+        </MudListItem>
+        <MudListItem>
+            <MudContainer>
+                <div class="d-flex justify-space-between">
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Lípidos</div>
+                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@data.ElementAt(2)</div>
+                </div>
+            </MudContainer>
+
+        </MudListItem>
+    </MudList>
+</MudPaper>
+
+@code {
+    private int Index = -1;
+    int energy = 488;
+    int dataSize = 3;
+    double[] data = { 77, 25, 20 };
+    string[] labels = { "Proteínas", "Carbohidratos", "Lípidos" };
+
+
+}
+
+
+<style>
+    .text-dark-gray {
+        color: #2d303c;
+        color: var(--charcoal-gray);
+    }
+    .text-large {
+        font-size: 18px;
+        letter-spacing: 0.5px;
+    }
+</style>

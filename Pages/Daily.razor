@@ -1,0 +1,20 @@
+﻿@page "/MealPlan2"
+@using NutrifoodsFrontend.Pages.Components.MealPlan
+
+<MudContainer  MaxWidth="MaxWidth.Small">
+    <DistributionComponent/>
+    @for(var i = 0; i < comidas.Count(); i++)
+    {
+        <div class="mt-3">
+            <MealComponent Mealtype=@comidas[i] />
+        </div>   
+    }
+</MudContainer>
+
+
+@code {
+    public List<string> comidas = new()
+            { "Desayuno", "Almuerzo", "Cena" };
+    
+}
+
