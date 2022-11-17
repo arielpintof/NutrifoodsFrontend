@@ -10,20 +10,22 @@ namespace NutrifoodsFrontend.Services
             _httpClient = httpClient;
         }
 
-        public Task<List<RecipeDto>?> FilterByCarbohydrates(int lowerBound, int upperBound)
+        public async Task<List<RecipeDto>?> FilterByCarbohydrates(int lowerBound, int upperBound)
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/carbohydrates?lower={lowerBound}&upper={upperBound}");
         }
 
-        //PENDIENTE
         public async Task<List<RecipeDto>?> FilterByEnergy(int lowerBound, int upperBound)
         {
-            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>($"api/v1/recipes/energy?=");
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/energy?lower={lowerBound}&upper={upperBound}");
         }
 
-        public Task<List<RecipeDto>?> FilterByLipids(int lowerBound, int upperBound)
+        public async Task<List<RecipeDto>?> FilterByLipids(int lowerBound, int upperBound)
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/lipids?lower={lowerBound}&upper={upperBound}");
         }
 
         public async Task<List<RecipeDto>?> FilterByPortions(int portions)
@@ -35,17 +37,19 @@ namespace NutrifoodsFrontend.Services
         public async Task<List<RecipeDto>?> FilterByPortions(int lowerBound, int upperBound)
         {
             return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
-                ($"api/v1/recipes/portions/?lower={lowerBound}&upper={upperBound}");
+                ($"api/v1/recipes/portions?lower={lowerBound}&upper={upperBound}");
         }
 
-        public Task<List<RecipeDto>?> FilterByPreparationTime(int lowerBound, int upperBound)
+        public async Task<List<RecipeDto>?> FilterByPreparationTime(int lowerBound, int upperBound)
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/preparationTime?lower={lowerBound}&upper={upperBound}");
         }
 
-        public Task<List<RecipeDto>?> FilterByProteins(int lowerBound, int upperBound)
+        public async Task<List<RecipeDto>?> FilterByProteins(int lowerBound, int upperBound)
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/proteins?lower={lowerBound}&upper={upperBound}");
         }
 
         public async Task<List<RecipeDto>?> FindAll()
@@ -84,19 +88,22 @@ namespace NutrifoodsFrontend.Services
                 ($"api/v1/recipes/ovo-vegetarian");
         }
 
-        public Task<List<RecipeDto>?> GetPescetarianRecipes()
+        public async Task<List<RecipeDto>?> GetPescetarianRecipes()
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/pescetarian");
         }
 
-        public Task<List<RecipeDto>?> GetPolloPescetarianRecipes()
+        public async Task<List<RecipeDto>?> GetPolloPescetarianRecipes()
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/pollo-pescetarian");
         }
 
-        public Task<List<RecipeDto>?> GetPollotarianRecipes()
+        public async Task<List<RecipeDto>?> GetPollotarianRecipes()
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<RecipeDto>?>
+                ($"api/v1/recipes/pollotarian");
         }
 
         public async Task<List<RecipeDto>?> GetVegetarianRecipes()
