@@ -1,5 +1,9 @@
 ﻿@page "/fetchdata"
+@using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Data
+@using Services
+@inject IIngredientService ingService
+@inject IMealPlanService mpService
 @inject WeatherForecastService ForecastService
 
 <PageTitle>Weather forecast</PageTitle>
@@ -34,9 +38,12 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
-
+    private ICollection<IngredientDto>? ingredients;
+    private MealPlanDto? mealPlan;
     protected override async Task OnInitializedAsync()
     {
+        ingredients = await ingService.GetAll();
+        mealPlan = await mpService.GenerateBasedOnMbr(1900, "y", "normal", "normal");
         forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
     }
 }
