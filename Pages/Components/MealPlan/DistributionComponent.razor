@@ -1,4 +1,8 @@
 ﻿@page "/Distribution"
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.Data
+@using Services
+@inject IMealPlanService mpService
 
 <MudPaper Class="pa-4">
     <div class="d-flex justify-center mb-5">
@@ -6,39 +10,30 @@
     </div>
     <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="200px" Height="200px" />
     <MudList>
-        <MudListItem Class="d-flex">
-            <MudContainer>
-                <div class="d-flex justify-space-between">
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Energía</div>
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@energy</div>
+        <MudListItem Class="d-flex">        
+                <div class="d-flex justify-space-between pl-5 pr-5">
+                    <MudText Typo="Typo.body1">Energía</MudText>
+                    <MudText Typo="Typo.body1">@energy</MudText>
                 </div>
-            </MudContainer>
         </MudListItem>
         <MudListItem>
-            <MudContainer>
-                <div class="d-flex justify-space-between">
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Carbohidratos</div>
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@data.ElementAt(1)</div>
+                <div class="d-flex justify-space-between pl-5 pr-5">
+                    <MudText Typo="Typo.body1">Carbohidratos</MudText>
+                    <MudText Typo="Typo.body1">@data.ElementAt(1)</MudText>
                 </div>
-            </MudContainer>
         </MudListItem>
         <MudListItem>
-            <MudContainer>
-                <div class="d-flex justify-space-between">
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Proteínas</div>
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@data.ElementAt(0)</div>
+                <div class="d-flex justify-space-between pl-5 pr-5">
+                    <MudText Typo="Typo.body1">Proteínas</MudText>
+                    <MudText Typo="Typo.body1">@data.ElementAt(0)</MudText>
                 </div>
-            </MudContainer>
-
         </MudListItem>
         <MudListItem>
-            <MudContainer>
-                <div class="d-flex justify-space-between">
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">Lípidos</div>
-                    <div class="col-auto text-dark-gray  text-strong wrap_or_truncate pr-0">@data.ElementAt(2)</div>
+                <div class="d-flex justify-space-between pl-5 pr-5">
+                    <MudText Typo="Typo.body1">Lípidos</MudText>
+                    
+                    <MudText Typo="Typo.body1">@data.ElementAt(2)</MudText>
                 </div>
-            </MudContainer>
-
         </MudListItem>
     </MudList>
 </MudPaper>
@@ -50,17 +45,27 @@
     double[] data = { 77, 25, 20 };
     string[] labels = { "Proteínas", "Carbohidratos", "Lípidos" };
 
+    private double totalEnergy { get; set; }
+    private double totalCarbs { get; set; }
+    private double totalLipids { get; set; }
+    private double totalProteins { get; set; }
 
+    [Parameter]
+    public IEnumerable<MealMenuDto>? MealMenus { get; set; }
+
+    private void CalculateTotals()
+    {
+
+        foreach (var meal in MealMenus)
+        {
+            totalEnergy += meal.EnergyTotal;
+            totalCarbs += meal.CarbohydratesTotal;
+            totalLipids += meal.LipidsTotal;
+            totalProteins += meal.ProteinsTotal;
+        }
+
+    }
+
+  
 }
 
-
-<style>
-    .text-dark-gray {
-        color: #2d303c;
-        color: var(--charcoal-gray);
-    }
-    .text-large {
-        font-size: 18px;
-        letter-spacing: 0.5px;
-    }
-</style>

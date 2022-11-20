@@ -1,0 +1,18 @@
+﻿@page "/MealPlan"
+
+<MudContainer  MaxWidth="MaxWidth.Small">
+    <CaloriesTotal Energy="1736"/>
+    @for(var i = 0; i < comidas.Count(); i++)
+    {
+        <div class="mt-3">
+            <MealComponent Mealtype=@comidas[i] />
+        </div>   
+    }
+</MudContainer>
+
+
+@code {
+    public List<string> comidas = new()
+            { "Desayuno", "Almuerzo", "Cena" };
+    
+}

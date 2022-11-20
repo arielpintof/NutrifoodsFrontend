@@ -1,10 +1,18 @@
+using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
 using NutrifoodsFrontend.Data;
+using NutrifoodsFrontend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddAuth0WebAppAuthentication(options => {
+        options.Domain = builder.Configuration["Auth0:Domain"];
+        options.ClientId = builder.Configuration["Auth0:ClientId"];
+    });
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
@@ -12,6 +20,21 @@ StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configurat
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddSingleton<IngredientService>();
+builder.Services.AddSingleton<MealPlanService>();
+builder.Services.AddSingleton<RecipeService>();
+builder.Services.AddHttpClient<IIngredientService, IngredientService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7212/");
+});
+builder.Services.AddHttpClient<IMealPlanService, MealPlanService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7212/");
+});
+builder.Services.AddHttpClient<IRecipeService, RecipeService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7212/");
+});
 builder.Services.AddMudServices();
 
 var app = builder.Build();
@@ -29,6 +52,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
