@@ -1,0 +1,31 @@
+﻿@page "/prueba"
+@using Services
+@using NutrifoodsFrontend.Data.Dto
+@inject IMealPlanService mpService
+
+@if (mealPlan == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudText>@mealPlan.CarbohydratesTarget</MudText>
+    @foreach (var mealMenu in mealPlan.MealMenus)
+    {
+        foreach (var recipe in mealMenu.MenuRecipes)
+        {
+            var receta = recipe.Recipe;
+            <MudText>@receta.Name</MudText>
+        }
+    }
+}
+
+@code {
+    private MealPlanDto? mealPlan;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mealPlan = await mpService.GenerateBasedOnMbr(1900, "y", "normal", "normal");
+        
+    }
+}
