@@ -7,13 +7,11 @@
         </MudAvatar>
     </div>
     
-    <MudText Typo="Typo.body1">@Name</MudText>
+    <MudText Typo="Typo.body1">@Recipe.Name</MudText>
     
 </div>
 
 @code {
-    [Parameter]
-    public string? Name { get; set; }
 
     [Parameter]
     public RecipeDto? Recipe { get; set; }

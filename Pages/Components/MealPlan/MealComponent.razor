@@ -4,16 +4,17 @@
     <MudPaper Class="pa-4" Style="background-color: #F8F4F4">
         <MudStack>
             <div Class="d-flex justify-space-between flex-grow-1 gap-4" Elevation="0">
-                <MudText Class="pl-3" Typo="Typo.h5">@Mealtype</MudText>
+                <!-- MealType (Almuerzo, Desayuno, Cena, Merienda) -->
+                <MudText Class="pl-3" Typo="Typo.h5">@MealType</MudText>
                 <MudIconButton Size="Size.Small" Icon="@Icons.Filled.Autorenew" />
             </div>
         </MudStack>
         <MudList>
-
-            @foreach (var recipes in Recipes)
+            @foreach (var recipe in MenuRecipes)
             {
+                
                 <MudListItem>
-                  <RecipeComponent Name=@recipes.Name></RecipeComponent>
+                    <RecipeComponent Recipe=@recipe.Recipe></RecipeComponent>
                 </MudListItem>
             } 
         </MudList>
@@ -23,39 +24,10 @@
 </MudStack>
 
 @code {
+
     [Parameter]
-    public string? Mealtype { get; set; }
+    public IEnumerable<MealMenuRecipeDto>? MenuRecipes { get; set; }
+    [Parameter]
+    public string MealType { get; set; }
     
-    public int total { get; set; }
-
-    private List<Recipe> Recipes = new(){
-        new Recipe{ Name = "Pan tostado", Calories = 160 },
-        new Recipe{ Name = "Pizza", Calories = 300}
-    };
-
-    public class Recipe
-    {
-        public string? Name { get; set; }
-        public int Calories { get; set; }
-
-    }
-
- 
-    public void caloriesSum(List<Recipe> Recipes)
-    {
-        foreach(var recipe in Recipes){
-            total = total + recipe.Calories;
-        }
-
-    }
-
-    protected override void OnInitialized()
-    {
-        caloriesSum(Recipes);
-    }
-
-    [Parameter]
-    public MealTypeDto? _MealType { get; set; }
-
-  
 }

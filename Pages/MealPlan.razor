@@ -1,18 +1,63 @@
 ﻿@page "/MealPlan"
+@inject AuthenticationStateProvider AuthState
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.Services
+@inject IMealPlanService mealPlanService
 
-<MudContainer  MaxWidth="MaxWidth.Small">
-    <CaloriesTotal Energy="1736"/>
-    @for(var i = 0; i < comidas.Count(); i++)
-    {
-        <div class="mt-3">
-            <MealComponent Mealtype=@comidas[i] />
-        </div>   
-    }
-</MudContainer>
+
+@if (mealPlan == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <!-- MealPlan recibe una Regimen alimentario -->
+    <MudContainer MaxWidth="MaxWidth.Small">
+
+        <!-- Input: Cantidad de calorías | Destino: Componente hijo CaloriesTotal -->
+        <CaloriesTotal Energy="CalculateEnergy()" />
+        @foreach(var menu in mealPlan.MealMenus)
+        {
+            
+            <div class="mt-3">
+                <!-- Input: Comida del día | Destino: Componente hijo MealComponent -->
+                <MealComponent MenuRecipes=@menu.MenuRecipes />
+            </div>
+        }
+    </MudContainer>
+}
+
 
 
 @code {
-    public List<string> comidas = new()
-            { "Desayuno", "Almuerzo", "Cena" };
+    
+    private bool IsAuthenticated = false;
+
+    //[Parameter]
+    public MealPlanDto? mealPlan { get; set; }
+
+    public int Energy;
+
+    public int _energy
+    {
+        get { return Energy; }
+        set { Energy = CalculateEnergy(); }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        /*var state = await AuthState.GetAuthenticationStateAsync();
+        IsAuthenticated = state.User.Identity.IsAuthenticated;*/
+
+        mealPlan = await mealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
+        await base.OnInitializedAsync();
+    }
+
+    public int CalculateEnergy()
+    {
+        var mealMenus = mealPlan.MealMenus.Sum(e => e.EnergyTotal);
+        return Convert.ToInt32(mealMenus);
+
+    }
     
 }
