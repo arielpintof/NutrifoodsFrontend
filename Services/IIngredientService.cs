@@ -4,10 +4,10 @@ namespace NutrifoodsFrontend.Services
 {
     public interface IIngredientService
     {
-        Task<ICollection<IngredientDto>?> GetAll();
+        Task<HttpResponseMessage?> GetAll();
         Task<IngredientDto?> FindByName(string name);
         Task<IngredientDto?> FindById(int id);
-        Task<ICollection<IngredientDto>?> FindByPrimaryGroup(string name);
+        Task<HttpResponseMessage?> FindByPrimaryGroup(string name);
         Task<ICollection<IngredientDto>?> FindByPrimaryGroup(int id);
         Task<ICollection<IngredientDto>?> FindBySecondaryGroup(string name);
         Task<ICollection<IngredientDto>?> FindBySecondaryGroup(int id);

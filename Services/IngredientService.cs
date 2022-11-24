@@ -17,9 +17,11 @@ namespace NutrifoodsFrontend.Services
             _httpClient = httpClient;
         }
 
-        public async Task<ICollection<IngredientDto>?> GetAll()
+        public async Task<HttpResponseMessage?> GetAll()
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>("api/v1/ingredients");
+            var response = await _httpClient.GetAsync("api/v1/ingredients");
+            response.EnsureSuccessStatusCode();
+            return response;
         }
 
         public async Task<IngredientDto?> FindByName(string name)
@@ -32,9 +34,11 @@ namespace NutrifoodsFrontend.Services
             return await _httpClient.GetFromJsonAsync<IngredientDto?>($"api/v1/ingredients/id/{id}");
         }
 
-        public async Task<ICollection<IngredientDto>?> FindByPrimaryGroup(string name)
+        public async Task<HttpResponseMessage?> FindByPrimaryGroup(string name)
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>($"api/v1/ingredients/primaryGroup/{name}");
+            var response = await _httpClient.GetAsync($"api/v1/ingredients/primaryGroup/{name}");
+            response.EnsureSuccessStatusCode();
+            return response;
         }
 
         public async Task<ICollection<IngredientDto>?> FindByPrimaryGroup(int id)

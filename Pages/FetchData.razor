@@ -10,24 +10,41 @@
 
 <MudText Typo="Typo.h3" GutterBottom="true">Weather forecast</MudText>
 <MudText Class="mb-8">This component demonstrates fetching data from the server.</MudText>
-@if (forecasts == null)
+
+@if (mealPlanResponse == null)
+{
+    <MudText> Your meal plan is generating at this moment.</MudText>
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    if(!mealPlanResponse.IsSuccessStatusCode)
+    {
+        <MudText> Error @mealPlanResponse.ReasonPhrase </MudText>
+    }
+    else
+    {
+        MealPlanDto? amealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+        <MudText>amealPlan.CarbohydratesTarget</MudText>
+    }
+}
+
+@if (ingredientsResponse == null)
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
 else
 {
-    <MudTable Items="forecasts" Hover="true" SortLabel="Sort By" Elevation="0">
+    <MudTable Items="ingredientsResponse.Content.ReadFromJsonAsync<ICollection<IngredientDto>?>().Result" Hover="true" SortLabel="Sort By" Elevation="0">
         <HeaderContent>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WeatherForecast, object>(x=>x.Date)">Date</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureC)">Temp. (C)</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.TemperatureF)">Temp. (F)</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<WeatherForecast, object>(x=>x.Summary!)">Summary</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<IngredientDto, object>(x=>x.Id)">Date</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<IngredientDto, object>(x=>x.IsAnimal)">Temp. (C)</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<IngredientDto, object>(x=>x.ContainsGluten)">Temp. (F)</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Date">@context.Date</MudTd>
-            <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
-            <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
-            <MudTd DataLabel="Summary">@context.Summary</MudTd>
+            <MudTd DataLabel="Date">@context.Id</MudTd>
+            <MudTd DataLabel="Temp. (C)">@context.IsAnimal</MudTd>
+            <MudTd DataLabel="Temp. (F)">@context.ContainsGluten</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[]{50, 100}" />
@@ -37,13 +54,12 @@ else
 
 
 @code {
-    private WeatherForecast[]? forecasts;
-    private ICollection<IngredientDto>? ingredients;
+    private HttpResponseMessage? ingredientsResponse;
+    private HttpResponseMessage? mealPlanResponse;
     private MealPlanDto? mealPlan;
     protected override async Task OnInitializedAsync()
     {
-        ingredients = await ingService.GetAll();
-        mealPlan = await mpService.GenerateBasedOnMbr(1900, "y", "normal", "normal");
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        ingredientsResponse = await ingService.FindByPrimaryGroup("Carnes");
+        mealPlanResponse = await mpService.GenerateBasedOnMbr(1900, "y", "normaal", "normal");
     }
 }

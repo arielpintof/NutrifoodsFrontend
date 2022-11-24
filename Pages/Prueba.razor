@@ -21,11 +21,13 @@ else
 }
 
 @code {
+    private HttpResponseMessage? mealPlanResponse;
     private MealPlanDto? mealPlan;
 
     protected override async Task OnInitializedAsync()
     {
-        mealPlan = await mpService.GenerateBasedOnMbr(1900, "y", "normal", "normal");
-        
+        mealPlanResponse = await mpService.GenerateBasedOnMbr(1900, "y", "normal", "normal");
+        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+
     }
 }
