@@ -25,7 +25,18 @@ else
     else
     {
         MealPlanDto? amealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
-        <MudText>amealPlan.CarbohydratesTarget</MudText>
+        if (amealPlan != null)
+        {
+            <MudText> @amealPlan.CarbohydratesTarget </MudText>
+            @foreach (var mealMenu in amealPlan.MealMenus)
+            {
+                foreach (var recipe in mealMenu.MenuRecipes)
+                {
+                    var receta = recipe.Recipe;
+                    <MudText>@receta.Name</MudText>
+                }
+            }
+        }
     }
 }
 
@@ -59,7 +70,7 @@ else
     private MealPlanDto? mealPlan;
     protected override async Task OnInitializedAsync()
     {
-        ingredientsResponse = await ingService.FindByPrimaryGroup("Carnes");
-        mealPlanResponse = await mpService.GenerateBasedOnMbr(1900, "y", "normaal", "normal");
+        ingredientsResponse = await ingService.FindByPrimaryGroup("Frutas");
+        mealPlanResponse = await mpService.GenerateBasedOnMbr(1900, "y", "normal", "normal");
     }
 }
