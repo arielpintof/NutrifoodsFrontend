@@ -16,6 +16,7 @@ builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IngredientService>();
 builder.Services.AddSingleton<MealPlanService>();
 builder.Services.AddSingleton<RecipeService>();
+builder.Services.AddSingleton<UserService>();
 builder.Services.AddHttpClient<IIngredientService, IngredientService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7212/");
@@ -25,6 +26,10 @@ builder.Services.AddHttpClient<IMealPlanService, MealPlanService>(client =>
     client.BaseAddress = new Uri("https://localhost:7212/");
 });
 builder.Services.AddHttpClient<IRecipeService, RecipeService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7212/");
+});
+builder.Services.AddHttpClient<IUserService, UserService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7212/");
 });
