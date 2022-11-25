@@ -4,9 +4,8 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Welcome, @Username!</h1>
-<h1>Welcome, @name</h1>
-You can only see this content if you're authenticated.
+<h1>Bienvenido, @Nickname!</h1>
+Este contenido solo se puede ver si estas autenticado.
 <br />
 <img src="@Picture">
 
@@ -14,6 +13,7 @@ You can only see this content if you're authenticated.
     private string Username = "Anonymous User";
     private string Picture = "";
     private string name = "";
+    private string Nickname = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -26,6 +26,11 @@ You can only see this content if you're authenticated.
 
         Picture = state.User.Claims
                     .Where(c => c.Type.Equals("picture"))
+                    .Select(c => c.Value)
+                    .FirstOrDefault() ?? string.Empty;
+
+        Nickname = state.User.Claims
+                    .Where(c => c.Type.Equals("nickname"))
                     .Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty;
 
