@@ -1,0 +1,19 @@
+﻿@using NutrifoodsFrontend.Data.Dto
+
+<div class="justify-content-start d-flex mr-0">
+    <div class="d-flex mr-3">
+        <MudAvatar Square="true" Variant="Variant.Outlined">
+            <MudIcon Icon="@Icons.Filled.Image" />
+        </MudAvatar>
+    </div>
+    
+    <MudText Typo="Typo.body1">@Recipe.Name</MudText>
+    
+</div>
+
+@code {
+
+    [Parameter]
+    public RecipeDto? Recipe { get; set; }
+
+}

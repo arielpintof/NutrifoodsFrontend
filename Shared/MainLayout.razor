@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="myTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -8,8 +8,8 @@
     <MudAppBar Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
+        <AccessControl></AccessControl>
+        
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
@@ -25,10 +25,26 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    bool _drawerOpen = false;
 
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    private MudTheme myTheme = new()
+        {
+            Palette = new Palette
+            {
+                Primary = "#35A14B",
+                Secondary = "#B0B006",
+                Tertiary = "#5B06B0",
+                Info = "#928B8B",
+                Success = "#2ECC40",
+                Warning = "#FF851B",
+                Error = "#F012BE",
+                AppbarBackground = "#35A14B",
+                
+            }
+        };
 }

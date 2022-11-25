@@ -1,0 +1,33 @@
+﻿@using NutrifoodsFrontend.Data.Dto;
+
+<MudStack>
+    <MudPaper Class="pa-4" Style="background-color: #F8F4F4">
+        <MudStack>
+            <div Class="d-flex justify-space-between flex-grow-1 gap-4" Elevation="0">
+                <!-- MealType (Almuerzo, Desayuno, Cena, Merienda) -->
+                <MudText Class="pl-3" Typo="Typo.h5">@MealType</MudText>
+                <MudIconButton Size="Size.Small" Icon="@Icons.Filled.Autorenew" />
+            </div>
+        </MudStack>
+        <MudList>
+            @foreach (var recipe in MenuRecipes)
+            {
+                
+                <MudListItem>
+                    <RecipeComponent Recipe=@recipe.Recipe></RecipeComponent>
+                </MudListItem>
+            } 
+        </MudList>
+    </MudPaper>
+
+    
+</MudStack>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<MealMenuRecipeDto>? MenuRecipes { get; set; }
+    [Parameter]
+    public string MealType { get; set; }
+    
+}

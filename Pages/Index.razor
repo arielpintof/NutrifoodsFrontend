@@ -1,7 +1,39 @@
 ﻿@page "/"
+@inject AuthenticationStateProvider AuthState
+@attribute [Authorize]
 
 <PageTitle>Index</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
-<MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
+<h1>Bienvenido, @Nickname!</h1>
+Este contenido solo se puede ver si estas autenticado.
+<br />
+<img src="@Picture">
+
+@code {
+    private string Username = "Anonymous User";
+    private string Picture = "";
+    private string name = "";
+    private string Nickname = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState.GetAuthenticationStateAsync();
+
+        name = state.User.Identity.Name;
+        
+
+        Username = state.User.Identity.Name ?? string.Empty;
+
+        Picture = state.User.Claims
+                    .Where(c => c.Type.Equals("picture"))
+                    .Select(c => c.Value)
+                    .FirstOrDefault() ?? string.Empty;
+
+        Nickname = state.User.Claims
+                    .Where(c => c.Type.Equals("nickname"))
+                    .Select(c => c.Value)
+                    .FirstOrDefault() ?? string.Empty;
+
+        await base.OnInitializedAsync();
+    }
+}
