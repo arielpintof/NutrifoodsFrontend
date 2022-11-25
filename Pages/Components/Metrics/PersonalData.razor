@@ -1,0 +1,29 @@
+﻿@page "/personaldata"
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <div class="d-flex flex-column">
+        <MudText Class="justify-content-start" Typo="Typo.h4">Datos Personales</MudText>
+        <div class="d-flex mt-5">
+            <MudTextField Class="pl-3 pr-3" @bind-Value="Nombre" Label="Nombre" Variant="Variant.Outlined"></MudTextField>
+            <MudTextField Class="pl-3 pr-3" @bind-Value="Apellido" Label="Apellido" Variant="Variant.Outlined"></MudTextField>
+        </div>
+        <MudDatePicker Class="pl-3 pr-3" @ref="_picker" Label="Fecha de Nacimiento" @bind-Date="date">
+            <PickerActions>
+                <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Clear</MudButton>
+                <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
+                <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+            </PickerActions>
+        </MudDatePicker>
+        <MudButtonGroup Class="pt-3 pb-3 pl-3 pr-3 justify-space-between" Color="Color.Primary" Variant="Variant.Outlined">
+            <MudButton FullWidth="true">Hombre</MudButton>
+            <MudButton FullWidth="true">Mujer</MudButton>
+        </MudButtonGroup>
+        <MudButton Class="background-color: #35A14B" Variant="Variant.Filled"  FullWidth="true">Siguiente</MudButton>
+    </div>  
+</MudContainer>
+@code {
+    MudDatePicker _picker;
+    DateTime? date = DateTime.Today;
+    public string Nombre { get; set; }
+    public string Apellido { get; set; }
+}
