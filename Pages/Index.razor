@@ -20,7 +20,6 @@ You can only see this content if you're authenticated.
         var state = await AuthState.GetAuthenticationStateAsync();
 
         name = state.User.Identity.Name;
-        Console.WriteLine("Hola");
         
 
         Username = state.User.Identity.Name ?? string.Empty;
