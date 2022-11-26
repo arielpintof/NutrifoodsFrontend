@@ -1,42 +1,43 @@
 ﻿using NutrifoodsFrontend.Data.Dto;
+using System.Net.Http;
 
 namespace NutrifoodsFrontend.Services
 {
     public interface IRecipeService
     {
-        Task<List<RecipeDto>?> FindAll();
+        Task<HttpResponseMessage?> FindAll();
 
-        Task<RecipeDto?> FindByName(string name);
+        Task<HttpResponseMessage?> FindByName(string name);
 
-        Task<RecipeDto?> FindById(int id);
+        Task<HttpResponseMessage?> FindById(int id);
 
-        Task<List<RecipeDto>?> GetVegetarianRecipes();
+        Task<HttpResponseMessage?> GetVegetarianRecipes();
 
-        Task<List<RecipeDto>?> GetOvoVegetarianRecipes();
+        Task<HttpResponseMessage?> GetOvoVegetarianRecipes();
 
-        Task<List<RecipeDto>?> GetOvoLactoVegetarianRecipes();
+        Task<HttpResponseMessage?> GetOvoLactoVegetarianRecipes();
 
-        Task<List<RecipeDto>?> GetLactoVegetarianRecipes();
+        Task<HttpResponseMessage?> GetLactoVegetarianRecipes();
 
-        Task<List<RecipeDto>?> GetPollotarianRecipes();
+        Task<HttpResponseMessage?> GetPollotarianRecipes();
 
-        Task<List<RecipeDto>?> GetPescetarianRecipes();
+        Task<HttpResponseMessage?> GetPescetarianRecipes();
 
-        Task<List<RecipeDto>?> GetPolloPescetarianRecipes();
+        Task<HttpResponseMessage?> GetPolloPescetarianRecipes();
 
-        Task<List<RecipeDto>?> FilterByPreparationTime(int lowerBound, int upperBound);
+        Task<HttpResponseMessage?> FilterByPreparationTime(int lowerBound, int upperBound);
 
-        Task<List<RecipeDto>?> FilterByPortions(int portions);
+        Task<HttpResponseMessage?> FilterByPortions(int portions);
 
-        Task<List<RecipeDto>?> FilterByPortions(int lowerBound, int upperBound);
+        Task<HttpResponseMessage?> FilterByPortions(int lowerBound, int upperBound);
 
-        Task<List<RecipeDto>?> FilterByEnergy(int lowerBound, int upperBound);
+        Task<HttpResponseMessage?> FilterByEnergy(int lowerBound, int upperBound);
 
-        Task<List<RecipeDto>?> FilterByCarbohydrates(int lowerBound, int upperBound);
+        Task<HttpResponseMessage?> FilterByCarbohydrates(int lowerBound, int upperBound);
 
-        Task<List<RecipeDto>?> FilterByLipids(int lowerBound, int upperBound);
+        Task<HttpResponseMessage?> FilterByLipids(int lowerBound, int upperBound);
 
-        Task<List<RecipeDto>?> FilterByProteins(int lowerBound, int upperBound);
+        Task<HttpResponseMessage?> FilterByProteins(int lowerBound, int upperBound);
 
     }
 }

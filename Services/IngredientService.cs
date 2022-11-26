@@ -17,49 +17,51 @@ namespace NutrifoodsFrontend.Services
             _httpClient = httpClient;
         }
 
-        public async Task<ICollection<IngredientDto>?> GetAll()
+        public async Task<HttpResponseMessage?> GetAll()
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>("api/v1/ingredients");
+            var response = await _httpClient.GetAsync("api/v1/ingredients");
+            response.EnsureSuccessStatusCode();
+            return response;
         }
 
-        public async Task<IngredientDto?> FindByName(string name)
+        public async Task<HttpResponseMessage?> FindByName(string name)
         {
-                return await _httpClient.GetFromJsonAsync<IngredientDto?>($"api/v1/ingredients/name/{name}");
+                return await _httpClient.GetAsync($"api/v1/ingredients/name/{name}");
         }
 
-        public async Task<IngredientDto?> FindById(int id)
+        public async Task<HttpResponseMessage?> FindById(int id)
         {
-            return await _httpClient.GetFromJsonAsync<IngredientDto?>($"api/v1/ingredients/id/{id}");
+            return await _httpClient.GetAsync($"api/v1/ingredients/id/{id}");
         }
 
-        public async Task<ICollection<IngredientDto>?> FindByPrimaryGroup(string name)
+        public async Task<HttpResponseMessage?> FindByPrimaryGroup(string name)
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>($"api/v1/ingredients/primaryGroup/{name}");
+            return await _httpClient.GetAsync($"api/v1/ingredients/primaryGroup/{name}");
         }
 
-        public async Task<ICollection<IngredientDto>?> FindByPrimaryGroup(int id)
+        public async Task<HttpResponseMessage?> FindByPrimaryGroup(int id)
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>($"api/v1/ingredients/primaryGroup/{id}");
+            return await _httpClient.GetAsync($"api/v1/ingredients/primaryGroup/{id}");
         }
 
-        public async Task<ICollection<IngredientDto>?> FindBySecondaryGroup(string name)
+        public async Task<HttpResponseMessage?> FindBySecondaryGroup(string name)
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>($"api/v1/ingredients/secondaryGroup/{name}");
+            return await _httpClient.GetAsync($"api/v1/ingredients/secondaryGroup/{name}");
         }
 
-        public async Task<ICollection<IngredientDto>?> FindBySecondaryGroup(int id)
+        public async Task<HttpResponseMessage?> FindBySecondaryGroup(int id)
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>($"api/v1/ingredients/secondaryGroup/{id}");
+            return await _httpClient.GetAsync($"api/v1/ingredients/secondaryGroup/{id}");
         }
 
-        public async Task<ICollection<IngredientDto>?> FindByTertiaryGroup(string name)
+        public async Task<HttpResponseMessage?> FindByTertiaryGroup(string name)
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>($"api/v1/ingredients/tertiaryGroup/{name}");
+            return await _httpClient.GetAsync($"api/v1/ingredients/tertiaryGroup/{name}");
         }
 
-        public async Task<ICollection<IngredientDto>?> FindByTertiaryGroup(int id)
+        public async Task<HttpResponseMessage?> FindByTertiaryGroup(int id)
         {
-            return await _httpClient.GetFromJsonAsync<ICollection<IngredientDto>?>($"api/v1/ingredients/tertiaryGroup/{id}");
+            return await _httpClient.GetAsync($"api/v1/ingredients/tertiaryGroup/{id}");
         }
     }
 }
