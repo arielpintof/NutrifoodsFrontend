@@ -31,27 +31,41 @@ else
                     <MealComponent MenuRecipes=@menu.MenuRecipes />
                 </div>
             }
-
-            <div class="d-flex justify-space-between mt-3 mb-3">
-                <MudButton 
-                    Style="width: 175px; height: 50px;" 
-                    Class="pa-3 rounded-pill" 
-                    Size="Size.Large" 
-                    Variant="Variant.Filled" 
-                    Color="Color.Primary" 
-                    ButtonType="ButtonType.Submit">
-                    Confirmar
-                </MudButton>
-                <MudButton 
-                    Style="width: 175px; height: 50px;" 
-                    Class="pa-3 rounded-pill" 
-                    Size="Size.Large" 
-                    Variant="Variant.Filled" 
-                    Color="Color.Primary" 
-                    ButtonType="ButtonType.Submit">
-                    Regenerar
-                </MudButton>
-            </div>
+            <AuthorizeView>
+                <Authorized>
+                    <div class="d-flex justify-space-between mt-3 mb-3">
+                        <MudButton Style="width: 175px; height: 50px;"
+                           Class="pa-3 rounded-pill"
+                           Size="Size.Large"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           ButtonType="ButtonType.Submit">
+                            Confirmar
+                        </MudButton>
+                        <MudButton Style="width: 175px; height: 50px;"
+                           Class="pa-3 rounded-pill"
+                           Size="Size.Large"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           ButtonType="ButtonType.Submit">
+                            Regenerar
+                        </MudButton>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div class="d-flex justify-end mt-3 mb-3">
+                        <MudButton Style="width: 175px; height: 50px;"
+                           Class="pa-3 rounded-pill"
+                           Size="Size.Large"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           ButtonType="ButtonType.Submit">
+                            Regenerar
+                        </MudButton>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+            
         </MudContainer>        
     }
 }
