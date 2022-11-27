@@ -6,14 +6,19 @@
             <MudIcon Icon="@Icons.Filled.Image" />
         </MudAvatar>
     </div>
-    
-    <MudText Typo="Typo.body1">@Recipe.Name</MudText>
-    
+
+    <MudStack Spacing=0>
+        <MudText Color="Color.Dark" Typo="Typo.body1"><b>@Name</b></MudText>
+        <MudText Typo="Typo.body2">Porciones: @Quantity</MudText>
+    </MudStack>
+
 </div>
 
 @code {
 
     [Parameter]
-    public RecipeDto? Recipe { get; set; }
+    public string? Name { get; set; }
+    [Parameter]
+    public int Quantity { get; set; }
 
 }
