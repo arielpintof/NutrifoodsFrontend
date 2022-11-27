@@ -7,8 +7,11 @@
 
 @if (mealPlanResponse == null)
 {
-    <MudText> Your meal plan is generating at this moment.</MudText>
-    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+    <div class="d-flex justify-center align-center">
+        <MudProgressCircular Class="mr-2" Color="Color.Primary" Indeterminate="true" />
+        <MudText Typo="Typo.h6">Estamos generando tu Plan Alimentario</MudText> 
+    </div>
+    
 }
 else
 {
