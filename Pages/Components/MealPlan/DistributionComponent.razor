@@ -5,35 +5,37 @@
 @inject IMealPlanService mpService
 
 <MudContainer MaxWidth="MaxWidth.Small">
+    @if(Energy != null){
+        initData();
+    }
     <MudPaper Class="pa-4">
         <div class="d-flex justify-center mb-5">
             <MudText>Distribución de macronutrientes</MudText>
         </div>
-        <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="200px" Height="200px" />
+        <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="400px" Height="300px" />
         <MudList>
             <MudListItem Class="d-flex">
                 <div class="d-flex justify-space-between pl-5 pr-5">
                     <MudText Typo="Typo.body1">Energía</MudText>
-                    <MudText Typo="Typo.body1">@energy</MudText>
+                    <MudText Typo="Typo.body1">@Energy</MudText>
                 </div>
             </MudListItem>
             <MudListItem>
                 <div class="d-flex justify-space-between pl-5 pr-5">
                     <MudText Typo="Typo.body1">Carbohidratos</MudText>
-                    <MudText Typo="Typo.body1">@data.ElementAt(1)</MudText>
+                    <MudText Typo="Typo.body1">@Carbs</MudText>
                 </div>
             </MudListItem>
             <MudListItem>
                 <div class="d-flex justify-space-between pl-5 pr-5">
                     <MudText Typo="Typo.body1">Proteínas</MudText>
-                    <MudText Typo="Typo.body1">@data.ElementAt(0)</MudText>
+                    <MudText Typo="Typo.body1">@Proteins</MudText>
                 </div>
             </MudListItem>
             <MudListItem>
                 <div class="d-flex justify-space-between pl-5 pr-5">
                     <MudText Typo="Typo.body1">Lípidos</MudText>
-
-                    <MudText Typo="Typo.body1">@data.ElementAt(2)</MudText>
+                    <MudText Typo="Typo.body1">@Lipids</MudText>
                 </div>
             </MudListItem>
         </MudList>
@@ -42,10 +44,22 @@
 </MudContainer>
 
 @code {
+
+    [Parameter]
+    public int Energy { get; set; }
+    [Parameter]
+    public int Carbs { get; set; }
+    [Parameter]
+    public int Proteins { get; set; }
+    [Parameter]
+    public int Lipids { get; set; }
+
     private int Index = -1;
-    int energy = 488;
+
+
     int dataSize = 3;
-    double[] data = { 77, 25, 20 };
+    double[] data = new double[3];
+
     string[] labels = { "Proteínas", "Carbohidratos", "Lípidos" };
 
     private double totalEnergy { get; set; }
@@ -67,6 +81,14 @@
             totalProteins += meal.ProteinsTotal;
         }
 
+    }
+
+    public void initData()
+    {
+        data[0] = Convert.ToDouble(Proteins);
+        data[1] = Convert.ToDouble(Carbs);
+        data[2] = Convert.ToDouble(Lipids);
+        
     }
 
   
