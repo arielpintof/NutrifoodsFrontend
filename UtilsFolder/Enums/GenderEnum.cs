@@ -6,10 +6,10 @@ namespace UtilsFolder.Enums;
 public class GenderEnum : SmartEnum<GenderEnum>
 {
     public static readonly GenderEnum Male =
-        new(nameof(Male), (int)Gender.Male, Gender.Male, "Male");
+        new(nameof(Male), (int)Gender.Male, Gender.Male, "Masculino");
 
     public static readonly GenderEnum Female =
-        new(nameof(Female), (int)Gender.Female, Gender.Female, "Female");
+        new(nameof(Female), (int)Gender.Female, Gender.Female, "Femenino");
 
     private static readonly IDictionary<Gender, GenderEnum> TokenDictionary =
         new Dictionary<Gender, GenderEnum>
