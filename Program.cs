@@ -1,9 +1,6 @@
 using Auth0.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
-using NutrifoodsFrontend.Data;
 using NutrifoodsFrontend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +16,6 @@ StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configurat
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<IngredientService>();
 builder.Services.AddSingleton<MealPlanService>();
 builder.Services.AddSingleton<RecipeService>();
