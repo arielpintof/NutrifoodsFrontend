@@ -2,37 +2,45 @@
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudPaper>
-        <div class="d-flex flex-column pa-4">
-            <MudText Typo="Typo.h5" Class="pa-4">Datos Personales</MudText>
-            <div class="d-flex mt-3">
-                <MudTextField Class="pl-3 pr-3" @bind-Value="Nombre" Label="Nombre" Variant="Variant.Outlined"></MudTextField>
-                <MudTextField Class="pl-3 pr-3" @bind-Value="Apellido" Label="Apellido" Variant="Variant.Outlined"></MudTextField>
-            </div>
-            <MudDatePicker Class="pl-3 pr-3 pa-3" @ref="_picker" Label="Fecha de Nacimiento" @bind-Date="date">
-                <PickerActions>
-                    <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Clear</MudButton>
-                    <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
-                    <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
-                </PickerActions>
-            </MudDatePicker>
+        <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+            <div class="d-flex flex-column pa-4">
+                <MudText Typo="Typo.h5" Class="pa-4">Datos Personales</MudText>
 
-            <div class="d-flex flex-column">
-                <MudText Class="pl-3 pr-3" Typo="Typo.body1">Género</MudText>
-                <MudButtonGroup Class="pt-1 pb-3 pl-3 pr-3 justify-space-between" Color="Color.Primary" Variant="Variant.Outlined">
-                    <MudButton FullWidth="true">Hombre</MudButton>
-                    <MudButton FullWidth="true">Mujer</MudButton>
-                </MudButtonGroup>
+                <div class="d-flex mt-3">
+                    <MudTextField Class="pl-3 pr-3" @bind-Value="Name" Label="Nombre" Variant="Variant.Outlined"></MudTextField>
+                    <MudTextField Class="pl-3 pr-3" @bind-Value="LastName" Label="Apellido" Variant="Variant.Outlined"></MudTextField>
+                </div>
+
+                <MudDatePicker Class="pl-3 pr-3 pa-3" @ref="_picker" Label="Fecha de Nacimiento" @bind-Date="date">
+                    <PickerActions>
+                        <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Clear</MudButton>
+                        <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
+                        <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+                    </PickerActions>
+                </MudDatePicker>
+
+                <div class="d-flex flex-column">
+                    <MudText Class="pl-3 pr-3" Typo="Typo.body1">Género</MudText>
+                    <MudButtonGroup Class="pt-1 pb-3 pl-3 pr-3 justify-space-between" Color="Color.Primary" Variant="Variant.Outlined">
+                        <MudButton FullWidth="true">Hombre</MudButton>
+                        <MudButton FullWidth="true">Mujer</MudButton>
+                    </MudButtonGroup>
+                </div>
+
+                <div class="pa-3 mt-3">
+                    <MudButton Class="pa-2" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth="true">Siguiente</MudButton>
+                </div>
             </div>
-            <div class="pa-3 mt-3">
-                <MudButton Class="pa-2" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth="true">Siguiente</MudButton>
-            </div>
-        </div>
-    </MudPaper>
-   
+        </MudForm>
+    </MudPaper>   
 </MudContainer>
+
 @code {
-    MudDatePicker? _picker;
-    DateTime? date = DateTime.Today;
-    public string Nombre { get; set; }
-    public string Apellido { get; set; }
+    private bool success;
+    private string[] errors = { };
+    private MudForm? form;
+    private string? Name { get; set; }
+    private string? LastName { get; set; }
+    private MudDatePicker? _picker;
+    private DateTime? date = DateTime.Today;
 }
