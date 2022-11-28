@@ -7,18 +7,9 @@
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Datos Personales</MudText>
                 <div class="d-flex mt-3">
-                    <MudTextField Required="true" Class="pl-3 pr-3" @bind-Value="Name" Label="Nombre" Variant="Variant.Outlined"></MudTextField>
-                    <MudTextField Required="true" Class="pl-3 pr-3" @bind-Value="LastName" Label="Apellido" Variant="Variant.Outlined"></MudTextField>
+                    <MudTextField Required="true" Class="px-3" @bind-Value="Name" Label="Nombre" Variant="Variant.Outlined"></MudTextField>
+                    <MudTextField Required="true" Class="px-3" @bind-Value="LastName" Label="Apellido" Variant="Variant.Outlined"></MudTextField>
                 </div>
-
-                <MudDatePicker Required="true" Label="Fecha de Nacimiento" Class="pl-3 pr-3 pa-3" @ref="_picker" DateFormat="yyyy-MM-dd" @bind-Date="date">
-                    <PickerActions>
-                        <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Limpiar</MudButton>
-                        <MudButton OnClick="@(() => _picker.Close(false))">Cancelar</MudButton>
-                        <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
-                    </PickerActions>
-                </MudDatePicker>
-
                 <div class="pl-3 pr-3 mt-3">
                     <MudSelect Required="true" Dense="true" @bind-Value="GenderValue" Class="pb-4" Label="Género" Variant="Variant.Outlined">
                         @foreach (GenderEnum item in GenderEnum.List)
@@ -27,6 +18,13 @@
                         }
                     </MudSelect>
                 </div>
+                <MudDatePicker Required="true" Label="Fecha de Nacimiento" Class="px-3" @ref="_picker" DateFormat="yyyy-MM-dd" @bind-Date="date">
+                    <PickerActions>
+                        <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Limpiar</MudButton>
+                        <MudButton OnClick="@(() => _picker.Close(false))">Cancelar</MudButton>
+                        <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+                    </PickerActions>
+                </MudDatePicker>
 
                 <div class="pa-3 mt-3">
                     <MudButton Class="pa-3" 
@@ -51,5 +49,5 @@
     private MudForm? form;
     private MudDatePicker? _picker;
     private DateTime? date = DateTime.Today;
-    private GenderEnum GenderValue;
+    private GenderEnum? GenderValue;
 }
