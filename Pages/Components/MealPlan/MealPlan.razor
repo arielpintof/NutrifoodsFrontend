@@ -2,7 +2,7 @@
 @inject AuthenticationStateProvider AuthState
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Services
-@inject IMealPlanService mealPlanService
+@inject IMealPlanService MealPlanService
 
 
 @if (mealPlanResponse == null)
@@ -121,7 +121,7 @@ else
         /*var state = await AuthState.GetAuthenticationStateAsync();
         IsAuthenticated = state.User.Identity.IsAuthenticated;*/
 
-        mealPlanResponse = await mealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
+        mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
         mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
         await base.OnInitializedAsync();
     }
