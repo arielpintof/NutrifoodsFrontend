@@ -6,7 +6,7 @@
             <div Class="d-flex justify-space-between flex-grow-1 gap-4" Elevation="0">
                 <!-- MealType (Almuerzo, Desayuno, Cena, Merienda) -->
                 <MudText Class="pl-3" Typo="Typo.h5">@MealType</MudText>
-                <MudIconButton Size="Size.Medium" Icon="@Icons.Filled.Autorenew" />
+                <MudIconButton Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
             </div>
         </MudStack>
         <MudList>
@@ -15,7 +15,7 @@
                 <MudListItem>
                     <RecipeComponent Quantity=@menu.Quantity Name=@menu.Recipe.Name></RecipeComponent>
                 </MudListItem>
-            } 
+            }
         </MudList>
     </MudPaper>
 </MudStack>
@@ -24,7 +24,8 @@
 
     [Parameter]
     public IEnumerable<MealMenuRecipeDto>? MenuRecipes { get; set; }
+
     [Parameter]
     public string? MealType { get; set; }
-    
+
 }
