@@ -9,7 +9,7 @@
         <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
             <MudText Class="d-flex justify-center" Typo="Typo.h5">Configuración del día</MudText>
             <div class="flex-column mt-5">
-                <MudSelect Required="true" @bind-Value="MealsQuantity" T="int" Label="Cantidad de comidas" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                <MudSelect Required="true" @bind-Value="QuantityTest" T="int" Label="Cantidad de comidas" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
                     <MudSelectItem T="int" Value="2" />
                     <MudSelectItem T="int" Value="3" />
                     <MudSelectItem T="int" Value="4" />
@@ -17,16 +17,8 @@
                 </MudSelect>
                 <MudStack>
                     <div class="row d-flex align-center mt-2">
-                        <MudCheckBox @bind-Checked="BreakfastCheckTest" 
-                                    Color="Color.Primary" 
-                                    UnCheckedColor="Color.Default" 
-                                    Class="mr-3">
-                                    @BreakFast
-                        </MudCheckBox>
-                        <MudSelect @bind-Value="BreakfastSatiety" 
-                                    Dense="true" 
-                                    Label="Contundencia" 
-                                    Variant="Variant.Outlined">
+                        <MudCheckBox Disabled="BreakfastCheckBoxDisableValue" @bind-Checked="BreakfastCheckTest" Color="Color.Primary" UnCheckedColor="Color.Default" Class="mr-3">@BreakFast</MudCheckBox>
+                        <MudSelect Disabled="BreakfastSelectDisableValue" @bind-Value="BreakfastSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined">
                             @foreach (SatietyEnum item in SatietyEnum.List)
                             {
                                 <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
@@ -43,8 +35,9 @@
                         </MudSelect>
                     </div>
                     <div class="row d-flex align-center mt-2">
-                        <MudCheckBox @bind-Checked="DinnerCheck" Color="Color.Primary" UnCheckedColor="Color.Default" Class="mr-11">Cena</MudCheckBox>
-                        <MudSelect @bind-Value="DinnerSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined">
+                        <MudCheckBox Disabled="DinnerCheckBoxDisableValue" @bind-Checked="DinnerCheckTest" Color="Color.Primary" UnCheckedColor="Color.Default" 
+                                    Class="mr-11">Cena</MudCheckBox>
+                        <MudSelect Disabled="DinnerSelectDisableValue" @bind-Value="DinnerSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined">
                             @foreach (SatietyEnum item in SatietyEnum.List)
                             {
                                 <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
@@ -52,8 +45,9 @@
                         </MudSelect>
                     </div>
                     <div class="row d-flex align-center mt-2">
-                        <MudCheckBox @bind-Checked="SnackCheck" Color="Color.Primary" UnCheckedColor="Color.Default" Class="mr-3">Merienda</MudCheckBox>
-                        <MudSelect @bind-Value="SnackSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined">
+                        <MudCheckBox Disabled="SnackCheckBoxDisableValue" @bind-Checked="SnackCheck" Color="Color.Primary" UnCheckedColor="Color.Default" 
+                                    Class="mr-3">Merienda</MudCheckBox>
+                        <MudSelect Disabled="SnackSelectDisableValue" @bind-Value="SnackSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined">
                             @foreach (SatietyEnum item in SatietyEnum.List)
                             {
                                     <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
@@ -72,31 +66,46 @@
                 </MudStack>
             </div>
         </MudForm>
+
+        <MudText>Valor de la cantidad de comidas: @MealsQuantity</MudText>
+        <MudChip Color="Color.Primary">@BreakfastSatiety</MudChip>
     </MudPaper>
 </MudContainer>
 
 
 @code {
     private bool Success;
-    public int MealsQuantity { get; set; } = 3;
-    public bool Basic_CheckBox2 { get; set; } = true;
+    public int MealsQuantity = 3;
     private MudForm? Form;
     private string[] Errors = { };
 
-    private bool BreakFastCheck;
+    //Variables para el ticket de los Checkboxs de comidas del día
+    private bool BreakfastCheck;
     private bool LaunchCheck = true;
     private bool DinnerCheck;
     private bool SnackCheck;
+    //Variables para Selects de comidas del día
+    private bool SnackSelectDisableValue;
+    private bool BreakfastSelectDisableValue;
+    private bool DinnerSelectDisableValue;
 
-    private string BreakFast = MealTypeEnum.Breakfast.ReadableName;
+    //Variables para 
+    private bool BreakfastCheckBoxDisableValue;
+    private bool DinnerCheckBoxDisableValue;
+    private bool SnackCheckBoxDisableValue;
+
+    private static string BreakFast = MealTypeEnum.Breakfast.ReadableName;
     private MealTypeEnum? MealType;
-
-    
     private SatietyEnum? BreakfastSatiety;
     private SatietyEnum? LaunchSatiety;
     private SatietyEnum? DinnerSatiety;
     private SatietyEnum? SnackSatiety;
-    
+
+    protected override Task OnInitializedAsync()
+    {
+        QuantityCheck(MealsQuantity);
+        return base.OnInitializedAsync();
+    }
 
     int QuantityTest
     {
@@ -106,8 +115,8 @@
 
     bool BreakfastCheckTest
     {
-        get { return BreakFastCheck; }
-        set { BreakFastCheck = value; BreakfastHandleCheck(value); }
+        get { return BreakfastCheck; }
+        set { BreakfastCheck = value; BreakfastHandleCheck(value); }
     }
     bool DinnerCheckTest
     {
@@ -115,19 +124,26 @@
         set { DinnerCheck = value; DinnerHandleCheck(value); }
     }
 
-    
-
     void BreakfastHandleCheck(bool IsChecked)
     {
-        if (IsChecked)
+        if (IsChecked && MealsQuantity == 2){
             DinnerCheck = false;
+            DinnerSatiety = SatietyEnum.None;
+            DinnerSelectDisableValue = true;
+            BreakfastSelectDisableValue = false;
+        }
 
     }
 
     void DinnerHandleCheck(bool IsChecked)
-    {
-        if (IsChecked)
-            BreakFastCheck = false;
+    {  
+        if (IsChecked && MealsQuantity == 2)
+        {
+            BreakfastCheck = false;
+            BreakfastSelectDisableValue = true;
+            DinnerSelectDisableValue = false;
+            BreakfastSatiety = SatietyEnum.None;
+        }
 
     }
 
@@ -135,14 +151,66 @@
     {
         if (quantity == 2)
         {
+            TwoMealsConfiguration();
 
         }
-        else
+        if (quantity == 3)
         {
-            BreakFastCheck = true;
-            DinnerCheck = true;
-
+            ThreeMealsConfiguration();
         }
+        if (quantity == 4)
+        {
+            FourMealsConfiguration();
+        }
+        if (quantity == 5)
+        {
+            BreakfastCheck = true;
+            DinnerCheck = true;
+            SnackCheck = true;
+        }
+
+    }
+
+    void TwoMealsConfiguration()
+    {
+        BreakfastCheck = true;
+        DinnerCheck = false;
+        SnackCheck = false;
+        BreakfastCheckBoxDisableValue = false;
+        DinnerSelectDisableValue = true;
+        DinnerCheckBoxDisableValue = false;
+        SnackCheckBoxDisableValue = true;
+        SnackSelectDisableValue = true;
+        SnackSatiety = SatietyEnum.None;
+
+    }
+
+    void ThreeMealsConfiguration()
+    {
+        BreakfastCheck = true;
+        DinnerCheck = true;
+        BreakfastCheckBoxDisableValue = false;
+        DinnerCheckBoxDisableValue = false;
+        DinnerSelectDisableValue = false;
+        BreakfastSelectDisableValue = false;
+        SnackCheck = false;
+        SnackCheckBoxDisableValue = true;
+        SnackSelectDisableValue = true;
+        SnackSatiety = SatietyEnum.None;
+
+    }
+
+    void FourMealsConfiguration()
+    {
+        BreakfastCheck = true;
+        DinnerCheck = true;
+        SnackCheck = true;
+        BreakfastCheckBoxDisableValue = true;
+        DinnerCheckBoxDisableValue = true;
+        SnackCheckBoxDisableValue = true;
+        BreakfastSelectDisableValue = false;
+        DinnerSelectDisableValue = false;
+        SnackSelectDisableValue = false;
     }
 
 }
