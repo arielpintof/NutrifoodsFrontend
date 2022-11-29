@@ -8,40 +8,36 @@
     @if(Energy != null){
         initData();
     }
-    <MudPaper Class="pa-4">
+    <MudPaper Class="pa-4" Width="100%" Height="90%">
         <div class="d-flex justify-center mb-5">
             <MudText>Distribución de macronutrientes</MudText>
         </div>
-        <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="400px" Height="300px" />
+        <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="50%" Height="40%" />
         <MudList>
-            <MudListItem Class="d-flex">
-                <div class="d-flex justify-space-between pl-5 pr-5">
+            <MudListItem Class="pl-5 pr-5">
+                <div class="list-items">
                     <MudText Typo="Typo.body1">Energía</MudText>
                     <MudText Typo="Typo.body1">@Energy</MudText>
                 </div>
-            </MudListItem>
-            <MudListItem>
-                <div class="d-flex justify-space-between pl-5 pr-5">
+                <div class="list-items">
                     <MudText Typo="Typo.body1">Carbohidratos</MudText>
                     <MudText Typo="Typo.body1">@Carbs</MudText>
                 </div>
-            </MudListItem>
-            <MudListItem>
-                <div class="d-flex justify-space-between pl-5 pr-5">
+                <div class="list-items">
                     <MudText Typo="Typo.body1">Proteínas</MudText>
                     <MudText Typo="Typo.body1">@Proteins</MudText>
                 </div>
-            </MudListItem>
-            <MudListItem>
-                <div class="d-flex justify-space-between pl-5 pr-5">
+                <div class="list-items">
                     <MudText Typo="Typo.body1">Lípidos</MudText>
                     <MudText Typo="Typo.body1">@Lipids</MudText>
                 </div>
             </MudListItem>
+            
         </MudList>
     </MudPaper>
 
 </MudContainer>
+
 
 @code {
 
@@ -90,7 +86,12 @@
         data[2] = Convert.ToDouble(Lipids);
         
     }
-
-  
+    
 }
 
+<style>
+    .list-items {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>

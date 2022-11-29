@@ -84,46 +84,61 @@ else
 
 
 @code {
-
-    private bool IsAuthenticated = false;
-    public HttpResponseMessage? mealPlanResponse { get; set; }
-    public MealPlanDto? mealPlan { get; set; }
-
+    private bool IsAuthenticated { get; set;} = false;
     public int Energy;
     public int Carbs;
     public int Proteins;
     public int Lipids;
+    public HttpResponseMessage? mealPlanResponse { get; set; }
+    public MealPlanDto? mealPlan { get; set; }
+    [Parameter]
+    public int GuestEnergy { get; set; }
    
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState.GetAuthenticationStateAsync();
+        var IsAuthenticated = state.User.Identity.IsAuthenticated;
+
+        mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
+        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+        /*
+         * if(IsAuthenticated)
+        {
+            mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
+            mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+        }
+        else {
+            //energyTarget,normal, normal, normal, false, false
+        }*/
+        
+        await base.OnInitializedAsync();
+
+    }
 
     public int _energy
     {
         get { return Energy; }
         set { Energy = CalculateEnergy(); }
     }
+
     public int _carbs
     {
         get { return Carbs; }
         set { Carbs = CalculateCarbs(); }
     }
+
     public int _proteins
     {
         get { return Proteins; }
         set { Proteins = CalculateProteins(); }
     }
+
     public int _lipids
     {
         get { return Lipids; }
         set { Lipids = CalculateLipids(); }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        /*var state = await AuthState.GetAuthenticationStateAsync();
-        IsAuthenticated = state.User.Identity.IsAuthenticated;*/
-
-        mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
-        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
-        await base.OnInitializedAsync();
     }
 
     public int CalculateEnergy()
