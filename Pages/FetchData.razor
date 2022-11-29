@@ -2,8 +2,10 @@
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Data
 @using Services
+@using UtilsFolder.Enums
 @inject IIngredientService ingService
 @inject IMealPlanService mpService
+@inject IDailyMenuService dmService
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -23,17 +25,14 @@ else
     }
     else
     {
-        MealPlanDto? amealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
-        if (amealPlan != null)
+        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<DailyMenuDto?>().Result;
+        if (mealPlan != null)
         {
-            <MudText> @amealPlan.CarbohydratesTarget </MudText>
-            @foreach (var mealMenu in amealPlan.MealMenus)
+            <MudText> @mealPlan.CarbohydratesTotal </MudText>
+            @foreach (var recipe in mealPlan.MenuRecipes)
             {
-                foreach (var recipe in mealMenu.MenuRecipes)
-                {
-                    var receta = recipe.Recipe;
-                    <MudText>@receta.Name</MudText>
-                }
+                <MudText>@recipe.Recipe.Name</MudText>
+
             }
         }
     }
@@ -66,10 +65,10 @@ else
 @code {
     private HttpResponseMessage? ingredientsResponse;
     private HttpResponseMessage? mealPlanResponse;
-    private MealPlanDto? mealPlan;
+    private DailyMenuDto? mealPlan;
     protected override async Task OnInitializedAsync()
     {
         ingredientsResponse = await ingService.FindByPrimaryGroup("Frutas");
-        mealPlanResponse = await mpService.GenerateBasedOnMbr(1900, "y", "normal", "normal");
+        mealPlanResponse = await dmService.GenerateDailyMenu(1900, MealType.Lunch, Satiety.Filling);
     }
 }
