@@ -1,0 +1,40 @@
+﻿@page "/nested"
+@using NutrifoodsFrontend.Data
+@using NutrifoodsFrontend.Data.Dto
+@implements IDisposable
+
+@inject StateContainer StateContainer
+
+<h2>Nested component</h2>
+
+
+
+
+<p>
+    <a @onclick="ChangePropertyValue" href="https://localhost:5001/state-container-example">
+        Change the Property from the Nested component
+    </a>
+</p>
+
+@code {
+    protected override void OnInitialized()
+    {
+        StateContainer.OnChange += StateHasChanged;
+    }
+
+    private void ChangePropertyValue() => StateContainer.Property = new UserBodyMetricDto()
+        {
+            Height = 173,
+            Weight = 80,
+            BodyMassIndex = 50,
+            MuscleMassPercentage = 50,
+            PhysicalActivityLevel = "VerySedentary",
+            AddedOn = DateTime.Now
+
+        };
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}

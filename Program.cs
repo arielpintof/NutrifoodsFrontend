@@ -1,6 +1,7 @@
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
+using NutrifoodsFrontend.Data;
 using NutrifoodsFrontend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddSingleton<IngredientService>();
 builder.Services.AddSingleton<MealPlanService>();
 builder.Services.AddSingleton<RecipeService>();
 builder.Services.AddSingleton<UserService>();
+builder.Services.AddScoped<StateContainer>();
 builder.Services.AddHttpClient<IIngredientService, IngredientService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7212/");
