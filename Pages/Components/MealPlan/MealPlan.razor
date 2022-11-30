@@ -111,7 +111,15 @@ else
             mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
         }
         else {
-            GuestRequest();
+            var height = UserMetricsState.Property.Height;
+            var gender = UserMetricsState.Property.Gender;
+            var weight = UserMetricsState.Property.Weight;
+            var activity = UserMetricsState.Property.PhysicalActivity;
+            var age = UserMetricsState.Property.Age;
+
+            mealPlanResponse = await MealPlanService.GenerateBasedOnMetrics(
+                gender, height.Value, weight.Value, age.Value, activity, "Y", "Normal", "Normal");
+            mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
         }
         
         await base.OnInitializedAsync();
@@ -179,14 +187,6 @@ else
 
     public async void GuestRequest(){
 
-        var height = UserMetricsState.Property.Height;
-        var gender = UserMetricsState.Property.Gender;
-        var weight = UserMetricsState.Property.Weight;
-        var activity = UserMetricsState.Property.PhysicalActivity;
-        var age = UserMetricsState.Property.Age;
-
-        mealPlanResponse = await MealPlanService.GenerateBasedOnMetrics(
-            gender, height.Value, weight.Value, age.Value, activity, "Y", "Normal", "Normal");
-        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+        
     }
 }
