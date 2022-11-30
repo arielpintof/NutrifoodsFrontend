@@ -1,5 +1,6 @@
 ﻿using NutrifoodsFrontend.Data.Dto;
 using System.Reflection;
+using UtilsFolder.Enums;
 
 namespace NutrifoodsFrontend.Services
 {
@@ -7,16 +8,12 @@ namespace NutrifoodsFrontend.Services
     {
         Task<HttpResponseMessage?> Find(string apiKey);
 
-        Task<HttpResponseMessage?> FindByUsername(string username, string password);
-
-        Task<HttpResponseMessage?> FindByEmail(string email, string password);
+        Task<HttpResponseMessage?> Save(string username, string email, string apiKey);
 
         /*
-        public Task<UserDto?> SaveUser(string username, string email, string password, string? name, string? lastName,
-            DateOnly birthDate, Gender gender);
-
-        public Task<UserDto?> SaveBodyMetrics(string apiKey, int height, double weight, PhysicalActivity level,
-            double? muscleMassPercentage);
+        public Task<HttpResponseMessage?> SavePersonalData(string apiKey, string birthdate, Gender gender,
+            string? name = "", string? lastName = "", Diet diet = Diet.None, IntendedUse intendedUse = IntendedUse.None,
+            UpdateFrequency updateFrequency = UpdateFrequency.None);
         */
     }
 }

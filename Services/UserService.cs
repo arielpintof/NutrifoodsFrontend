@@ -1,8 +1,14 @@
-﻿namespace NutrifoodsFrontend.Services
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using NutrifoodsFrontend.Data.Dto;
+
+namespace NutrifoodsFrontend.Services
 {
     public class UserService : IUserService
     {
         private readonly HttpClient _httpClient;
+
         public UserService(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -13,14 +19,18 @@
             return await _httpClient.GetAsync($"api/v1/users/api-key?apiKey={apiKey}");
         }
 
-        public async Task<HttpResponseMessage?> FindByEmail(string email, string password)
+        public async Task<HttpResponseMessage?> Save(string username, string email, string apiKey)
         {
-            return await _httpClient.GetAsync($"api/v1/users/find-by-email?email={email}&password={password}");
-        }
-
-        public async Task<HttpResponseMessage?> FindByUsername(string username, string password)
-        {
-            return await _httpClient.GetAsync($"api/v1/users/find-by-username?username={username}&password={password}");
+            var user = new UserDto
+            {
+                Username = username,
+                Email = email,
+                ApiKey = apiKey
+            };
+            var userSerialized = JsonSerializer.Serialize(user);
+            var content = new StringContent(userSerialized, Encoding.UTF8, "application/json");
+            return await _httpClient.PutAsync
+                ($"api/v1/users/save-user?username={username}&email={email}&apiKey={apiKey}", content);
         }
     }
 }
