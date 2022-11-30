@@ -1,40 +1,106 @@
 ﻿@page "/nested"
 @using NutrifoodsFrontend.Data
 @using NutrifoodsFrontend.Data.Dto
+@using UtilsFolder.Enums
 @implements IDisposable
 
-@inject StateContainer StateContainer
+@inject UserMetricsState UserMetricsState
 
-<h2>Nested component</h2>
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudPaper>
+        <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
+            <div class="d-flex flex-column pa-4">
+                <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
+                <div class="d-flex">
+                    <MudTextField 
+                        @bind-Value="HeightValue"
+                        Class="pa-4"  
+                        Label="Altura" 
+                        Variant="Variant.Outlined" 
+                        Adornment="Adornment.End" 
+                        AdornmentText="Centímetros" 
+                        AdornmentColor="Color.Info"
+                        Required="true" 
+                        RequiredError="La altura es obligatoria" />
+                    <MudTextField 
+                        Class="pa-4" 
+                        @bind-Value="WeightValue" 
+                        Label="Peso" 
+                        Variant="Variant.Outlined" 
+                        Adornment="Adornment.End" 
+                        AdornmentText="Kilogramos" 
+                        AdornmentColor="Color.Info"
+                        Required="true"
+                        RequiredError="El peso es obligatorio" />
+                </div>
+                <div>
+                    <MudTextField 
+                                                        @bind-Value="AgeValue"
+                                                        Class="pa-4"  
+                                                        Label="Edad" 
+                                                        Variant="Variant.Outlined" 
+                                                        Adornment="Adornment.End" 
+                                                        AdornmentText="Años" 
+                                                        AdornmentColor="Color.Info"
+                                                        Required="true" 
+                                                        RequiredError="La edad es obligatoria" />
+                </div>
+                
+                <div class="pa-4 ">
 
-
-
-
-<p>
-    <a @onclick="ChangePropertyValue" href="https://localhost:5001/state-container-example">
-        Change the Property from the Nested component
-    </a>
-</p>
+                    <MudSelect Required="true" Dense="true" @bind-Value="PhysicalValue" Class="pb-4" Label="Actividad Física" Variant="Variant.Outlined">
+                        @foreach (PhysicalActivityEnum item in PhysicalActivityEnum.List)
+                        {
+                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect Required="true" Dense="true" @bind-Value="GenderValue" Class="pb-4" Label="Genero" Variant="Variant.Outlined">
+                                            @foreach (GenderEnum item in GenderEnum.List)
+                                            {
+                                                <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                    <div class="mt-5">
+                        <MudButton Class="pa-3" 
+                                   Disabled="@(!Success)" 
+                                   Variant="Variant.Filled" 
+                                   Color="Color.Primary"
+                                   Href="https://localhost:5001/mealplan"
+                                   FullWidth="true">
+                                   Siguiente
+                        </MudButton>
+                    </div>      
+                </div>
+            </div>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
 
 @code {
+    private MudForm? Form;
+    private bool Success;
+    private string[] Errors = { };
+    private int? WeightValue { get; set; }
+    private int? HeightValue { get; set; }
+    private int? AgeValue { get; set; }
+    private GenderEnum? GenderValue { get; set; }
+    private PhysicalActivityEnum? PhysicalValue { get; set; }
+    
     protected override void OnInitialized()
     {
-        StateContainer.OnChange += StateHasChanged;
+        UserMetricsState.OnChange += StateHasChanged;
     }
 
-    private void ChangePropertyValue() => StateContainer.Property = new UserBodyMetricDto()
+    private void ChangePropertyValue() => UserMetricsState.Property = new GuestUserDto()
         {
             Height = 173,
             Weight = 80,
-            BodyMassIndex = 50,
-            MuscleMassPercentage = 50,
-            PhysicalActivityLevel = "VerySedentary",
-            AddedOn = DateTime.Now
+            
 
         };
 
     public void Dispose()
     {
-        StateContainer.OnChange -= StateHasChanged;
+        UserMetricsState.OnChange -= StateHasChanged;
     }
 }

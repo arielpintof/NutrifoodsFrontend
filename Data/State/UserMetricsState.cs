@@ -2,16 +2,16 @@
 
 namespace NutrifoodsFrontend.Data
 {
-    public class StateContainer
+    public class UserMetricsState
     {
-        private UserBodyMetricDto? savedUserData;
+        private GuestUserDto? _savedUserData;
 
-        public UserBodyMetricDto Property
+        public GuestUserDto? Property
         {
-            get => savedUserData;
+            get => _savedUserData;
             set
             {
-                savedUserData = value;
+                _savedUserData = value;
                 NotifyStateChanged();
             }
         }

@@ -2,29 +2,20 @@
 @using NutrifoodsFrontend.Data
 @using NutrifoodsFrontend.Data.Dto
 @implements IDisposable
-@inject StateContainer StateContainer
+@inject UserMetricsState UserMetricsState
 
-<h1>State Container Example component</h1>
+<h1>Página de MealPlan</h1>
 
-@if(StateContainer.Property != null){
-    <p>Altura: <b> @StateContainer.Property.Height</b></p>
-    <p>Peso: <b> @StateContainer.Property.Weight</b></p>
+@if(UserMetricsState.Property != null){
+    <p>Altura: <b> @UserMetricsState.Property.Height</b></p>
+    <p>Peso: <b> @UserMetricsState.Property.Weight</b></p>
 }
-
-
-<p>
-    <button @onclick="ChangePropertyValue">
-        Change the Property from the State Container Example component
-    </button>
-</p>
-
-
 
 @code {
 
     protected override void OnInitialized()
     {
-        StateContainer.OnChange += StateHasChanged;
+        UserMetricsState.OnChange += StateHasChanged;
     }
 
     private void ChangePropertyValue(){
@@ -33,6 +24,6 @@
 
     public void Dispose()
     {
-        StateContainer.OnChange -= StateHasChanged;
+        UserMetricsState.OnChange -= StateHasChanged;
     }
 }
