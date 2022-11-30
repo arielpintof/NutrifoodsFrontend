@@ -1,4 +1,4 @@
-﻿@page "/nested"
+﻿@page "/Invitado"
 @using NutrifoodsFrontend.Data
 @using NutrifoodsFrontend.Data.Dto
 @using UtilsFolder.Enums
@@ -13,41 +13,40 @@
                 <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
                 <div class="d-flex">
                     <MudTextField 
-                        @bind-Value="HeightValue"
-                        Class="pa-4"  
-                        Label="Altura" 
-                        Variant="Variant.Outlined" 
-                        Adornment="Adornment.End" 
-                        AdornmentText="Centímetros" 
-                        AdornmentColor="Color.Info"
-                        Required="true" 
-                        RequiredError="La altura es obligatoria" />
+                                @bind-Value="HeightValue"
+                                Class="pa-4"  
+                                Label="Altura" 
+                                Variant="Variant.Outlined" 
+                                Adornment="Adornment.End" 
+                                AdornmentText="Centímetros" 
+                                AdornmentColor="Color.Info"
+                                Required="true" 
+                                RequiredError="La altura es obligatoria" />
                     <MudTextField 
-                        Class="pa-4" 
-                        @bind-Value="WeightValue" 
-                        Label="Peso" 
-                        Variant="Variant.Outlined" 
-                        Adornment="Adornment.End" 
-                        AdornmentText="Kilogramos" 
-                        AdornmentColor="Color.Info"
-                        Required="true"
-                        RequiredError="El peso es obligatorio" />
+                                Class="pa-4" 
+                                @bind-Value="WeightValue" 
+                                Label="Peso" 
+                                Variant="Variant.Outlined" 
+                                Adornment="Adornment.End" 
+                                AdornmentText="Kilogramos" 
+                                AdornmentColor="Color.Info"
+                                Required="true"
+                                RequiredError="El peso es obligatorio" />
                 </div>
                 <div>
                     <MudTextField 
-                                                        @bind-Value="AgeValue"
-                                                        Class="pa-4"  
-                                                        Label="Edad" 
-                                                        Variant="Variant.Outlined" 
-                                                        Adornment="Adornment.End" 
-                                                        AdornmentText="Años" 
-                                                        AdornmentColor="Color.Info"
-                                                        Required="true" 
-                                                        RequiredError="La edad es obligatoria" />
+                                 @bind-Value="AgeValue"
+                                 Class="pa-4"  
+                                 Label="Edad" 
+                                 Variant="Variant.Outlined" 
+                                 Adornment="Adornment.End" 
+                                 AdornmentText="Años" 
+                                 AdornmentColor="Color.Info"
+                                 Required="true" 
+                                 RequiredError="La edad es obligatoria" />
                 </div>
                 
-                <div class="pa-4 ">
-
+                <div class="pa-4">
                     <MudSelect Required="true" Dense="true" @bind-Value="PhysicalValue" Class="pb-4" Label="Actividad Física" Variant="Variant.Outlined">
                         @foreach (PhysicalActivityEnum item in PhysicalActivityEnum.List)
                         {
@@ -55,21 +54,22 @@
                         }
                     </MudSelect>
                     <MudSelect Required="true" Dense="true" @bind-Value="GenderValue" Class="pb-4" Label="Genero" Variant="Variant.Outlined">
-                                            @foreach (GenderEnum item in GenderEnum.List)
-                                            {
-                                                <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                                            }
-                                        </MudSelect>
-                    <div class="mt-5">
-                        <MudButton Class="pa-3" 
-                                   Disabled="@(!Success)" 
-                                   Variant="Variant.Filled" 
-                                   Color="Color.Primary"
-                                   Href="https://localhost:5001/mealplan"
-                                   FullWidth="true">
-                                   Siguiente
-                        </MudButton>
-                    </div>      
+                        @foreach (GenderEnum item in GenderEnum.List)
+                        {
+                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                        }
+                    </MudSelect>  
+                </div>
+                <div class="mt-2 pa-4">
+                    <MudButton Class="pa-3"
+                               Disabled="@(!Success)"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               OnClick="ChangePropertyValue"
+                               Href="https://localhost:5001/MealPlan"
+                               FullWidth="true">
+                        Siguiente
+                    </MudButton>
                 </div>
             </div>
         </MudForm>
@@ -93,10 +93,11 @@
 
     private void ChangePropertyValue() => UserMetricsState.Property = new GuestUserDto()
         {
-            Height = 173,
-            Weight = 80,
-            
-
+            Height = HeightValue,
+            Weight = WeightValue,
+            Age = AgeValue,
+            Gender = GenderValue.Name,
+            PhysicalActivity = PhysicalValue.Name
         };
 
     public void Dispose()

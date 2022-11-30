@@ -1,7 +1,10 @@
 ﻿@page "/MealPlan"
 @inject AuthenticationStateProvider AuthState
+@using NutrifoodsFrontend.Data
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Services
+@implements IDisposable
+@inject UserMetricsState UserMetricsState
 @inject IMealPlanService MealPlanService
 
 
@@ -91,9 +94,10 @@ else
     public int Lipids;
     public HttpResponseMessage? mealPlanResponse { get; set; }
     public MealPlanDto? mealPlan { get; set; }
+
     [Parameter]
     public int GuestEnergy { get; set; }
-   
+
 
 
     protected override async Task OnInitializedAsync()
@@ -101,17 +105,14 @@ else
         var state = await AuthState.GetAuthenticationStateAsync();
         var IsAuthenticated = state.User.Identity.IsAuthenticated;
 
-        mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
-        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
-        /*
-         * if(IsAuthenticated)
+        if(IsAuthenticated)
         {
             mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
             mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
         }
         else {
-            //energyTarget,normal, normal, normal, false, false
-        }*/
+            GuestRequest();
+        }
         
         await base.OnInitializedAsync();
 
@@ -159,5 +160,33 @@ else
     public int CalculateProteins()
     {
         return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.ProteinsTotal));
+    }
+
+    protected override void OnInitialized()
+    {
+        UserMetricsState.OnChange += StateHasChanged;
+    }
+
+    private void ChangePropertyValue()
+    {
+
+    }
+
+    public void Dispose()
+    {
+        UserMetricsState.OnChange -= StateHasChanged;
+    }
+
+    public async void GuestRequest(){
+
+        var height = UserMetricsState.Property.Height;
+        var gender = UserMetricsState.Property.Gender;
+        var weight = UserMetricsState.Property.Weight;
+        var activity = UserMetricsState.Property.PhysicalActivity;
+        var age = UserMetricsState.Property.Age;
+
+        mealPlanResponse = await MealPlanService.GenerateBasedOnMetrics(
+            gender, height.Value, weight.Value, age.Value, activity, "Y", "Normal", "Normal");
+        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
     }
 }
