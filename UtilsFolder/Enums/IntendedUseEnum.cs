@@ -5,18 +5,22 @@ namespace UtilsFolder.Enums;
 
 public class IntendedUseEnum : SmartEnum<IntendedUseEnum>
 {
+    public static readonly IntendedUseEnum None =
+        new(nameof(None), (int) IntendedUse.None, IntendedUse.None, string.Empty);
+
     public static readonly IntendedUseEnum LoseWeight =
-        new(nameof(LoseWeight), (int)IntendedUse.LoseWeight, IntendedUse.LoseWeight, "Perder peso");
+        new(nameof(LoseWeight), (int) IntendedUse.LoseWeight, IntendedUse.LoseWeight, "Perder peso");
 
     public static readonly IntendedUseEnum MaintainWeight =
-        new(nameof(MaintainWeight), (int)IntendedUse.MaintainWeight, IntendedUse.MaintainWeight, "Mantener peso");
+        new(nameof(MaintainWeight), (int) IntendedUse.MaintainWeight, IntendedUse.MaintainWeight, "Mantener peso");
 
     public static readonly IntendedUseEnum GainWeight =
-        new(nameof(GainWeight), (int)IntendedUse.GainWeight, IntendedUse.GainWeight, "Subir de peso");
+        new(nameof(GainWeight), (int) IntendedUse.GainWeight, IntendedUse.GainWeight, "Subir de peso");
 
     private static readonly IDictionary<IntendedUse, IntendedUseEnum> TokenDictionary =
         new Dictionary<IntendedUse, IntendedUseEnum>
         {
+            {IntendedUse.None, None},
             {IntendedUse.LoseWeight, LoseWeight},
             {IntendedUse.MaintainWeight, MaintainWeight},
             {IntendedUse.GainWeight, GainWeight}
@@ -42,6 +46,7 @@ public class IntendedUseEnum : SmartEnum<IntendedUseEnum>
 
 public enum IntendedUse
 {
+    None = 0,
     LoseWeight = 1,
     MaintainWeight = 2,
     GainWeight = 3
