@@ -28,10 +28,10 @@
                     <div class="row d-flex align-center mt-2">
                         <MudCheckBox Disabled="true" @bind-Checked="LaunchCheck" Color="Color.Primary" UnCheckedColor="Color.Default" Class="mr-3">Almuerzo</MudCheckBox>
                         <MudSelect @bind-Value="LaunchSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-                                @foreach (SatietyEnum item in SatietyEnum.List)
-                                {
-                                        <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                                }
+                            @foreach (SatietyEnum item in SatietyEnum.List)
+                            {
+                                <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                            }
                         </MudSelect>
                     </div>
                     <div class="row d-flex align-center mt-2">
