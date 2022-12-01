@@ -12,15 +12,6 @@
 
 @code {
 
-    protected override void OnInitialized()
-    {
-        UserMetricsState.OnChange += StateHasChanged;
-    }
-
-    private void ChangePropertyValue(){
-
-    }
-
     public void Dispose()
     {
         UserMetricsState.OnChange -= StateHasChanged;
