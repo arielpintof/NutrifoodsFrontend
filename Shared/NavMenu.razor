@@ -1,4 +1,14 @@
-﻿<MudNavMenu>
+﻿@inject AuthenticationStateProvider AuthState
+
+<MudNavMenu>
+    <AuthorizeView>
+        <Authorized>
+            <div class="d-flex justify-center mb-3">
+                <MudAvatar Size="Size.Large" Image="UserPicture"/>
+            </div>
+            <MudDivider />
+        </Authorized>
+    </AuthorizeView>         
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <MudNavLink Href="mealplan" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Dining">Regimen Alimentario</MudNavLink>
     <MudNavLink Href="body" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.AssignmentTurnedIn">Métricas Corporales</MudNavLink>
@@ -10,3 +20,19 @@
     
     
 </MudNavMenu>
+
+@code{
+    private string UserPicture { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState.GetAuthenticationStateAsync();
+        UserPicture = state.User.Claims
+                    .Where(c => c.Type.Equals("picture"))
+                    .Select(c => c.Value)
+                    .FirstOrDefault() ?? string.Empty;
+
+        
+        await base.OnInitializedAsync();
+    }
+}
