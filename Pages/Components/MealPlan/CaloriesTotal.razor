@@ -1,5 +1,6 @@
 ﻿@inject AuthenticationStateProvider AuthState
 @inject IDialogService DialogService
+@using UtilsFolder.ToolTip;
 
 <MudPaper Outlined="true" Class="pa-1 rounded-pill">
     <div class="d-flex pl-3 pr-3 justify-space-between">
@@ -11,7 +12,10 @@
         <AuthorizeView>
             <Authorized>
                 <div>
-                    <MudIconButton @onclick="OpenDialog" Size="Size.Medium" Icon="@Icons.Filled.Settings" />
+                    <MudTooltip Text="@InfoMessage.DailyConfiguration" Arrow="true" Placement="Placement.Right">
+                        <MudIconButton @onclick="OpenDialog" Size="Size.Medium" Icon="@Icons.Filled.Settings" />
+                    </MudTooltip>
+                    
                 </div>
             </Authorized>
         </AuthorizeView>
