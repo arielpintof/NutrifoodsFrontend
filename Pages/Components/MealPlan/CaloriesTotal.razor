@@ -1,4 +1,5 @@
 ﻿@inject AuthenticationStateProvider AuthState
+@inject IDialogService DialogService
 
 <MudPaper Outlined="true" Class="pa-1 rounded-pill">
     <div class="d-flex pl-3 pr-3 justify-space-between">
@@ -10,7 +11,7 @@
         <AuthorizeView>
             <Authorized>
                 <div>
-                     <MudIconButton Size="Size.Medium" Icon="@Icons.Filled.Settings"/>
+                    <MudIconButton @onclick="OpenDialog" Size="Size.Medium" Icon="@Icons.Filled.Settings" />
                 </div>
             </Authorized>
         </AuthorizeView>
@@ -45,6 +46,10 @@
         else
             _isOpen = true;
     }
-
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogService.Show<DailyConfiguration>("",options);
+    }
     
 }

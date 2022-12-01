@@ -4,11 +4,12 @@
 @using System.Globalization;
 @using UtilsFolder.Enums;
 
-<MudContainer MaxWidth="MaxWidth.Small">
-    <MudPaper Class="px-10 py-10">
+<MudDialog>
+    <DialogContent>
+        <MudContainer Class="px-10 py-5" MaxWidth="MaxWidth.Medium">
         <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
             <MudText Class="d-flex justify-center" Typo="Typo.h5">Configuración del día</MudText>
-            <div class="flex-column mt-5">
+            <div class="flex-sm-column mt-5" >
                 <MudSelect Required="true" @bind-Value="QuantityTest" T="int" Label="Cantidad de comidas" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
                     <MudSelectItem T="int" Value="2" />
                     <MudSelectItem T="int" Value="3" />
@@ -53,23 +54,22 @@
                                     <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
                             }
                         </MudSelect>
-                    </div>
-                    <div class="mt-5">
-                        <MudButton Class="pa-3"
-                                   Disabled="@(!Success)"
-                                   Variant="Variant.Filled"
-                                   Color="Color.Primary" 
-                                   FullWidth="true">
-                                   Confirmar
-                        </MudButton>
-                    </div>
+                    </div>    
                 </MudStack>
             </div>
         </MudForm>
-
-        
-    </MudPaper>
 </MudContainer>
+    </DialogContent>
+    <DialogActions>
+            <div class="px-14 mb-5">
+                <MudButton OnClick="Cancel">Cancelar</MudButton>
+                <MudButton OnClick="Submit" Disabled="@(!Success)" Variant="Variant.Filled" Color="Color.Primary">
+                    Confirmar
+                </MudButton>
+            </div>              
+    </DialogActions>
+</MudDialog>
+
 
 
 @code {
@@ -212,4 +212,8 @@
         SnackSelectDisableValue = false;
     }
 
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
 }
