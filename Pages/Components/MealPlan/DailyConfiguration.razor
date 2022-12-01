@@ -39,7 +39,7 @@
                         <MudCheckBox Disabled="DinnerCheckBoxDisableValue" @bind-Checked="DinnerCheckTest" Color="Color.Primary" UnCheckedColor="Color.Default" 
                                     Class="mr-11">Cena</MudCheckBox>
                         <MudSelect Disabled="DinnerSelectDisableValue" @bind-Value="DinnerSatiety" Dense="true" Label="Contundencia" AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
-                            @foreach (SatietyEnum item in SatietyEnum.List)
+                                @foreach (SatietyEnum item in SatietyEnum.List)
                             {
                                 <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
                             }
@@ -77,26 +77,21 @@
     public int MealsQuantity = 3;
     private MudForm? Form;
     private string[] Errors = { };
-
-    //Variables para el ticket de los Checkboxs de comidas del día
-    private bool BreakfastCheck;
     private bool LaunchCheck = true;
+    private bool BreakfastCheck;
     private bool DinnerCheck;
     private bool SnackCheck;
-    //Variables para Selects de comidas del día
     private bool SnackSelectDisableValue;
     private bool BreakfastSelectDisableValue;
     private bool DinnerSelectDisableValue;
-
-    //Variables para 
     private bool BreakfastCheckBoxDisableValue;
     private bool DinnerCheckBoxDisableValue;
     private bool SnackCheckBoxDisableValue;
 
     private static string BreakFast = MealTypeEnum.Breakfast.ReadableName;
     private MealTypeEnum? MealType;
-    private SatietyEnum? BreakfastSatiety;
     private SatietyEnum? LaunchSatiety;
+    private SatietyEnum? BreakfastSatiety;
     private SatietyEnum? DinnerSatiety;
     private SatietyEnum? SnackSatiety;
 

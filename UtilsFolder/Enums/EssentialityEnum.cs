@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Ardalis.SmartEnum;
 
-namespace UtilsFolder.Enums;
+namespace NutrifoodsFrontend.UtilsFolder.Enums;
 
 public class EssentialityEnum : SmartEnum<EssentialityEnum>
 {

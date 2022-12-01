@@ -1,6 +1,6 @@
 ﻿using NutrifoodsFrontend.Data.Dto;
 
-namespace NutrifoodsFrontend.Data
+namespace NutrifoodsFrontend.Data.State
 {
     public class UserMetricsState
     {

@@ -1,7 +1,7 @@
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
-using NutrifoodsFrontend.Data;
+using NutrifoodsFrontend.Data.State;
 using NutrifoodsFrontend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
