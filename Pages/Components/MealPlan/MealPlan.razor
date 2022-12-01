@@ -29,11 +29,10 @@ else
         <MudContainer MaxWidth="MaxWidth.Small">
 
             <!-- Input: Cantidad de calorías | Destino: Componente hijo CaloriesTotal -->
-            <CaloriesTotal 
-                Energy="CalculateEnergy()" 
-                Carbs ="CalculateCarbs()"
-                Lipids ="CalculateLipids()"
-                Proteins ="CalculateProteins()"
+            <CaloriesTotal Energy="CalculateEnergy()" 
+                                        Carbs ="CalculateCarbs()"
+                                        Lipids ="CalculateLipids()"
+                                        Proteins ="CalculateProteins()"
             />
             @foreach(var menu in mealPlan.MealMenus)
             {
@@ -47,20 +46,20 @@ else
                 <Authorized>
                     <div class="d-flex justify-space-between mt-3 mb-3">
                         <MudButton Style="width: 175px; height: 50px;"
-                               Class="pa-3 rounded-pill"
-                               Size="Size.Large"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               ButtonType="ButtonType.Submit">
-                                Confirmar
+                                               Class="pa-3 rounded-pill"
+                                               Size="Size.Large"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               ButtonType="ButtonType.Submit">
+                                                Confirmar
                         </MudButton>
                         <MudButton Style="width: 175px; height: 50px;"
-                               Class="pa-3 rounded-pill"
-                               Size="Size.Large"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               ButtonType="ButtonType.Submit"
-                               OnClick="OnInitializedAsync">
+                                               Class="pa-3 rounded-pill"
+                                               Size="Size.Large"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               ButtonType="ButtonType.Submit"
+                                               OnClick="OnInitializedAsync">
                             Regenerar
                         </MudButton>
                     </div>
@@ -68,13 +67,13 @@ else
                 <NotAuthorized>
                     <div class="d-flex justify-end mt-3 mb-3">
                         <MudButton Style="width: 175px; height: 50px;"
-                               Class="pa-3 rounded-pill"
-                               Size="Size.Large"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               ButtonType="ButtonType.Submit"
-                               OnClick="OnInitializedAsync">
-                                Regenerar
+                                               Class="pa-3 rounded-pill"
+                                               Size="Size.Large"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               ButtonType="ButtonType.Submit"
+                                               OnClick="OnInitializedAsync">
+                                                Regenerar
                         </MudButton>
                     </div>
                 </NotAuthorized>
@@ -87,23 +86,20 @@ else
 
 
 @code {
-    private bool IsAuthenticated { get; set;} = false;
-    public int Energy;
-    public int Carbs;
-    public int Proteins;
-    public int Lipids;
-    public HttpResponseMessage? mealPlanResponse { get; set; }
-    public MealPlanDto? mealPlan { get; set; }
-
+    private bool IsAuthenticated { get; set;}
+    private int Energy;
+    private int Carbs;
+    private int Proteins;
+    private int Lipids;
+    private HttpResponseMessage? mealPlanResponse { get; set; }
+    private MealPlanDto? mealPlan { get; set; }
     [Parameter]
     public int GuestEnergy { get; set; }
-
-
-
+    
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
-        var IsAuthenticated = state.User.Identity.IsAuthenticated;
+        IsAuthenticated = state.User.Identity.IsAuthenticated;
 
         if(IsAuthenticated)
         {
@@ -138,34 +134,34 @@ else
         set { Carbs = CalculateCarbs(); }
     }
 
-    public int _proteins
+    private int _proteins
     {
         get { return Proteins; }
         set { Proteins = CalculateProteins(); }
     }
 
-    public int _lipids
+    private int _lipids
     {
         get { return Lipids; }
         set { Lipids = CalculateLipids(); }
     }
 
-    public int CalculateEnergy()
+    private int CalculateEnergy()
     {
         return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.EnergyTotal));       
     }
 
-    public int CalculateCarbs()
+    private int CalculateCarbs()
     {
         return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.CarbohydratesTotal));
     }
 
-    public int CalculateLipids()
+    private int CalculateLipids()
     {
         return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.LipidsTotal));
     }
 
-    public int CalculateProteins()
+    private int CalculateProteins()
     {
         return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.ProteinsTotal));
     }
