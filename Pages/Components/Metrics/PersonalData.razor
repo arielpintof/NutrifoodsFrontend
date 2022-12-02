@@ -1,9 +1,12 @@
 ﻿@page "/personaldata"
+@using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using UtilsFolder.Enums
+@inject AuthenticationStateProvider AuthState
+@attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudPaper>
-        <MudForm @ref="form" @bind-IsValid="@Success" @bind-Errors="@errors">
+        <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@errors">
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Datos Personales</MudText>
                 <div class="d-flex mt-3">
@@ -27,12 +30,13 @@
                 </MudDatePicker>
 
                 <div class="pa-3 mt-3">
-                    <MudButton Class="pa-3" 
+                    <MudButton     Class="pa-3" 
                                    Disabled="@(!Success)" 
                                    Variant="Variant.Filled" 
                                    Color="Color.Primary"
                                    Href="https://localhost:5001/body"
-                                   FullWidth="true">
+                                   FullWidth="true"
+                                   OnClick="SaveUserData">
                                    Siguiente
                     </MudButton>
                 </div>
@@ -46,8 +50,22 @@
     private string[] errors = { };
     private string? Name { get; set; }
     private string? LastName { get; set; }
-    private MudForm? form;
+    private MudForm? Form;
     private MudDatePicker? _picker;
     private DateTime? date = DateTime.Today;
     private GenderEnum? GenderValue;
+
+
+    private async Task SaveUserData()
+    {
+        var authenticationState = await AuthState.GetAuthenticationStateAsync();
+        var apiKey = authenticationState.User.Claims
+            .Where(c => c.Type.Equals(Claims.NameIdentifier))
+            .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
+            
+        
+        //SavePersonalData(Name, LastName, date, GenderValue);
+    }
+
+
 }

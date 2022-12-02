@@ -4,7 +4,6 @@
 @using NutrifoodsFrontend.Data.State
 @using UtilsFolder.Enums
 @implements IDisposable
-
 @inject UserMetricsState UserMetricsState
 
 <MudContainer MaxWidth="MaxWidth.Small">
@@ -81,9 +80,9 @@
     private MudForm? Form;
     private bool Success;
     private string[] Errors = { };
-    private int? WeightValue { get; set; }
-    private int? HeightValue { get; set; }
-    private int? AgeValue { get; set; }
+    private int WeightValue { get; set; }
+    private int HeightValue { get; set; }
+    private int AgeValue { get; set; }
     private GenderEnum? GenderValue { get; set; }
     private PhysicalActivityEnum? PhysicalValue { get; set; }
     
