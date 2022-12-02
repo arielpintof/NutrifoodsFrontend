@@ -6,7 +6,7 @@
     <div class="d-flex pl-3 pr-3 justify-space-between">
         <div class="d-flex align-center">
             <MudIcon Class="mr-3" Size="Size.Medium" Icon="@Icons.Filled.PieChart" />
-            <MudText Typo="Typo.h6" Color="Color.Info">@Energy Kilocalorías</MudText>
+            <MudText Typo="Typo.h6" Color="Color.Info">@totalEnergy() Kilocalorías</MudText>
             <MudIconButton OnClick="@ToggleOpen" Size="Size.Medium" Icon="@Icons.Filled.Info" />
         </div>
         <AuthorizeView>
@@ -22,10 +22,10 @@
         
     </div>
     <MudPopover Open="_isOpen" OverflowBehavior="OverflowBehavior.FlipAlways" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopCenter" Paper="false">
-        <DistributionComponent Energy=@Energy
-                               Carbs=@Carbs
-                               Proteins=@Proteins
-                               Lipids=@Lipids>
+        <DistributionComponent Energy="totalEnergy()"
+                               Carbs="totalCarbs()"
+                               Proteins="totalProteins()"
+                               Lipids="totalLipids()">
         </DistributionComponent>
     </MudPopover>
 </MudPaper>
@@ -33,15 +33,24 @@
 
 @code {
     [Parameter]
-    public int Energy { get; set; }
-    [Parameter]
-    public int Carbs { get; set; }
-    [Parameter]
-    public int Proteins { get; set; }
-    [Parameter]
-    public int Lipids { get; set; }
+    public Dictionary<string, int> Macronutrients { get; set; }
+
+    public int totalEnergy() => Macronutrients.Where(c => c.Key.Contains("Energy")).Select(c => c.Value).FirstOrDefault();
+    
+    public int totalCarbs() => Macronutrients.Where(c => c.Key.Contains("Carbohydrates")).Select(c => c.Value).FirstOrDefault();
+    
+    public int totalProteins() => Macronutrients.Where(c => c.Key.Contains("Proteins")).Select(c => c.Value).FirstOrDefault();
+    
+    public int totalLipids() => Macronutrients.Where(c => c.Key.Contains("Lipids")).Select(c => c.Value).FirstOrDefault();
 
     public bool _isOpen = false;
+
+   
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogService.Show<DailyConfiguration>("",options);
+    }
 
     public void ToggleOpen()
     {
@@ -49,11 +58,6 @@
             _isOpen = false;
         else
             _isOpen = true;
-    }
-    private void OpenDialog()
-    {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        DialogService.Show<DailyConfiguration>("",options);
     }
     
 }

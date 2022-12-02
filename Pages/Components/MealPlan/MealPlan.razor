@@ -1,26 +1,29 @@
 ﻿@page "/MealPlan"
-@inject AuthenticationStateProvider AuthState
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Data.State
 @using NutrifoodsFrontend.Services
-@implements IDisposable
+@inject AuthenticationStateProvider AuthState
 @inject UserMetricsState UserMetricsState
 @inject IMealPlanService MealPlanService
+@inject ISnackbar Snackbar
 
 
 @if (mealPlanResponse == null)
 {
-    <div class="d-flex justify-center align-center">
-        <MudProgressCircular Class="mr-2" Color="Color.Primary" Indeterminate="true" />
-        <MudText Typo="Typo.h6">Estamos generando tu Plan Alimentario</MudText> 
-    </div>
+    <MudContainer MaxWidth="MaxWidth.Small">
+       <div class="d-flex justify-center align-content-center mt-10">
+            <MudProgressCircular Class="mr-2" Color="Color.Primary" Indeterminate="true" />
+            <MudText Typo="Typo.h6">Estamos generando tu Plan Alimentario</MudText> 
+        </div> 
+    </MudContainer>
+    
     
 }
 else
 {
     @if (!mealPlanResponse.IsSuccessStatusCode)
     {
-        <MudText> Error @mealPlanResponse.ReasonPhrase </MudText>
+        <MudText>Error @mealPlanResponse.ReasonPhrase</MudText>
     }
     else
     {
@@ -29,11 +32,7 @@ else
         <MudContainer MaxWidth="MaxWidth.Small">
 
             <!-- Input: Cantidad de calorías | Destino: Componente hijo CaloriesTotal -->
-            <CaloriesTotal Energy="CalculateEnergy()" 
-                                        Carbs ="CalculateCarbs()"
-                                        Lipids ="CalculateLipids()"
-                                        Proteins ="CalculateProteins()"
-            />
+            <CaloriesTotal Macronutrients="TotalMacronutrients()"/>
             @foreach(var menu in mealPlan.MealMenus)
             {
             
@@ -50,7 +49,9 @@ else
                                                Size="Size.Large"
                                                Variant="Variant.Filled"
                                                Color="Color.Primary"
-                                               ButtonType="ButtonType.Submit">
+                                                @onclick="@(() => Snackbar.Add("Plan alimentario confirmado",
+                                                Severity.Success, config => { config.HideIcon = true;}))">
+                                                                
                                                 Confirmar
                         </MudButton>
                         <MudButton Style="width: 175px; height: 50px;"
@@ -60,7 +61,7 @@ else
                                                Color="Color.Primary"
                                                ButtonType="ButtonType.Submit"
                                                OnClick="OnInitializedAsync">
-                            Regenerar
+                                               Regenerar
                         </MudButton>
                     </div>
                 </Authorized>
@@ -73,7 +74,7 @@ else
                                                Color="Color.Primary"
                                                ButtonType="ButtonType.Submit"
                                                OnClick="OnInitializedAsync">
-                                                Regenerar
+                                               Regenerar
                         </MudButton>
                     </div>
                 </NotAuthorized>
@@ -86,90 +87,52 @@ else
 
 
 @code {
-    private bool IsAuthenticated { get; set;}
-    private int Energy;
-    private int Carbs;
-    private int Proteins;
-    private int Lipids;
     private HttpResponseMessage? mealPlanResponse { get; set; }
     private MealPlanDto? mealPlan { get; set; }
     [Parameter]
     public int GuestEnergy { get; set; }
+
     
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
-        IsAuthenticated = state.User.Identity.IsAuthenticated;
+        var IsAuthenticated = state.User.Identity.IsAuthenticated;
 
         if(IsAuthenticated)
         {
             mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
             mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+            
         }
         else {
-            var height = UserMetricsState.Property.Height;
-            var gender = UserMetricsState.Property.Gender;
-            var weight = UserMetricsState.Property.Weight;
-            var activity = UserMetricsState.Property.PhysicalActivity;
-            var age = UserMetricsState.Property.Age;
-
+            var guestUser = UserMetricsState.Property;
             mealPlanResponse = await MealPlanService.GenerateBasedOnMetrics(
-                gender, height.Value, weight.Value, age.Value, activity, "Y", "Normal", "Normal");
+                guestUser.Gender, guestUser.Height, guestUser.Weight, guestUser.Age, 
+                guestUser.PhysicalActivity, "Y", "Normal", "Normal");
             mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
         }
         
         await base.OnInitializedAsync();
-
     }
 
-    public int _energy
-    {
-        get { return Energy; }
-        set { Energy = CalculateEnergy(); }
-    }
 
-    public int _carbs
-    {
-        get { return Carbs; }
-        set { Carbs = CalculateCarbs(); }
-    }
-
-    private int _proteins
-    {
-        get { return Proteins; }
-        set { Proteins = CalculateProteins(); }
-    }
-
-    private int _lipids
-    {
-        get { return Lipids; }
-        set { Lipids = CalculateLipids(); }
-    }
-
-    private int CalculateEnergy()
-    {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.EnergyTotal));       
-    }
-
-    private int CalculateCarbs()
-    {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.CarbohydratesTotal));
-    }
-
-    private int CalculateLipids()
-    {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.LipidsTotal));
-    }
-
-    private int CalculateProteins()
-    {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.ProteinsTotal));
-    }
-
-    public void Dispose()
-    {
-        UserMetricsState.OnChange -= StateHasChanged;
-    }
-
+    private int CalculateEnergy() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.EnergyTotal));
+   
+    private int CalculateCarbs() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.CarbohydratesTotal));
     
+    private int CalculateLipids() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.LipidsTotal));
+
+    private int CalculateProteins() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.ProteinsTotal));
+    
+    
+    private Dictionary<string, int> TotalMacronutrients()
+    {
+        var nutrients = new Dictionary<string, int>();
+        nutrients.Add("Energy", CalculateEnergy());
+        nutrients.Add("Carbohydrates", CalculateCarbs());
+        nutrients.Add("Lipids", CalculateLipids());
+        nutrients.Add("Proteins", CalculateProteins());
+        return nutrients;
+    }
+   
 }
