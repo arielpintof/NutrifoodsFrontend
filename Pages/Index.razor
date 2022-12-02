@@ -1,7 +1,18 @@
 ﻿@page "/"
-@inject NavigationManager Navigation
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.UtilsFolder.ToolTip
+@using NutrifoodsFrontend.Services
 @inject AuthenticationStateProvider AuthState
+@inject IUserService UserService
 @attribute [Authorize]
+
+@if(DisplayAlert)
+{
+   <div class="d-flex justify-center mt-3">
+        <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Warning" Variant="Variant.Outlined">@InfoMessage.UserWarning</MudAlert>
+   </div> 
+}
+
 
 <PageTitle>Index</PageTitle>
 
@@ -11,28 +22,43 @@ Este contenido solo se puede ver si estas autenticado.
 
 
 @code {
-    private string Nickname { get; set; }
+    private string? Nickname { get; set; }
+    private string ApiKey { get; set; }
+    private bool DisplayAlert { get; set; } 
+    private string? Email { get; set; }
+    private DateTime JoinedOn { get; } = DateTime.Now; 
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
-        Nickname = state.User.Claims
-                    .Where(c => c.Type.Equals("nickname"))
-                    .Select(c => c.Value)
+        
+        Nickname = state.User.Claims.Where(c => c.Type.Equals("nickname")).Select(c => c.Value)
+                    .FirstOrDefault() ?? string.Empty;
+
+        ApiKey = state.User.Claims.Where(c => c.Type.Equals(Claims.NameIdentifier)).Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty;
 
         await base.OnInitializedAsync();
     }
 
-    private void NavigateToCounterComponent()
+    private async Task RegisterUserCheck()
     {
-        Navigation.NavigateTo("counter");
+        var isRegisteredResponse = await UserService.Find(ApiKey);
+        var isRegistered = isRegisteredResponse.IsSuccessStatusCode;
+
+        if (!isRegistered)
+        {
+            // SaveUser(Nickname, Email, ApiKey, JoinedOn);
+        }
+
     }
 
-    private void CheckingUserData()
+    private async Task UserMetricsCheck()
     {
-        //EndPoint para saber si el usuario esta registrado
-        //EndPoint para saber si el usuario tiene registrado datos personales
-        //EndPoint para saber si el usuario tiene registrado metricas corporales
+        var isRegisteredResponse = await UserService.Find(ApiKey);
+        var userData = isRegisteredResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+
+        DisplayAlert = userData.BodyMetrics == null ? true : false;
+
     }
 }
