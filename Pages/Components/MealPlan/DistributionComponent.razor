@@ -6,13 +6,13 @@
 
 <MudContainer MaxWidth="MaxWidth.Small">
     @if(Energy != null){
-        initData();
+        InitData();
     }
     <MudPaper Class="pa-4" Width="100%" Height="90%">
         <div class="d-flex justify-center mb-5">
             <MudText>Distribución de macronutrientes</MudText>
         </div>
-        <MudChart ChartType="ChartType.Pie" InputData="@data" @bind-SelectedIndex="Index" InputLabels="@labels" Width="50%" Height="40%" />
+        <MudChart ChartType="ChartType.Pie" InputData="@_data" @bind-SelectedIndex="_index" InputLabels="@_labels" Width="50%" Height="40%" />
         <MudList>
             <MudListItem Class="pl-5 pr-5">
                 <div class="list-items">
@@ -49,41 +49,35 @@
     public int Proteins { get; set; }
     [Parameter]
     public int Lipids { get; set; }
-
-    private int Index = -1;
-
-
-    int dataSize = 3;
-    double[] data = new double[3];
-
-    string[] labels = { "Proteínas", "Carbohidratos", "Lípidos" };
-
-    private double totalEnergy { get; set; }
-    private double totalCarbs { get; set; }
-    private double totalLipids { get; set; }
-    private double totalProteins { get; set; }
+    private int _index = -1;
+    private int _dataSize = 3;
+    private double[] _data = new double[3];
+    string[] _labels = { "Proteínas", "Carbohidratos", "Lípidos" };
+    private double TotalEnergy { get; set; }
+    private double TotalCarbs { get; set; }
+    private double TotalLipids { get; set; }
+    private double TotalProteins { get; set; }
 
     [Parameter]
     public IEnumerable<MealMenuDto>? MealMenus { get; set; }
 
     private void CalculateTotals()
     {
-
+        if (MealMenus == null) return;
         foreach (var meal in MealMenus)
         {
-            totalEnergy += meal.EnergyTotal;
-            totalCarbs += meal.CarbohydratesTotal;
-            totalLipids += meal.LipidsTotal;
-            totalProteins += meal.ProteinsTotal;
+            TotalEnergy += meal.EnergyTotal;
+            TotalCarbs += meal.CarbohydratesTotal;
+            TotalLipids += meal.LipidsTotal;
+            TotalProteins += meal.ProteinsTotal;
         }
-
     }
 
-    public void initData()
+    private void InitData()
     {
-        data[0] = Convert.ToDouble(Proteins);
-        data[1] = Convert.ToDouble(Carbs);
-        data[2] = Convert.ToDouble(Lipids);
+        _data[0] = Convert.ToDouble(Proteins);
+        _data[1] = Convert.ToDouble(Carbs);
+        _data[2] = Convert.ToDouble(Lipids);
         
     }
     

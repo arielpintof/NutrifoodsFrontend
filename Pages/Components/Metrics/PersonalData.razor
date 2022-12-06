@@ -6,7 +6,7 @@
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudPaper>
-        <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@errors">
+        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Datos Personales</MudText>
                 <div class="d-flex mt-3">
@@ -21,7 +21,7 @@
                         }
                     </MudSelect>
                 </div>
-                <MudDatePicker Required="true" Label="Fecha de Nacimiento" Class="px-3" @ref="_picker" DateFormat="yyyy-MM-dd" @bind-Date="date">
+                <MudDatePicker Required="true" Label="Fecha de Nacimiento" Class="px-3" @ref="_picker" DateFormat="yyyy-MM-dd" @bind-Date="_date">
                     <PickerActions>
                         <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Limpiar</MudButton>
                         <MudButton OnClick="@(() => _picker.Close(false))">Cancelar</MudButton>
@@ -31,7 +31,7 @@
 
                 <div class="pa-3 mt-3">
                     <MudButton     Class="pa-3" 
-                                   Disabled="@(!Success)" 
+                                   Disabled="@(!_success)" 
                                    Variant="Variant.Filled" 
                                    Color="Color.Primary"
                                    Href="https://localhost:5001/body"
@@ -46,13 +46,13 @@
 </MudContainer>
 
 @code {
-    private bool Success;
-    private string[] errors = { };
+    private bool _success;
+    private string[] _errors = { };
     private string? Name { get; set; }
     private string? LastName { get; set; }
-    private MudForm? Form;
+    private MudForm? _form;
     private MudDatePicker? _picker;
-    private DateTime? date = DateTime.Today;
+    private DateTime? _date = DateTime.Today;
     private GenderEnum? GenderValue;
 
 

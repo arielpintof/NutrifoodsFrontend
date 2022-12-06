@@ -8,7 +8,7 @@
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudPaper>
-        <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
+        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
                 <div class="d-flex">
@@ -62,7 +62,7 @@
                 </div>
                 <div class="mt-2 pa-4">
                     <MudButton Class="pa-3"
-                               Disabled="@(!Success)"
+                               Disabled="@(!_success)"
                                Variant="Variant.Filled"
                                Color="Color.Primary"
                                OnClick="ChangePropertyValue"
@@ -77,9 +77,9 @@
 </MudContainer>
 
 @code {
-    private MudForm? Form;
-    private bool Success;
-    private string[] Errors = { };
+    private MudForm? _form;
+    private bool _success;
+    private string[] _errors = { };
     private int WeightValue { get; set; }
     private int HeightValue { get; set; }
     private int AgeValue { get; set; }

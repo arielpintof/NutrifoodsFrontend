@@ -1,6 +1,4 @@
 ﻿@page "/Body"
-@using System.Text.RegularExpressions
-@using System.ComponentModel.DataAnnotations
 @using UtilsFolder.Enums
 @using UtilsFolder.ToolTip
 @inject AuthenticationStateProvider AuthState
@@ -8,7 +6,7 @@
 
 <MudContainer MaxWidth="MaxWidth.Small">
     <MudPaper>
-        <MudForm @ref="Form" @bind-IsValid="@Success" @bind-Errors="@Errors">
+        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
                 <div class="d-flex">
@@ -56,7 +54,7 @@
                     </MudSelect>
                     <div class="mt-5">
                         <MudButton Class="pa-3" 
-                                   Disabled="@(!Success)" 
+                                   Disabled="@(!_success)" 
                                    Variant="Variant.Filled" 
                                    Color="Color.Primary"
                                    Href="https://localhost:5001/mealplan"
@@ -71,18 +69,16 @@
     </MudPaper>
 </MudContainer>
 
-    @code {
-    private bool Success;
-    private string[] Errors = { };
+@code {
+    private MudForm? _form;
+    private bool _success;
+    private string[] _errors = { };
     private double? WeightValue { get; set; }
     private int? HeightValue { get; set; }
-    private double? ImcValue { get; set; } = 25;
-    private MudForm? Form;
-    public PhysicalActivityEnum? PhysicalValue { get; set; }
-    public UpdateFrequencyEnum? UpdateFrequencyValue { get; set; }
-    public IntendedUseEnum? IntendedUseValue { get; set; }
-
-
+    private PhysicalActivityEnum? PhysicalValue { get; set; }
+    private UpdateFrequencyEnum? UpdateFrequencyValue { get; set; }
+    private IntendedUseEnum? IntendedUseValue { get; set; }
+    
     protected async Task SaveBodyMeasures()
     {
         var authenticationState = await AuthState.GetAuthenticationStateAsync();
@@ -95,7 +91,6 @@
             
         
     }
-
-
+    
 
 }
