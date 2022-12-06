@@ -6,16 +6,16 @@ namespace NutrifoodsFrontend.UtilsFolder.Enums;
 public class SatietyEnum : SmartEnum<SatietyEnum>
 {
     public static readonly SatietyEnum None =
-        new(nameof(None), (int)Satiety.None, Satiety.None, "Ninguna");
+        new(nameof(None), (int) Satiety.None, Satiety.None, "Ninguna");
 
     public static readonly SatietyEnum Light =
-        new(nameof(Light), (int)Satiety.Light, Satiety.Light, "Ligera");
+        new(nameof(Light), (int) Satiety.Light, Satiety.Light, "Ligera");
 
     public static readonly SatietyEnum Normal =
-        new(nameof(Normal), (int)Satiety.Normal, Satiety.Normal, "Normal");
+        new(nameof(Normal), (int) Satiety.Normal, Satiety.Normal, "Normal");
 
     public static readonly SatietyEnum Filling =
-        new(nameof(Filling), (int)Satiety.Filling, Satiety.Filling, "Contundente");
+        new(nameof(Filling), (int) Satiety.Filling, Satiety.Filling, "Contundente");
 
     private static readonly IDictionary<Satiety, SatietyEnum> TokenDictionary =
         new Dictionary<Satiety, SatietyEnum>
@@ -29,6 +29,12 @@ public class SatietyEnum : SmartEnum<SatietyEnum>
     private static readonly IDictionary<string, SatietyEnum> ReadableNameDictionary = TokenDictionary
         .ToImmutableDictionary(e => e.Value.ReadableName, e => e.Value, StringComparer.InvariantCultureIgnoreCase);
 
+    public static IReadOnlyCollection<SatietyEnum> Values { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).ToList();
+
+    public static IReadOnlyCollection<SatietyEnum> NonNullValues { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).Skip(1).ToList();
+    
     public SatietyEnum(string name, int value, Satiety token, string readableName) : base(name, value)
     {
         Token = token;

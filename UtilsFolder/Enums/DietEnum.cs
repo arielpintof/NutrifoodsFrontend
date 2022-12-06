@@ -6,33 +6,33 @@ namespace NutrifoodsFrontend.UtilsFolder.Enums;
 public class DietEnum : SmartEnum<DietEnum>
 {
     public static readonly DietEnum None =
-        new(nameof(None), (int)Diet.None, Diet.None, "Ninguna");
+        new(nameof(None), (int) Diet.None, Diet.None, "Ninguna");
 
     public static readonly DietEnum Vegetarian =
-        new(nameof(Vegetarian), (int)Diet.Vegetarian, Diet.Vegetarian, "Vegetariana");
+        new(nameof(Vegetarian), (int) Diet.Vegetarian, Diet.Vegetarian, "Vegetariana");
 
     public static readonly DietEnum OvoVegetarian =
-        new(nameof(OvoVegetarian), (int)Diet.OvoVegetarian, Diet.OvoVegetarian, "Ovo-Vegetariana");
+        new(nameof(OvoVegetarian), (int) Diet.OvoVegetarian, Diet.OvoVegetarian, "Ovo-Vegetariana");
 
     public static readonly DietEnum LactoVegetarian =
-        new(nameof(LactoVegetarian), (int)Diet.LactoVegetarian, Diet.LactoVegetarian, "Lacto-Vegetariana");
+        new(nameof(LactoVegetarian), (int) Diet.LactoVegetarian, Diet.LactoVegetarian, "Lacto-Vegetariana");
 
     public static readonly DietEnum OvoLactoVegetarian =
-        new(nameof(OvoLactoVegetarian), (int)Diet.OvoLactoVegetarian, Diet.OvoLactoVegetarian,
+        new(nameof(OvoLactoVegetarian), (int) Diet.OvoLactoVegetarian, Diet.OvoLactoVegetarian,
             "Ovo-Lacto-Vegetariana");
 
     public static readonly DietEnum Pollotarian =
-        new(nameof(Pollotarian), (int)Diet.Pollotarian, Diet.Pollotarian, "Pollotariana");
+        new(nameof(Pollotarian), (int) Diet.Pollotarian, Diet.Pollotarian, "Pollotariana");
 
     public static readonly DietEnum Pescetarian =
-        new(nameof(Pescetarian), (int)Diet.Pescetarian, Diet.Pescetarian, "Pescetariana");
+        new(nameof(Pescetarian), (int) Diet.Pescetarian, Diet.Pescetarian, "Pescetariana");
 
     public static readonly DietEnum PolloPescetarian =
-        new(nameof(PolloPescetarian), (int)Diet.PolloPescetarian, Diet.PolloPescetarian,
+        new(nameof(PolloPescetarian), (int) Diet.PolloPescetarian, Diet.PolloPescetarian,
             "Pollo-Pescetariana");
 
     public static readonly DietEnum Vegan =
-        new(nameof(Vegan), (int)Diet.Vegan, Diet.Vegan, "Vegano");
+        new(nameof(Vegan), (int) Diet.Vegan, Diet.Vegan, "Vegano");
 
     private static readonly IDictionary<Diet, DietEnum> TokenDictionary =
         new Dictionary<Diet, DietEnum>
@@ -50,6 +50,12 @@ public class DietEnum : SmartEnum<DietEnum>
 
     private static readonly IDictionary<string, DietEnum> ReadableNameDictionary = TokenDictionary
         .ToImmutableDictionary(e => e.Value.ReadableName, e => e.Value, StringComparer.InvariantCultureIgnoreCase);
+    
+    public static IReadOnlyCollection<DietEnum> Values { get; } = 
+        TokenDictionary.Values.OrderBy(e => e.Value).ToList();
+
+    public static IReadOnlyCollection<DietEnum> NonNullValues { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).Skip(1).ToList();
 
     public DietEnum(string name, int value, Diet token, string readableName) : base(name, value)
     {

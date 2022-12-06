@@ -6,37 +6,37 @@ namespace NutrifoodsFrontend.UtilsFolder.Enums;
 public class DishTypeEnum : SmartEnum<DishTypeEnum>
 {
     public static readonly DishTypeEnum None =
-        new(nameof(None), (int)DishType.None, DishType.None, "Ninguno");
+        new(nameof(None), (int) DishType.None, DishType.None, "Ninguno");
 
     public static readonly DishTypeEnum Entree =
-        new(nameof(Entree), (int)DishType.Entree, DishType.Entree, "Plato de entrada");
+        new(nameof(Entree), (int) DishType.Entree, DishType.Entree, "Plato de entrada");
 
     public static readonly DishTypeEnum MainDish =
-        new(nameof(MainDish), (int)DishType.MainDish, DishType.MainDish, "Plato principal");
+        new(nameof(MainDish), (int) DishType.MainDish, DishType.MainDish, "Plato principal");
 
     public static readonly DishTypeEnum Dessert =
-        new(nameof(Dessert), (int)DishType.Dessert, DishType.Dessert, "Postre");
+        new(nameof(Dessert), (int) DishType.Dessert, DishType.Dessert, "Postre");
 
     public static readonly DishTypeEnum Appetizer =
-        new(nameof(Appetizer), (int)DishType.Appetizer, DishType.Appetizer, "Aperitivo");
+        new(nameof(Appetizer), (int) DishType.Appetizer, DishType.Appetizer, "Aperitivo");
 
     public static readonly DishTypeEnum Beverage =
-        new(nameof(Beverage), (int)DishType.Beverage, DishType.Beverage, "Bebida");
+        new(nameof(Beverage), (int) DishType.Beverage, DishType.Beverage, "Bebida");
 
     public static readonly DishTypeEnum Salad =
-        new(nameof(Salad), (int)DishType.Salad, DishType.Salad, "Ensalada");
+        new(nameof(Salad), (int) DishType.Salad, DishType.Salad, "Ensalada");
 
     public static readonly DishTypeEnum Soup =
-        new(nameof(Soup), (int)DishType.Soup, DishType.Soup, "Sopa");
+        new(nameof(Soup), (int) DishType.Soup, DishType.Soup, "Sopa");
 
     public static readonly DishTypeEnum Pastries =
-        new(nameof(Pastries), (int)DishType.Pastries, DishType.Pastries, "Repostería");
+        new(nameof(Pastries), (int) DishType.Pastries, DishType.Pastries, "Repostería");
 
     public static readonly DishTypeEnum Bread =
-        new(nameof(Bread), (int)DishType.Bread, DishType.Bread, "Pan");
+        new(nameof(Bread), (int) DishType.Bread, DishType.Bread, "Pan");
 
     public static readonly DishTypeEnum Sandwich =
-        new(nameof(Sandwich), (int)DishType.Sandwich, DishType.Sandwich, "Sándwich");
+        new(nameof(Sandwich), (int) DishType.Sandwich, DishType.Sandwich, "Sándwich");
 
     private static readonly IDictionary<DishType, DishTypeEnum> TokenDictionary =
         new Dictionary<DishType, DishTypeEnum>
@@ -53,10 +53,15 @@ public class DishTypeEnum : SmartEnum<DishTypeEnum>
             {DishType.Bread, Bread},
             {DishType.Sandwich, Sandwich}
         }.ToImmutableDictionary();
-
-
+    
     private static readonly IDictionary<string, DishTypeEnum> ReadableNameDictionary = TokenDictionary
         .ToImmutableDictionary(e => e.Value.ReadableName, e => e.Value, StringComparer.InvariantCultureIgnoreCase);
+    
+    public static IReadOnlyCollection<DishTypeEnum> Values { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).ToList();
+
+    public static IReadOnlyCollection<DishTypeEnum> NonNullValues { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).Skip(1).ToList();
 
     public DishTypeEnum(string name, int value, DishType token, string readableName) : base(name, value)
     {
@@ -66,7 +71,7 @@ public class DishTypeEnum : SmartEnum<DishTypeEnum>
 
     public DishType Token { get; }
     public string ReadableName { get; }
-
+    
     public static DishTypeEnum? FromReadableName(string name) =>
         ReadableNameDictionary.ContainsKey(name) ? ReadableNameDictionary[name] : null;
 
