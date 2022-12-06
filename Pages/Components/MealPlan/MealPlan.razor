@@ -11,13 +11,15 @@
 @if (mealPlanResponse == null)
 {
     <MudContainer MaxWidth="MaxWidth.Small">
-       <div class="d-flex justify-center align-content-center mt-10">
+        <div class="d-flex justify-center align-content-center mt-10">
             <MudProgressCircular Class="mr-2" Color="Color.Primary" Indeterminate="true" />
             <MudText Typo="Typo.h6">Estamos generando tu Plan Alimentario</MudText> 
         </div> 
     </MudContainer>
     
     
+    <!-- if(UserHasNoMetrics) -->
+
 }
 else
 {
@@ -33,9 +35,8 @@ else
 
             <!-- Input: Cantidad de calorías | Destino: Componente hijo CaloriesTotal -->
             <CaloriesTotal Macronutrients="TotalMacronutrients()"/>
-            @foreach(var menu in mealPlan.MealMenus)
+            @foreach(var menu in MealMenus)
             {
-            
                 <div class="mt-3">
                     <!-- Input: Comida del día | Destino: Componente hijo MealComponent -->
                     <MealComponent MenuRecipes=@menu.MenuRecipes />
@@ -89,27 +90,28 @@ else
 @code {
     private HttpResponseMessage? mealPlanResponse { get; set; }
     private MealPlanDto? mealPlan { get; set; }
-    [Parameter]
-    public int GuestEnergy { get; set; }
-
+    private List<MealMenuDto>? MealMenus { get; set; }
+    [Parameter] public int GuestEnergy { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
-        var IsAuthenticated = state.User.Identity.IsAuthenticated;
+        var isAuthenticated = state.User.Identity is {IsAuthenticated: true };
 
-        if(IsAuthenticated)
+        if(isAuthenticated)
         {
             mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
-            mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
-            
+            mealPlan = mealPlanResponse?.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+            MealMenus = mealPlan?.MealMenus.ToList();
+
         }
         else {
             var guestUser = UserMetricsState.Property;
-            mealPlanResponse = await MealPlanService.GenerateBasedOnMetrics(
-                guestUser.Gender, guestUser.Height, guestUser.Weight, guestUser.Age, 
-                guestUser.PhysicalActivity, "Y", "Normal", "Normal");
-            mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+            if (guestUser != null)
+                mealPlanResponse = await MealPlanService.GenerateBasedOnMetrics(
+                    guestUser.Gender, guestUser.Height, guestUser.Weight, guestUser.Age,
+                    guestUser.PhysicalActivity, "Y", "Normal", "Normal");
+            if (mealPlanResponse != null) mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
         }
         
         await base.OnInitializedAsync();
@@ -127,11 +129,13 @@ else
     
     private Dictionary<string, int> TotalMacronutrients()
     {
-        var nutrients = new Dictionary<string, int>();
-        nutrients.Add("Energy", CalculateEnergy());
-        nutrients.Add("Carbohydrates", CalculateCarbs());
-        nutrients.Add("Lipids", CalculateLipids());
-        nutrients.Add("Proteins", CalculateProteins());
+        var nutrients = new Dictionary<string, int>
+        {
+            { "Energy", CalculateEnergy() },
+            { "Carbohydrates", CalculateCarbs() },
+            { "Lipids", CalculateLipids() },
+            { "Proteins", CalculateProteins() }
+        };
         return nutrients;
     }
    
