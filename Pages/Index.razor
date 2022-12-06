@@ -6,7 +6,7 @@
 @inject IUserService UserService
 @attribute [Authorize]
 
-@if(DisplayAlert)
+@if (true)
 {
    <div class="d-flex justify-center mt-3">
         <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Warning" Variant="Variant.Outlined">@InfoMessage.UserWarning</MudAlert>
@@ -23,8 +23,7 @@ Este contenido solo se puede ver si estas autenticado.
 
 @code {
     private string? Nickname { get; set; }
-    private string ApiKey { get; set; }
-    private bool DisplayAlert { get; set; } 
+    private string ApiKey { get; set; }  
     private string? Email { get; set; }
     private DateTime JoinedOn { get; } = DateTime.Now; 
 
@@ -41,6 +40,8 @@ Este contenido solo se puede ver si estas autenticado.
         await base.OnInitializedAsync();
     }
 
+    private bool DisplayAlert() => UserMetricsCheck().Result;
+
     private async Task RegisterUserCheck()
     {
         var isRegisteredResponse = await UserService.Find(ApiKey);
@@ -53,12 +54,14 @@ Este contenido solo se puede ver si estas autenticado.
 
     }
 
-    private async Task UserMetricsCheck()
+    private async Task<bool> UserMetricsCheck()
     {
         var isRegisteredResponse = await UserService.Find(ApiKey);
         var userData = isRegisteredResponse.Content.ReadFromJsonAsync<UserDto>().Result;
 
-        DisplayAlert = userData.BodyMetrics == null ? true : false;
-
+        return userData.BodyMetrics == null ? true : false;
     }
+    
+    
+    
 }
