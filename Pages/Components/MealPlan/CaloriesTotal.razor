@@ -6,7 +6,7 @@
     <div class="d-flex pl-3 pr-3 justify-space-between">
         <div class="d-flex align-center">
             <MudIcon Class="mr-3" Size="Size.Medium" Icon="@Icons.Filled.PieChart" />
-            <MudText Typo="Typo.h6" Color="Color.Info">@totalEnergy() Kilocalorías</MudText>
+            <MudText Typo="Typo.h6" Color="Color.Info">@TotalEnergy() Kilocalorías</MudText>
             <MudIconButton OnClick="@ToggleOpen" Size="Size.Medium" Icon="@Icons.Filled.Info" />
         </div>
         <AuthorizeView>
@@ -21,11 +21,12 @@
         </AuthorizeView>
         
     </div>
-    <MudPopover Open="_isOpen" OverflowBehavior="OverflowBehavior.FlipAlways" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopCenter" Paper="false">
-        <DistributionComponent Energy="totalEnergy()"
-                               Carbs="totalCarbs()"
-                               Proteins="totalProteins()"
-                               Lipids="totalLipids()">
+    <MudPopover Open="_isOpen" OverflowBehavior="OverflowBehavior.FlipAlways" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopCenter" 
+                Paper="false">
+        <DistributionComponent Energy="TotalEnergy()"
+                               Carbs="TotalCarbs()"
+                               Proteins="TotalProteins()"
+                               Lipids="TotalLipids()">
         </DistributionComponent>
     </MudPopover>
 </MudPaper>
@@ -33,31 +34,30 @@
 
 @code {
     [Parameter]
-    public Dictionary<string, int> Macronutrients { get; set; }
+    public Dictionary<string, int>? Macronutrients { get; set; }
+    private bool _isOpen = false;
 
-    public int totalEnergy() => Macronutrients.Where(c => c.Key.Contains("Energy")).Select(c => c.Value).FirstOrDefault();
-    
-    public int totalCarbs() => Macronutrients.Where(c => c.Key.Contains("Carbohydrates")).Select(c => c.Value).FirstOrDefault();
-    
-    public int totalProteins() => Macronutrients.Where(c => c.Key.Contains("Proteins")).Select(c => c.Value).FirstOrDefault();
-    
-    public int totalLipids() => Macronutrients.Where(c => c.Key.Contains("Lipids")).Select(c => c.Value).FirstOrDefault();
+    private int TotalEnergy() => (Macronutrients ?? throw new InvalidOperationException())
+        .Where(c => c.Key.Contains("Energy")).Select(c => c.Value).FirstOrDefault();
 
-    public bool _isOpen = false;
+    private int TotalCarbs() => (Macronutrients ?? throw new InvalidOperationException()).
+        Where(c => c.Key.Contains("Carbohydrates")).Select(c => c.Value).FirstOrDefault();
 
-   
+    private int TotalProteins() => (Macronutrients ?? throw new InvalidOperationException()).
+        Where(c => c.Key.Contains("Proteins")).Select(c => c.Value).FirstOrDefault();
+
+    private int TotalLipids() => (Macronutrients ?? throw new InvalidOperationException()).
+        Where(c => c.Key.Contains("Lipids")).Select(c => c.Value).FirstOrDefault();
+    
     private void OpenDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<DailyConfiguration>("",options);
     }
 
-    public void ToggleOpen()
+    private void ToggleOpen()
     {
-        if (_isOpen)
-            _isOpen = false;
-        else
-            _isOpen = true;
+        _isOpen = !_isOpen;
     }
     
 }
