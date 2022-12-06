@@ -13,7 +13,7 @@
             @foreach (var menu in MenuRecipes)
             {
                 <MudListItem>
-                    <RecipeComponent Quantity=@menu.Quantity Name=@menu.Recipe.Name></RecipeComponent>
+                    <RecipeComponent Quantity=@menu.Portions Name=@menu.Recipe.Name></RecipeComponent>
                 </MudListItem>
             }
         </MudList>
@@ -22,7 +22,7 @@
 
 @code {
     [Parameter]
-    public IEnumerable<MealMenuRecipeDto>? MenuRecipes { get; set; }
+    public IEnumerable<MenuRecipeDto>? MenuRecipes { get; set; }
 
     [Parameter]
     public string? MealType { get; set; }

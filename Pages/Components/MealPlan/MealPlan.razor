@@ -32,13 +32,15 @@ else
                 Lipids ="CalculateLipids()"
                 Proteins ="CalculateProteins()"
             />
-            @foreach(var menu in mealPlan.MealMenus)
+            @foreach(var menu in mealPlan.DailyMealPlans)
             {
-            
-                <div class="mt-3">
-                    <!-- Input: Comida del día | Destino: Componente hijo MealComponent -->
-                    <MealComponent MenuRecipes=@menu.MenuRecipes />
-                </div>
+                foreach (var recipe in menu.DailyMenus)
+                {
+                    <div class="mt-3">
+                        <!-- Input: Comida del día | Destino: Componente hijo MealComponent -->
+                        <MealComponent MenuRecipes=@recipe.MenuRecipes />
+                    </div>
+                }
             }
             <AuthorizeView>
                 <Authorized>
@@ -143,21 +145,21 @@ else
 
     public int CalculateEnergy()
     {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.EnergyTotal));       
+        return Convert.ToInt32(mealPlan.DailyMealPlans.Sum(e => e.EnergyTotal));       
     }
 
     public int CalculateCarbs()
     {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.CarbohydratesTotal));
+        return Convert.ToInt32(mealPlan.DailyMealPlans.Sum(e => e.CarbohydratesTotal));
     }
 
     public int CalculateLipids()
     {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.LipidsTotal));
+        return Convert.ToInt32(mealPlan.DailyMealPlans.Sum(e => e.LipidsTotal));
     }
 
     public int CalculateProteins()
     {
-        return Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.ProteinsTotal));
+        return Convert.ToInt32(mealPlan.DailyMealPlans.Sum(e => e.ProteinsTotal));
     }
 }
