@@ -1,5 +1,6 @@
 using NutrifoodsFrontend.Data.Dto;
-using UtilsFolder.Enums;
+using NutrifoodsFrontend.UtilsFolder.Enums;
+
 
 namespace NutrifoodsFrontend.Services;
 

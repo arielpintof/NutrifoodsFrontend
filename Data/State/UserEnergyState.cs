@@ -1,12 +1,10 @@
-﻿using NutrifoodsFrontend.Data.Dto;
-
-namespace NutrifoodsFrontend.Data.State
+﻿namespace NutrifoodsFrontend.Data.State
 {
-    public class UserMetricsState
+    public class UserEnergyState
     {
-        private GuestUserDto? _savedUserData;
+        private double _savedUserData;
 
-        public GuestUserDto? Property
+        public double Property
         {
             get => _savedUserData;
             set
