@@ -2,11 +2,11 @@
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Data.State
 @using NutrifoodsFrontend.Services
+@using NutrifoodsFrontend.UtilsFolder.Enums
 @inject AuthenticationStateProvider AuthState
-@inject UserMetricsState UserMetricsState
-@inject IMealPlanService MealPlanService
+@inject UserEnergyState UserEnergyState
+@inject IDailyMealPlanService MealPlanService
 @inject ISnackbar Snackbar
-
 
 @if (mealPlanResponse == null)
 {
@@ -89,8 +89,8 @@ else
 
 @code {
     private HttpResponseMessage? mealPlanResponse { get; set; }
-    private MealPlanDto? mealPlan { get; set; }
-    private List<MealMenuDto>? MealMenus { get; set; }
+    private DailyMealPlanDto? mealPlan { get; set; }
+    private List<DailyMenuDto>? MealMenus { get; set; }
     [Parameter] public int GuestEnergy { get; set; }
     
     protected override async Task OnInitializedAsync()
@@ -100,31 +100,29 @@ else
 
         if(isAuthenticated)
         {
-            mealPlanResponse = await MealPlanService.GenerateBasedOnMbr(2000, "Y", "Normal", "Normal");
-            mealPlan = mealPlanResponse?.Content.ReadFromJsonAsync<MealPlanDto>().Result;
-            MealMenus = mealPlan?.MealMenus.ToList();
+            mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(1900, Satiety.Normal, Satiety.Filling, Satiety.Filling);
+            mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<DailyMealPlanDto?>().Result;
+            MealMenus = mealPlan?.DailyMenus.ToList();
 
         }
         else {
-            var guestUser = UserMetricsState.Property;
-            if (guestUser != null)
-                mealPlanResponse = await MealPlanService.GenerateBasedOnMetrics(
-                    guestUser.Gender, guestUser.Height, guestUser.Weight, guestUser.Age,
-                    guestUser.PhysicalActivity, "Y", "Normal", "Normal");
-            if (mealPlanResponse != null) mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<MealPlanDto>().Result;
+            var guestUserEnergy = UserEnergyState.Property;
+            mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(guestUserEnergy, Satiety.Normal, Satiety.Filling, Satiety.Filling);
+            if (mealPlanResponse != null) mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<DailyMealPlanDto>().Result;
+            MealMenus = mealPlan?.DailyMenus.ToList();
         }
         
         await base.OnInitializedAsync();
     }
 
 
-    private int CalculateEnergy() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.EnergyTotal));
+    private int CalculateEnergy() => Convert.ToInt32(mealPlan.DailyMenus.Sum(e => e.EnergyTotal));
    
-    private int CalculateCarbs() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.CarbohydratesTotal));
+    private int CalculateCarbs() => Convert.ToInt32(mealPlan.DailyMenus.Sum(e => e.CarbohydratesTotal));
     
-    private int CalculateLipids() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.LipidsTotal));
+    private int CalculateLipids() => Convert.ToInt32(mealPlan.DailyMenus.Sum(e => e.LipidsTotal));
 
-    private int CalculateProteins() => Convert.ToInt32(mealPlan.MealMenus.Sum(e => e.ProteinsTotal));
+    private int CalculateProteins() => Convert.ToInt32(mealPlan.DailyMenus.Sum(e => e.ProteinsTotal));
     
     
     private Dictionary<string, int> TotalMacronutrients()

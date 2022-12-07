@@ -13,7 +13,7 @@
             @foreach (var menu in MenuRecipes)
             {
                 <MudListItem>
-                    <RecipeComponent Quantity=@menu.Quantity Name=@menu.Recipe.Name></RecipeComponent>
+                    <RecipeComponent Quantity=@menu.Portions Name=@menu.Recipe.Name></RecipeComponent>
                 </MudListItem>
             }
         </MudList>
@@ -21,11 +21,11 @@
 </MudStack>
 
 @code {
-    [Parameter] public IEnumerable<MealMenuRecipeDto>? MenuRecipes { get; set; }
+    [Parameter] public IEnumerable<MenuRecipeDto>? MenuRecipes { get; set; }
 
     [Parameter] public string? MealType { get; set; }
 
-    [Parameter] public EventCallback<MealMenuDto> OnMealMenuRenew { get; set; }
+    //[Parameter] public EventCallback<MealMenuDto> OnMealMenuRenew { get; set; }
     private async Task AutoRenewClick()
     {
         /*var dailyMealPlanResponse = await DailyMenuService.GenerateDailyMenu([Required] double energyTarget,

@@ -59,7 +59,7 @@ Este contenido solo se puede ver si estas autenticado.
         var isRegisteredResponse = await UserService.Find(ApiKey);
         var userData = isRegisteredResponse.Content.ReadFromJsonAsync<UserDto>().Result;
 
-        return userData.BodyMetrics == null ? true : false;
+        return userData == null ? true : false;
     }
     
     
