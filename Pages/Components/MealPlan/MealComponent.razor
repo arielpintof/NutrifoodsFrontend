@@ -6,14 +6,14 @@
             <div Class="d-flex justify-space-between flex-grow-1 gap-4" Elevation="0">
                 <!-- MealType (Almuerzo, Desayuno, Cena, Merienda) -->
                 <MudText Class="pl-3" Typo="Typo.h5">@MealType</MudText>
-                <MudIconButton Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                <MudIconButton @onclick="AutoRenewClick" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
             </div>
         </MudStack>
         <MudList>
             @foreach (var menu in MenuRecipes)
             {
                 <MudListItem>
-                    <RecipeComponent Quantity=@menu.Portions Name=@menu.Recipe.Name></RecipeComponent>
+                    <RecipeComponent Quantity=@menu.Quantity Name=@menu.Recipe.Name></RecipeComponent>
                 </MudListItem>
             }
         </MudList>
@@ -21,10 +21,17 @@
 </MudStack>
 
 @code {
-    [Parameter]
-    public IEnumerable<MenuRecipeDto>? MenuRecipes { get; set; }
+    [Parameter] public IEnumerable<MealMenuRecipeDto>? MenuRecipes { get; set; }
 
-    [Parameter]
-    public string? MealType { get; set; }
+    [Parameter] public string? MealType { get; set; }
 
+    [Parameter] public EventCallback<MealMenuDto> OnMealMenuRenew { get; set; }
+    private async Task AutoRenewClick()
+    {
+        /*var dailyMealPlanResponse = await DailyMenuService.GenerateDailyMenu([Required] double energyTarget,
+            MealType mealType = MealType.None, Satiety satiety = Satiety.None)*/
+        ;
+        //var dailyMealPlan = dailyMealPlanResponse?.Content.ReadFromJsonAsync<DailyMenuDto>().Result;
+        
+    }
 }

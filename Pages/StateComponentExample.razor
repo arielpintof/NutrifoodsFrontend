@@ -1,0 +1,20 @@
+﻿@page "/state-container-example"
+@using NutrifoodsFrontend.Data.State
+
+@implements IDisposable
+@inject UserMetricsState UserMetricsState
+
+<h1>Página de MealPlan</h1>
+
+@if(UserMetricsState.Property != null){
+    <p>Altura: <b> @UserMetricsState.Property.Height</b></p>
+    <p>Peso: <b> @UserMetricsState.Property.Weight</b></p>
+}
+
+@code {
+
+    public void Dispose()
+    {
+        UserMetricsState.OnChange -= StateHasChanged;
+    }
+}

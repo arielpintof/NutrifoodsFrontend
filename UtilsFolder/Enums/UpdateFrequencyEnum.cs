@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Ardalis.SmartEnum;
 
-namespace UtilsFolder.Enums;
+namespace NutrifoodsFrontend.UtilsFolder.Enums;
 
 public class UpdateFrequencyEnum : SmartEnum<UpdateFrequencyEnum>
 {
@@ -24,6 +24,12 @@ public class UpdateFrequencyEnum : SmartEnum<UpdateFrequencyEnum>
 
     private static readonly IDictionary<string, UpdateFrequencyEnum> ReadableNameDictionary = TokenDictionary
         .ToImmutableDictionary(e => e.Value.ReadableName, e => e.Value, StringComparer.InvariantCultureIgnoreCase);
+
+    public static IReadOnlyCollection<UpdateFrequencyEnum> Values { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).ToList();
+
+    public static IReadOnlyCollection<UpdateFrequencyEnum> NonNullValues { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).Skip(1).ToList();
 
     public UpdateFrequencyEnum(string name, int value, UpdateFrequency token, string readableName) : base(name, value)
     {

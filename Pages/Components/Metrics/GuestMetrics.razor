@@ -1,0 +1,107 @@
+﻿@page "/Invitado"
+@using NutrifoodsFrontend.Data
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.Data.State
+@using UtilsFolder.Enums
+@implements IDisposable
+@inject UserMetricsState UserMetricsState
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudPaper>
+        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+            <div class="d-flex flex-column pa-4">
+                <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
+                <div class="d-flex">
+                    <MudTextField 
+                                @bind-Value="HeightValue"
+                                Class="pa-4"  
+                                Label="Altura" 
+                                Variant="Variant.Outlined" 
+                                Adornment="Adornment.End" 
+                                AdornmentText="Centímetros" 
+                                AdornmentColor="Color.Info"
+                                Required="true" 
+                                RequiredError="La altura es obligatoria" />
+                    <MudTextField 
+                                Class="pa-4" 
+                                @bind-Value="WeightValue" 
+                                Label="Peso" 
+                                Variant="Variant.Outlined" 
+                                Adornment="Adornment.End" 
+                                AdornmentText="Kilogramos" 
+                                AdornmentColor="Color.Info"
+                                Required="true"
+                                RequiredError="El peso es obligatorio" />
+                </div>
+                <div>
+                    <MudTextField 
+                                 @bind-Value="AgeValue"
+                                 Class="pa-4"  
+                                 Label="Edad" 
+                                 Variant="Variant.Outlined" 
+                                 Adornment="Adornment.End" 
+                                 AdornmentText="Años" 
+                                 AdornmentColor="Color.Info"
+                                 Required="true" 
+                                 RequiredError="La edad es obligatoria" />
+                </div>
+                
+                <div class="pa-4">
+                    <MudSelect Required="true" Dense="true" @bind-Value="PhysicalValue" Class="pb-4" Label="Actividad Física" Variant="Variant.Outlined">
+                        @foreach (PhysicalActivityEnum item in PhysicalActivityEnum.List)
+                        {
+                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudSelect Required="true" Dense="true" @bind-Value="GenderValue" Class="pb-4" Label="Genero" Variant="Variant.Outlined">
+                        @foreach (GenderEnum item in GenderEnum.List)
+                        {
+                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                        }
+                    </MudSelect>  
+                </div>
+                <div class="mt-2 pa-4">
+                    <MudButton Class="pa-3"
+                               Disabled="@(!_success)"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               OnClick="ChangePropertyValue"
+                               Href="https://localhost:5001/mealplan"
+                               FullWidth="true">
+                        Siguiente
+                    </MudButton>
+                </div>
+            </div>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private MudForm? _form;
+    private bool _success;
+    private string[] _errors = { };
+    private int WeightValue { get; set; }
+    private int HeightValue { get; set; }
+    private int AgeValue { get; set; }
+    private GenderEnum? GenderValue { get; set; }
+    private PhysicalActivityEnum? PhysicalValue { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        UserMetricsState.OnChange += StateHasChanged;
+    }
+
+    private void ChangePropertyValue() => UserMetricsState.Property = new GuestUserDto()
+        {
+            Height = HeightValue,
+            Weight = WeightValue,
+            Age = AgeValue,
+            Gender = GenderValue.Name,
+            PhysicalActivity = PhysicalValue.Name
+        };
+
+    public void Dispose()
+    {
+        UserMetricsState.OnChange -= StateHasChanged;
+    }
+}

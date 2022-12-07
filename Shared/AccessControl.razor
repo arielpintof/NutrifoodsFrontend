@@ -1,8 +1,15 @@
 ﻿<AuthorizeView>
     <Authorized>
-        <a Style="color: white" href="logout">Cerrar sesión</a>
+        <MudFab Class="color" StartIcon="@Icons.Filled.Logout" Href="logout" Label="Cerrar sesión" DisableElevation />
     </Authorized>
     <NotAuthorized>
-        <a Style="color: white" href="login?redirectUri=/">Iniciar Sesión</a>
+        <MudFab Class="color" StartIcon="@Icons.Filled.Login" Href="login?redirectUri=/" Label="Iniciar Sesión" DisableElevation />
     </NotAuthorized>
 </AuthorizeView>
+
+
+<style>
+    .color{
+        color: white;
+    }
+</style>

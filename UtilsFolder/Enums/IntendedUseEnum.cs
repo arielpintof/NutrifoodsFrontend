@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using Ardalis.SmartEnum;
 
-namespace UtilsFolder.Enums;
+namespace NutrifoodsFrontend.UtilsFolder.Enums;
 
 public class IntendedUseEnum : SmartEnum<IntendedUseEnum>
 {
@@ -28,6 +28,12 @@ public class IntendedUseEnum : SmartEnum<IntendedUseEnum>
 
     private static readonly IDictionary<string, IntendedUseEnum> ReadableNameDictionary = TokenDictionary
         .ToImmutableDictionary(e => e.Value.ReadableName, e => e.Value, StringComparer.InvariantCultureIgnoreCase);
+
+    public static IReadOnlyCollection<IntendedUseEnum> Values { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).ToList();
+
+    public static IReadOnlyCollection<IntendedUseEnum> NonNullValues { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).Skip(1).ToList();
 
     public IntendedUseEnum(string name, int value, IntendedUse token, string readableName) : base(name, value)
     {

@@ -1,39 +1,67 @@
 ﻿@page "/"
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.UtilsFolder.ToolTip
+@using NutrifoodsFrontend.Services
 @inject AuthenticationStateProvider AuthState
+@inject IUserService UserService
 @attribute [Authorize]
+
+@if (true)
+{
+   <div class="d-flex justify-center mt-3">
+        <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Warning" Variant="Variant.Outlined">@InfoMessage.UserWarning</MudAlert>
+   </div> 
+}
+
 
 <PageTitle>Index</PageTitle>
 
 <h1>Bienvenido, @Nickname!</h1>
 Este contenido solo se puede ver si estas autenticado.
 <br />
-<img src="@Picture">
+
 
 @code {
-    private string Username = "Anonymous User";
-    private string Picture = "";
-    private string name = "";
-    private string Nickname = "";
+    private string? Nickname { get; set; }
+    private string ApiKey { get; set; }  
+    private string? Email { get; set; }
+    private DateTime JoinedOn { get; } = DateTime.Now; 
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
-
-        name = state.User.Identity.Name;
         
-
-        Username = state.User.Identity.Name ?? string.Empty;
-
-        Picture = state.User.Claims
-                    .Where(c => c.Type.Equals("picture"))
-                    .Select(c => c.Value)
+        Nickname = state.User.Claims.Where(c => c.Type.Equals("nickname")).Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty;
 
-        Nickname = state.User.Claims
-                    .Where(c => c.Type.Equals("nickname"))
-                    .Select(c => c.Value)
+        ApiKey = state.User.Claims.Where(c => c.Type.Equals(Claims.NameIdentifier)).Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty;
 
         await base.OnInitializedAsync();
     }
+
+    private bool DisplayAlert() => UserMetricsCheck().Result;
+
+    private async Task RegisterUserCheck()
+    {
+        var isRegisteredResponse = await UserService.Find(ApiKey);
+        var isRegistered = isRegisteredResponse.IsSuccessStatusCode;
+
+        if (!isRegistered)
+        {
+            // SaveUser(Nickname, Email, ApiKey, JoinedOn);
+        }
+
+    }
+
+    private async Task<bool> UserMetricsCheck()
+    {
+        var isRegisteredResponse = await UserService.Find(ApiKey);
+        var userData = isRegisteredResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+
+        return userData.BodyMetrics == null ? true : false;
+    }
+    
+    
+    
 }

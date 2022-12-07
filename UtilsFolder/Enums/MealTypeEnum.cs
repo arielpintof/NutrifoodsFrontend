@@ -1,24 +1,24 @@
 using System.Collections.Immutable;
 using Ardalis.SmartEnum;
 
-namespace UtilsFolder.Enums;
+namespace NutrifoodsFrontend.UtilsFolder.Enums;
 
 public class MealTypeEnum : SmartEnum<MealTypeEnum>
 {
     public static readonly MealTypeEnum None =
-        new(nameof(None), (int)MealType.None, MealType.None, "Ninguno");
+        new(nameof(None), (int) MealType.None, MealType.None, "Ninguno");
 
     public static readonly MealTypeEnum Breakfast =
-        new(nameof(Breakfast), (int)MealType.Breakfast, MealType.Breakfast, "Desayuno");
+        new(nameof(Breakfast), (int) MealType.Breakfast, MealType.Breakfast, "Desayuno");
 
     public static readonly MealTypeEnum Lunch =
-        new(nameof(Lunch), (int)MealType.Lunch, MealType.Lunch, "Almuerzo");
+        new(nameof(Lunch), (int) MealType.Lunch, MealType.Lunch, "Almuerzo");
 
     public static readonly MealTypeEnum Dinner =
-        new(nameof(Dinner), (int)MealType.Dinner, MealType.Dinner, "Cena");
+        new(nameof(Dinner), (int) MealType.Dinner, MealType.Dinner, "Cena");
 
     public static readonly MealTypeEnum Snack =
-        new(nameof(Snack), (int)MealType.Snack, MealType.Snack, "Merienda");
+        new(nameof(Snack), (int) MealType.Snack, MealType.Snack, "Merienda");
 
     private static readonly IDictionary<MealType, MealTypeEnum> TokenDictionary =
         new Dictionary<MealType, MealTypeEnum>
@@ -32,6 +32,12 @@ public class MealTypeEnum : SmartEnum<MealTypeEnum>
 
     private static readonly IDictionary<string, MealTypeEnum> ReadableNameDictionary = TokenDictionary
         .ToImmutableDictionary(e => e.Value.ReadableName, e => e.Value, StringComparer.InvariantCultureIgnoreCase);
+
+    public static IReadOnlyCollection<MealTypeEnum> Values { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).ToList();
+
+    public static IReadOnlyCollection<MealTypeEnum> NonNullValues { get; } =
+        TokenDictionary.Values.OrderBy(e => e.Value).Skip(1).ToList();
 
     public MealTypeEnum(string name, int value, MealType token, string readableName) : base(name, value)
     {
