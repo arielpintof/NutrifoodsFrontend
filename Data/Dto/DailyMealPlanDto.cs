@@ -1,5 +1,3 @@
-using NutrifoodsFrontend.Data.Dto;
-
 namespace NutrifoodsFrontend.Data.Dto;
 
 public class DailyMealPlanDto
@@ -10,4 +8,5 @@ public class DailyMealPlanDto
     public double LipidsTotal { get; set; }
     public double ProteinsTotal { get; set; }
     public ICollection<DailyMenuDto> DailyMenus { get; set; } = null!;
+    public ICollection<DailyMealPlanNutrientDto> Nutrients { get; set; } = null!;
 }
