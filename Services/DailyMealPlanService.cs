@@ -11,11 +11,12 @@ public class DailyMealPlanService : IDailyMealPlanService
         _httpClient = httpClient;
     }
     
-    public async Task<HttpResponseMessage?> GenerateDailyMealPlan(double energyTarget, Satiety breakfast, Satiety lunch, Satiety dinner, bool? includeBrunch,
-        bool? includeLinner)
+    public async Task<HttpResponseMessage?> GenerateDailyMealPlan(double energyTarget,
+        bool isLunchFilling, Satiety breakfast, Satiety dinner,
+        bool? includeBrunch = false, bool? includeLinner = false, DayOfTheWeek? dayOfWeek = DayOfTheWeek.None)
     {
         return await _httpClient.GetAsync(
-            $"api/v1/daily-menus/default-parameters?energyTarget={energyTarget}&breakfast={breakfast}&lunch={lunch}&dinner={dinner}&includeBrunch={includeBrunch}&includeLinner={includeLinner}");
+            $"api/v1/daily-menus/default-parameters?energyTarget={energyTarget}&isLunchFilling={isLunchFilling}&breakfast={breakfast}&dinner={dinner}&includeBrunch={includeBrunch}&includeLinner={includeLinner}&dayOfWeek={dayOfWeek}");
     }
 
     

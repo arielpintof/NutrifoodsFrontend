@@ -13,10 +13,10 @@ public class DailyMenuService : IDailyMenuService
         _httpClient = httpClient;
     }
     
-    public Task<HttpResponseMessage?> GenerateDailyMenu(double energyTarget, double carbsPercent, double fatsPercent, double proteinsPercent,
+    public async Task<HttpResponseMessage?> GenerateDailyMenu(double energyTarget, double carbsPercent, double fatsPercent, double proteinsPercent,
         MealType mealType = MealType.None, Satiety satiety = Satiety.None)
     {
-        throw new NotImplementedException();
+        return await _httpClient.GetAsync($"api/v1/daily-meals/custom-percentages?energyTarget={energyTarget}&carbsPercent={carbsPercent}&fatsPercent={fatsPercent}&proteinsPercent={proteinsPercent}&mealType={mealType}&satiety={satiety}");
     }
 
     public async Task<HttpResponseMessage?> GenerateDailyMenu(double energyTarget, MealType mealType = MealType.None, 
