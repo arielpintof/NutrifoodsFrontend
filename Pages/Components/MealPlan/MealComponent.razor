@@ -1,12 +1,18 @@
 ﻿@using NutrifoodsFrontend.Data.Dto;
+@using NutrifoodsFrontend.Data.State
+@using NutrifoodsFrontend.Services
+@using NutrifoodsFrontend.UtilsFolder.Enums
+@inject DailyMenuState DailyMenuState
+@inject IDailyMenuService DailyMenuService
+@implements IDisposable
 
 <MudStack>
-    <MudPaper Class="pa-4" Style="background-color: #F8F4F4" Width="100%" Height="70%">
+    <MudPaper Class="pa-4" Style="background-color: #F8F4F4" Width="100%" Height="50%">
         <MudStack>
-            <div Class="d-flex justify-space-between flex-grow-1 gap-4" Elevation="0">
+            <div Class="d-flex justify-space-between align-center flex-grow-1" Elevation="0">
                 <!-- MealType (Almuerzo, Desayuno, Cena, Merienda) -->
-                <MudText Class="pl-3" Typo="Typo.h5">@MealType</MudText>
-                <MudIconButton @onclick="AutoRenewClick" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                <MudText Class="pl-3" Typo="Typo.h6">@MealType</MudText>
+                <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
             </div>
         </MudStack>
         <MudList>
@@ -21,17 +27,36 @@
 </MudStack>
 
 @code {
-    [Parameter] public IEnumerable<MenuRecipeDto>? MenuRecipes { get; set; }
 
-    [Parameter] public string? MealType { get; set; }
+    [Parameter]
+    public IEnumerable<MenuRecipeDto>? MenuRecipes { get; set; }
 
-    //[Parameter] public EventCallback<MealMenuDto> OnMealMenuRenew { get; set; }
-    private async Task AutoRenewClick()
+    [Parameter]
+    public string MealType { get; set; } = null!;
+
+    [Parameter]
+    public string Satiety { get; set; } = null!;
+
+    [Parameter]
+    public double EnergyTotal { get; set; }
+    
+    [Parameter]
+    public EventCallback OnDailyMenuChanged { get; set; }
+    
+    protected override void OnInitialized() => DailyMenuState.OnChange += StateHasChanged;
+
+    private async Task ChangePropertyValue()
     {
-        /*var dailyMealPlanResponse = await DailyMenuService.GenerateDailyMenu([Required] double energyTarget,
-            MealType mealType = MealType.None, Satiety satiety = Satiety.None)*/
-        ;
-        //var dailyMealPlan = dailyMealPlanResponse?.Content.ReadFromJsonAsync<DailyMenuDto>().Result;
-        
+        var dailyMenuResponse = await DailyMenuService.GenerateDailyMenu(EnergyTotal, MealTypeEnum.FromReadableName(MealType)!.Token, 
+            SatietyEnum.FromReadableName(Satiety)!.Token);
+        var dailyMenuContent = dailyMenuResponse!.Content.ReadFromJsonAsync<DailyMenuDto?>().Result;
+        DailyMenuState.Property = dailyMenuContent;
+        await OnDailyMenuChanged.InvokeAsync();
+
     }
+
+    public void Dispose() => DailyMenuState.OnChange -= StateHasChanged;
+
+   
+
 }
