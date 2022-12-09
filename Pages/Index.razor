@@ -6,7 +6,7 @@
 @inject IUserService UserService
 @attribute [Authorize]
 
-@if (true)
+@if (!_hasMetrics)
 {
    <div class="d-flex justify-center mt-3">
         <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Warning" Variant="Variant.Outlined">@InfoMessage.UserWarning</MudAlert>
@@ -16,33 +16,58 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Bienvenido, @Nickname!</h1>
-Este contenido solo se puede ver si estas autenticado.
+@if (_user != null)
+{
+    <MudText>@_user.Email</MudText>
+    <MudText>@_user.Id</MudText>
+    <MudText>@_user.Username</MudText>
+    <MudText>@_user.ApiKey</MudText>
+}
+
+
+
+
+
 <br />
 
 
 @code {
-    private string? Nickname { get; set; }
-    private string ApiKey { get; set; }  
+    
     private string? Email { get; set; }
-    private DateTime JoinedOn { get; } = DateTime.Now; 
+    private DateTime JoinedOn { get; } = DateTime.Now;
+    private bool _hasMetrics;
+    public UserDto _user { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
+        var isAuthenticated = state.User.Identity is { IsAuthenticated: true };
         
-        Nickname = state.User.Claims.Where(c => c.Type.Equals("nickname")).Select(c => c.Value)
+        if(isAuthenticated)
+        {
+            var apiKey = state.User.Claims.Where(c => c.Type.Equals(Claims.NameIdentifier)).Select(c => c.Value)
+                .FirstOrDefault() ?? string.Empty;
+            var findUserResponse = await UserService.Find(apiKey);
+            
+            if (findUserResponse == null)
+            {
+                var nickName = state.User.Claims.Where(c => c.Type.Equals("nickname")).Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty;
+                var email= state.User.Claims.Where(c => c.Type.Equals(Claims.Email)).Select(c => c.Value)
+                    .FirstOrDefault() ?? string.Empty;
+                var response = await UserService.SaveUser(nickName, email, apiKey);
+                var content = response.Content.ReadFromJsonAsync<UserDto>().Result;
+                _user = content;
 
-        ApiKey = state.User.Claims.Where(c => c.Type.Equals(Claims.NameIdentifier)).Select(c => c.Value)
-                    .FirstOrDefault() ?? string.Empty;
+            }            
+        }
 
         await base.OnInitializedAsync();
     }
 
-    private bool DisplayAlert() => UserMetricsCheck().Result;
+    //private bool DisplayAlert() => UserMetricsCheck().Result;
 
-    private async Task RegisterUserCheck()
+    /*private async Task RegisterUserCheck()
     {
         var isRegisteredResponse = await UserService.Find(ApiKey);
         var isRegistered = isRegisteredResponse.IsSuccessStatusCode;
@@ -60,7 +85,7 @@ Este contenido solo se puede ver si estas autenticado.
         var userData = isRegisteredResponse.Content.ReadFromJsonAsync<UserDto>().Result;
 
         return userData == null ? true : false;
-    }
+    }*/
     
     
     
