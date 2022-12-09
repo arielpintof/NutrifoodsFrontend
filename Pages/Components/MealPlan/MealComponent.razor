@@ -10,18 +10,27 @@
     <MudPaper Class="pa-4" Style="background-color: #F8F4F4" Width="100%" Height="50%">
         <MudStack>
             <div Class="d-flex justify-space-between align-center flex-grow-1" Elevation="0">
-                <!-- MealType (Almuerzo, Desayuno, Cena, Merienda) -->
                 <MudText Class="pl-3" Typo="Typo.h6">@MealType</MudText>
                 <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
             </div>
         </MudStack>
         <MudList>
-            @foreach (var menu in MenuRecipes)
+            @if (MenuRecipes == null)
             {
-                <MudListItem>
-                    <RecipeComponent Quantity=@menu.Portions Name=@menu.Recipe.Name></RecipeComponent>
-                </MudListItem>
+                <div class="d-flex justify-center">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+                </div>
             }
+            else
+            {
+                foreach (var menu in MenuRecipes)
+                {
+                    <MudListItem>
+                        <RecipeComponent Quantity=@menu.Portions Name=@menu.Recipe.Name></RecipeComponent>
+                    </MudListItem>
+                }
+            }
+
         </MudList>
     </MudPaper>
 </MudStack>
@@ -39,24 +48,26 @@
 
     [Parameter]
     public double EnergyTotal { get; set; }
-    
+
     [Parameter]
     public EventCallback OnDailyMenuChanged { get; set; }
-    
+
     protected override void OnInitialized() => DailyMenuState.OnChange += StateHasChanged;
 
     private async Task ChangePropertyValue()
     {
-        var dailyMenuResponse = await DailyMenuService.GenerateDailyMenu(EnergyTotal, MealTypeEnum.FromReadableName(MealType)!.Token, 
+        MenuRecipes = null;
+        var dailyMenuResponse = await DailyMenuService.GenerateDailyMenu(
+            EnergyTotal, 
+            MealTypeEnum.FromReadableName(MealType)!.Token,
             SatietyEnum.FromReadableName(Satiety)!.Token);
         var dailyMenuContent = dailyMenuResponse!.Content.ReadFromJsonAsync<DailyMenuDto?>().Result;
-        DailyMenuState.Property = dailyMenuContent;
+        DailyMenuState.Property = dailyMenuContent!;
         await OnDailyMenuChanged.InvokeAsync();
-
     }
 
     public void Dispose() => DailyMenuState.OnChange -= StateHasChanged;
 
-   
+
 
 }

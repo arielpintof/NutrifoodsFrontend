@@ -7,74 +7,82 @@
 <MudDialog>
     <DialogContent>
         <MudContainer Class="px-10 py-5" MaxWidth="MaxWidth.Medium">
-        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
-            <MudText Class="d-flex justify-center" Typo="Typo.h5">Configuración del día</MudText>
-            <div class="flex-sm-column mt-5" >
-                <MudSelect Required="true" @bind-Value="QuantityTest" T="int" Label="Cantidad de comidas" Variant="Variant.Outlined" 
-                           AnchorOrigin="Origin.BottomCenter">
-                    <MudSelectItem T="int" Value="2" />
-                    <MudSelectItem T="int" Value="3" />
-                    <MudSelectItem T="int" Value="4" />
-                    <MudSelectItem T="int" Value="5" />
-                </MudSelect>
-                <MudStack>
-                    <div class="row d-flex align-center mt-2">
-                        <MudCheckBox Disabled="_breakfastCheckBoxDisableValue" @bind-Checked="BreakfastCheckTest" Color="Color.Primary"
-                                     UnCheckedColor="Color.Default" Class="mr-3">Desayuno</MudCheckBox>
-                        <MudSelect Disabled="_breakfastSelectDisableValue" @bind-Value="_breakfastSatiety" Dense="true" Label="Contundencia" 
-                                   AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
-                            @foreach (var item in SatietyEnumList)
-                            {
-                                <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </div>
-                    <div class="row d-flex align-center mt-2">
-                        <MudCheckBox Disabled="true" @bind-Checked="_launchCheck" Color="Color.Primary" UnCheckedColor="Color.Default" 
-                                     Class="mr-3">Almuerzo</MudCheckBox>
-                        <MudSelect @bind-Value="LaunchSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined" 
-                                   AnchorOrigin="Origin.BottomCenter">
-                            @foreach (var item in LunchSatietyEnumList)
-                            {
-                                <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </div>
-                    <div class="row d-flex align-center mt-2">
-                        <MudCheckBox Disabled="_dinnerCheckBoxDisableValue" @bind-Checked="DinnerCheckTest" Color="Color.Primary" 
-                                     UnCheckedColor="Color.Default" 
-                                    Class="mr-11">Cena</MudCheckBox>
-                        <MudSelect Disabled="_dinnerSelectDisableValue" @bind-Value="_dinnerSatiety" Dense="true" Label="Contundencia" 
-                                   AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+            <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+                <MudText Class="d-flex justify-center" Typo="Typo.h5">Configuración del día</MudText>
+                <div class="flex-sm-column mt-5">
+                    <MudSelect Required="true" @bind-Value="QuantityTest" T="int" Label="Cantidad de comidas" Variant="Variant.Outlined"
+                               AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem T="int" Value="2"/>
+                        <MudSelectItem T="int" Value="3"/>
+                        <MudSelectItem T="int" Value="4"/>
+                        <MudSelectItem T="int" Value="5"/>
+                    </MudSelect>
+                    <MudStack>
+                        <div class="row d-flex align-center mt-2">
+                            <MudCheckBox Disabled="_breakfastCheckBoxDisableValue" @bind-Checked="BreakfastCheckTest" Color="Color.Primary"
+                                         UnCheckedColor="Color.Default" Class="mr-3">
+                                Desayuno
+                            </MudCheckBox>
+                            <MudSelect Disabled="_breakfastSelectDisableValue" @bind-Value="_breakfastSatiety" Dense="true" Label="Contundencia"
+                                       AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
                                 @foreach (var item in SatietyEnumList)
-                            {
-                                <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </div>
-                    <div class="row d-flex align-center mt-2">
-                        <MudCheckBox Disabled="_snackCheckBoxDisableValue" @bind-Checked="_snackCheck" Color="Color.Primary" 
-                                     UnCheckedColor="Color.Default" Class="mr-3">Merienda</MudCheckBox>
-                        <MudSelect Disabled="_snackSelectDisableValue" @bind-Value="_snackSatiety" Dense="true" Label="Hora" 
-                                   AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
-                            @foreach (var item in SnackEnumList)
-                            {
+                                {
                                     <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </div>    
-                </MudStack>
-            </div>
-        </MudForm>
-</MudContainer>
+                                }
+                            </MudSelect>
+                        </div>
+                        <div class="row d-flex align-center mt-2">
+                            <MudCheckBox Disabled="true" @bind-Checked="_launchCheck" Color="Color.Primary" UnCheckedColor="Color.Default"
+                                         Class="mr-3">
+                                Almuerzo
+                            </MudCheckBox>
+                            <MudSelect @bind-Value="LaunchSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined"
+                                       AnchorOrigin="Origin.BottomCenter">
+                                @foreach (var item in LunchSatietyEnumList)
+                                {
+                                    <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </div>
+                        <div class="row d-flex align-center mt-2">
+                            <MudCheckBox Disabled="_dinnerCheckBoxDisableValue" @bind-Checked="DinnerCheckTest" Color="Color.Primary"
+                                         UnCheckedColor="Color.Default"
+                                         Class="mr-11">
+                                Cena
+                            </MudCheckBox>
+                            <MudSelect Disabled="_dinnerSelectDisableValue" @bind-Value="_dinnerSatiety" Dense="true" Label="Contundencia"
+                                       AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                                @foreach (var item in SatietyEnumList)
+                                {
+                                    <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </div>
+                        <div class="row d-flex align-center mt-2">
+                            <MudCheckBox Disabled="_snackCheckBoxDisableValue" @bind-Checked="_snackCheck" Color="Color.Primary"
+                                         UnCheckedColor="Color.Default" Class="mr-3">
+                                Merienda
+                            </MudCheckBox>
+                            <MudSelect Disabled="_snackSelectDisableValue" @bind-Value="_snackSatiety" Dense="true" Label="Hora"
+                                       AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                                @foreach (var item in SnackEnumList)
+                                {
+                                    <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </div>
+                    </MudStack>
+                </div>
+            </MudForm>
+        </MudContainer>
     </DialogContent>
     <DialogActions>
-            <div class="px-14 mb-5">
-                <MudButton OnClick="Cancel">Cancelar</MudButton>
-                <MudButton OnClick="Submit" Disabled="@(!_success)" Variant="Variant.Filled" Color="Color.Primary">
-                    Confirmar
-                </MudButton>
-            </div>              
+        <div class="px-14 mb-5">
+            <MudButton OnClick="Cancel">Cancelar</MudButton>
+            <MudButton OnClick="Submit" Disabled="@(!_success)" Variant="Variant.Filled" Color="Color.Primary">
+                Confirmar
+            </MudButton>
+        </div>
     </DialogActions>
 </MudDialog>
 
@@ -95,15 +103,15 @@
     private SatietyEnum? _breakfastSatiety;
     private SatietyEnum? _dinnerSatiety;
     private SnackEnum? _snackSatiety;
-    
+
     private int _mealsQuantity = 3;
-    
+
     private bool _launchCheck = true;
-    
+
     private static SatietyEnum? LaunchSatiety { get; set; } = SatietyEnum.Filling;
-    
+
     private static IEnumerable<SatietyEnum> SatietyEnumList => SatietyEnum.NonNullValues;
-    
+
     private static IEnumerable<SatietyEnum> LunchSatietyEnumList => SatietyEnum.NonNullValues.Skip(1);
 
     private static IEnumerable<SnackEnum> SnackEnumList => SnackEnum.NonNullValues;
@@ -117,18 +125,31 @@
     int QuantityTest
     {
         get => _mealsQuantity;
-        set { _mealsQuantity = value; QuantityCheck(value); }
+        set
+        {
+            _mealsQuantity = value;
+            QuantityCheck(value);
+        }
     }
 
     bool BreakfastCheckTest
     {
         get => _breakfastCheck;
-        set { _breakfastCheck = value; BreakfastHandleCheck(value); }
+        set
+        {
+            _breakfastCheck = value;
+            BreakfastHandleCheck(value);
+        }
     }
+
     bool DinnerCheckTest
     {
         get => _dinnerCheck;
-        set { _dinnerCheck = value; DinnerHandleCheck(value); }
+        set
+        {
+            _dinnerCheck = value;
+            DinnerHandleCheck(value);
+        }
     }
 
     void BreakfastHandleCheck(bool isChecked)
@@ -163,14 +184,12 @@
                 FourMealsConfiguration();
                 break;
             case 5:
-                _breakfastCheck = true;
-                _dinnerCheck = true;
-                _snackCheck = true;
+                FiveMealsConfiguration();
                 break;
         }
     }
 
-    void TwoMealsConfiguration()
+    private void TwoMealsConfiguration()
     {
         _breakfastCheck = true;
         _dinnerCheck = false;
@@ -181,10 +200,9 @@
         _snackCheckBoxDisableValue = true;
         _snackSelectDisableValue = true;
         _snackSatiety = SnackEnum.FromToken(Snack.None);
-
     }
 
-    void ThreeMealsConfiguration()
+    private void ThreeMealsConfiguration()
     {
         _breakfastCheck = true;
         _dinnerCheck = true;
@@ -196,10 +214,9 @@
         _snackCheckBoxDisableValue = true;
         _snackSelectDisableValue = true;
         _snackSatiety = SnackEnum.FromToken(Snack.None);
-
     }
 
-    void FourMealsConfiguration()
+    private void FourMealsConfiguration()
     {
         _breakfastCheck = true;
         _dinnerCheck = true;
@@ -211,8 +228,8 @@
         _dinnerSelectDisableValue = false;
         _snackSelectDisableValue = false;
     }
-    
-    void FiveMealsConfiguration()
+
+    private void FiveMealsConfiguration()
     {
         _breakfastCheck = true;
         _dinnerCheck = true;
@@ -224,10 +241,11 @@
         _dinnerSelectDisableValue = false;
         _snackSelectDisableValue = false;
     }
-    
-    
-    [CascadingParameter] MudDialogInstance? MudDialog { get; set; }
 
-    void Submit() => MudDialog?.Close(DialogResult.Ok(true));
-    void Cancel() => MudDialog?.Cancel();
+
+    [CascadingParameter]
+    MudDialogInstance? MudDialog { get; set; }
+
+    private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog?.Cancel();
 }

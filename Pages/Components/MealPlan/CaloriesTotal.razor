@@ -23,9 +23,7 @@
     </div>
     <MudPopover Open="_isOpen" OverflowBehavior="OverflowBehavior.FlipAlways" AnchorOrigin="Origin.TopRight" TransformOrigin="Origin.TopCenter" 
                 Paper="false">
-        <DistributionComponent Energy="TotalEnergy()"
-                               Carbs="TotalCarbs()"
-                               Proteins="TotalProteins()"
+        <DistributionComponent Energy="TotalEnergy()"Carbs="TotalCarbs()"Proteins="TotalProteins()"
                                Lipids="TotalLipids()">
         </DistributionComponent>
     </MudPopover>
@@ -35,19 +33,19 @@
 @code {
     [Parameter]
     public Dictionary<string, int>? Macronutrients { get; set; }
+    
+    private int TotalMacronutrient(string macronutrient) => (Macronutrients ?? throw new InvalidOperationException())
+        .Where(c => c.Key.Contains(macronutrient)).Select(c => c.Value).FirstOrDefault();
+    
+    private int TotalEnergy() => TotalMacronutrient("Energy");
+
+    private int TotalCarbs() => TotalMacronutrient("Carbohydrates");
+
+    private int TotalProteins() => TotalMacronutrient("Proteins");
+
+    private int TotalLipids() => TotalMacronutrient("Lipids");
+    
     private bool _isOpen = false;
-
-    private int TotalEnergy() => (Macronutrients ?? throw new InvalidOperationException())
-        .Where(c => c.Key.Contains("Energy")).Select(c => c.Value).FirstOrDefault();
-
-    private int TotalCarbs() => (Macronutrients ?? throw new InvalidOperationException()).
-        Where(c => c.Key.Contains("Carbohydrates")).Select(c => c.Value).FirstOrDefault();
-
-    private int TotalProteins() => (Macronutrients ?? throw new InvalidOperationException()).
-        Where(c => c.Key.Contains("Proteins")).Select(c => c.Value).FirstOrDefault();
-
-    private int TotalLipids() => (Macronutrients ?? throw new InvalidOperationException()).
-        Where(c => c.Key.Contains("Lipids")).Select(c => c.Value).FirstOrDefault();
     
     private void OpenDialog()
     {
