@@ -2,6 +2,8 @@
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using NutrifoodsFrontend.Services
+@using System.Net
+@using System.Security.Claims
 @inject AuthenticationStateProvider AuthState
 @inject IUserService UserService
 @attribute [Authorize]
@@ -36,7 +38,7 @@
     private string? Email { get; set; }
     private DateTime JoinedOn { get; } = DateTime.Now;
     private bool _hasMetrics;
-    public UserDto _user { get; set; }
+    public UserDto? _user { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,21 +51,32 @@
                 .FirstOrDefault() ?? string.Empty;
             var findUserResponse = await UserService.Find(apiKey);
             
-            if (findUserResponse == null)
+            if (findUserResponse != null)
             {
-                var nickName = state.User.Claims.Where(c => c.Type.Equals("nickname")).Select(c => c.Value)
-                    .FirstOrDefault() ?? string.Empty;
-                var email= state.User.Claims.Where(c => c.Type.Equals(Claims.Email)).Select(c => c.Value)
-                    .FirstOrDefault() ?? string.Empty;
-                var response = await UserService.SaveUser(nickName, email, apiKey);
-                var content = response.Content.ReadFromJsonAsync<UserDto>().Result;
-                _user = content;
-
+                HttpResponseMessage? saveUserResponse = null;
+                if (findUserResponse.StatusCode == HttpStatusCode.NotFound)
+                {
+                    var nickName = state.User.Claims.Where(c => c.Type.Equals("nickname")).Select(c => c.Value)
+                        .FirstOrDefault() ?? string.Empty;
+                    var email= state.User.Claims.Where(c => c.Type.Equals("name")).Select(c => c.Value)
+                        .FirstOrDefault() ?? string.Empty;
+                    saveUserResponse = await UserService.SaveUser(nickName, email, apiKey);
+                                    
+                    if (saveUserResponse is {IsSuccessStatusCode: true })
+                    {
+                        _user = saveUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+                    }
+                }
+                else
+                {
+                    _user = findUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+                }
             }            
         }
 
         await base.OnInitializedAsync();
     }
+    //
 
     //private bool DisplayAlert() => UserMetricsCheck().Result;
 

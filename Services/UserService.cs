@@ -31,7 +31,7 @@ namespace NutrifoodsFrontend.Services
             var userSerialized = JsonSerializer.Serialize(user);
             var content = new StringContent(userSerialized, Encoding.UTF8, "application/json");
             return await _httpClient.PutAsync
-                ($"api/v1/users/save-user?username={username}&email={email}&apiKey={apiKey}", content);
+                ($"api/v1/users/save-user?username={user.Username}&email={user.Email}&apiKey={user.ApiKey}", content);
         }
 
         public async Task<HttpResponseMessage?> SavePersonalData(string apiKey, string birthdate, Gender gender,
