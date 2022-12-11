@@ -1,7 +1,11 @@
 ﻿@page "/Body"
 @using UtilsFolder.Enums
 @using UtilsFolder.ToolTip
+@using NutrifoodsFrontend.Services
+@using NutrifoodsFrontend.Data.Dto
 @inject AuthenticationStateProvider AuthState
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
 @attribute [Authorize]
 
 <MudContainer MaxWidth="MaxWidth.Small">
@@ -10,58 +14,28 @@
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
                 <div class="d-flex">
-                    <MudTextField 
-                            @bind-Value="HeightValue"
-                            Class="pa-4"  
-                            Label="Altura" 
-                            Variant="Variant.Outlined" 
-                            Adornment="Adornment.End" 
-                            AdornmentText="Centímetros" 
-                            AdornmentColor="Color.Info"
-                            Required="true" 
-                            RequiredError="La altura es obligatoria" />
-                    <MudTextField 
-                            Class="pa-4" 
-                            @bind-Value="WeightValue" 
-                            Label="Peso" 
-                            Variant="Variant.Outlined" 
-                            Adornment="Adornment.End" 
-                            AdornmentText="Kilogramos" 
-                            AdornmentColor="Color.Info"
-                            Required="true"
-                            RequiredError="El peso es obligatorio" />
+                    <MudTextField @bind-Value="HeightValue" Class="pa-4" Label="Altura" Variant="Variant.Outlined"
+                                  Adornment="Adornment.End" AdornmentText="Centímetros" AdornmentColor="Color.Info"
+                                  Required="true" RequiredError="La altura es obligatoria"/>
+                    <MudTextField Class="pa-4" @bind-Value="WeightValue" Label="Peso" Variant="Variant.Outlined"
+                                  Adornment="Adornment.End" AdornmentText="Kilogramos" AdornmentColor="Color.Info"
+                                  Required="true" RequiredError="El peso es obligatorio"/>
                 </div>
-                <div class="pa-4 ">
-
-                    <MudSelect Required="true" Dense="true" @bind-Value="PhysicalValue" Class="pb-4" Label="Actividad Física" Variant="Variant.Outlined">
-                        @foreach (PhysicalActivityEnum item in PhysicalActivityEnum.List)
+                <div class="pa-4">
+                    <MudSelect Required="true" Dense="true" @bind-Value="PhysicalValue" Class="pb-4" Label="Actividad Física"
+                               Variant="Variant.Outlined">
+                        @foreach (var item in PhysicalActivityList)
                         {
                             <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
                         }
                     </MudSelect>
 
-                    <MudSelect Required="true" Dense="true" @bind-Value="IntendedUseValue" Class="pb-4" Label="Proposito de uso" Variant="Variant.Outlined">
-                        @foreach (IntendedUseEnum item in IntendedUseEnum.List)
-                        {
-                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudSelect Required="true" Dense="true" @bind-Value="UpdateFrequencyValue" Class="pb-4" Label="Periocidad" Variant="Variant.Outlined">
-                        @foreach (UpdateFrequencyEnum item in UpdateFrequencyEnum.List)
-                        {
-                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
-                        }
-                    </MudSelect>
                     <div class="mt-5">
-                        <MudButton Class="pa-3" 
-                                   Disabled="@(!_success)" 
-                                   Variant="Variant.Filled" 
-                                   Color="Color.Primary"
-                                   Href="https://localhost:5001/mealplan"
-                                   FullWidth="true">
-                                   Siguiente
+                        <MudButton Class="pa-3" Disabled="@(!_success)" Variant="Variant.Filled" Color="Color.Primary"
+                                   Href="https://localhost:5001/mealplan" OnClick="SaveBodyMeasures" FullWidth="true">
+                            Siguiente
                         </MudButton>
-                    </div>      
+                    </div>
                 </div>
             </div>
         </MudForm>
@@ -76,21 +50,39 @@
     private double? WeightValue { get; set; }
     private int? HeightValue { get; set; }
     private PhysicalActivityEnum? PhysicalValue { get; set; }
-    private UpdateFrequencyEnum? UpdateFrequencyValue { get; set; }
-    private IntendedUseEnum? IntendedUseValue { get; set; }
+    private static IEnumerable<PhysicalActivityEnum> PhysicalActivityList => PhysicalActivityEnum.NonNullValues;
     
-    protected async Task SaveBodyMeasures()
+    protected override async Task OnInitializedAsync()
     {
         var authenticationState = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = authenticationState.User.Claims
-            .Where(c => c.Type.Equals(Claims.NameIdentifier))
-            .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
-            
-        //SaveMetrics(apiKey, HeightValue, WeightValue, PhysicalValue)
-
-            
+        var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
+        var findUserResponse = await UserService.Find(apiKey);
+        var userContent = findUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+        if (userContent.UserBodyMetrics.Count() != 0)
+        {
+            NavigationManager.NavigateTo("/mealplan");
+        }
         
+        await base.OnInitializedAsync();
     }
-    
+
+    private async Task SaveBodyMeasures()
+    {
+        var authenticationState = await AuthState.GetAuthenticationStateAsync();
+        var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
+        var findUserResponse = await UserService.Find(apiKey);
+        if (findUserResponse.IsSuccessStatusCode)
+        {
+            var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
+            if (userContent.UserBodyMetrics.Count != 0) return;
+            
+        }
+        
+        await UserService.SaveMetrics(
+            apiKey, (int) HeightValue!, (double) WeightValue!, PhysicalActivityEnum.FromValue(PhysicalValue).Token);
+
+        await Task.CompletedTask;
+    }
+
 
 }

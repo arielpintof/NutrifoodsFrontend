@@ -65,7 +65,7 @@
     protected override void OnInitialized() => UserEnergyState.OnChange += StateHasChanged;
 
     private void ChangePropertyValue() => UserEnergyState.Property = TotalMetabolicRate.Calculate(_genderValue!, (double) _weightValue!, 
-       (int)_heightValue!,(int)_ageValue!, _physicalValue!);
+       (int)_heightValue!, (int)_ageValue!, _physicalValue!);
     
     private static IEnumerable<GenderEnum> GenderEnumList => GenderEnum.NonNullValues;
     
