@@ -3,103 +3,108 @@
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using NutrifoodsFrontend.Services
 @using System.Net
-@using System.Security.Claims
 @inject AuthenticationStateProvider AuthState
 @inject IUserService UserService
-@attribute [Authorize]
+@inject NavigationManager Nav
 
-@if (!_hasMetrics)
-{
-   <div class="d-flex justify-center mt-3">
-        <MudAlert ContentAlignment="HorizontalAlignment.Center" Severity="Severity.Warning" Variant="Variant.Outlined">@InfoMessage.UserWarning</MudAlert>
-   </div> 
-}
+<div style="background-color: #f9f9f9">
+    <MudContainer>
+        @if (!_hasMetrics)
+            {
+                <div class="d-flex justify-center pa-3">
+                    <MudAlert @onclick="NavigateToData" ContentAlignment="@HorizontalAlignment.Center" Severity="@Severity.Warning"
+                              Variant="@Variant.Outlined">
+                        @InfoMessage.UserWarning
+                    </MudAlert>
+                </div>
+            }
+        <div class="jumbo-background">
+            <div class="d-flex flex-column">
+                <Jumbotron class="mr-6 pr-6">
+                    <h1>Obten un plan alimentario de acuerdo a tus necesidades</h1>
+                    <p class="mt-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                </Jumbotron>
+                <div class="d-flex mt-6">
+                    <MudButton Style="width: 175px; height: 50px;" Class="rounded-pill pa-3" Size="Size.Large"
+                               Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">
+                        Empezar
+                    </MudButton>
+                </div>
+            </div>
+
+            <img src="https://stories.freepiklabs.com/storage/64920/eating-healthy-food-pana-3101.png" width="475" height="475" alt="">
+        </div>
+    </MudContainer>
+
+</div>
 
 
-<PageTitle>Index</PageTitle>
 
-@if (_user != null)
-{
-    <MudText>@_user.Email</MudText>
-    <MudText>@_user.Id</MudText>
-    <MudText>@_user.Username</MudText>
-    <MudText>@_user.ApiKey</MudText>
-}
+<PageTitle>Inicio - Nutrifoods</PageTitle>
 
-
-
-
-
-<br />
 
 
 @code {
-    
-    private string? Email { get; set; }
-    private DateTime JoinedOn { get; } = DateTime.Now;
-    private bool _hasMetrics;
-    public UserDto? _user { get; set; }
+    private bool _hasMetrics = true;
+    private UserDto? _user { get; set; }
+    private UserDto? _userFromNutrifoods { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
-        var isAuthenticated = state.User.Identity is { IsAuthenticated: true };
-        
-        if(isAuthenticated)
+        var isAuthenticated = state.User.Identity!.IsAuthenticated;
+        if (!isAuthenticated)
         {
-            var apiKey = state.User.Claims.Where(c => c.Type.Equals(Claims.NameIdentifier)).Select(c => c.Value)
-                .FirstOrDefault() ?? string.Empty;
-            var findUserResponse = await UserService.Find(apiKey);
-            
-            if (findUserResponse != null)
-            {
-                HttpResponseMessage? saveUserResponse = null;
-                if (findUserResponse.StatusCode == HttpStatusCode.NotFound)
-                {
-                    var nickName = state.User.Claims.Where(c => c.Type.Equals("nickname")).Select(c => c.Value)
-                        .FirstOrDefault() ?? string.Empty;
-                    var email= state.User.Claims.Where(c => c.Type.Equals("name")).Select(c => c.Value)
-                        .FirstOrDefault() ?? string.Empty;
-                    saveUserResponse = await UserService.SaveUser(nickName, email, apiKey);
-                                    
-                    if (saveUserResponse is {IsSuccessStatusCode: true })
-                    {
-                        _user = saveUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
-                    }
-                }
-                else
-                {
-                    _user = findUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
-                }
-            }            
+            await base.OnInitializedAsync();
+            return;
+        }
+
+        var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
+        var findUserResponse = await UserService.Find(apiKey);
+        if (findUserResponse.StatusCode != HttpStatusCode.NotFound)
+        {
+            _user = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
+            _hasMetrics = (_user.UserData != null && _user.UserBodyMetrics.Count != 0);
+            return;
+        }
+
+        var nickName = state.User.Claims.FirstOrDefault(c => c.Type == "nickname")?.Value;
+        var email = state.User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+        var saveUserResponse = await UserService.SaveUser(nickName!, email!, apiKey);
+        if (saveUserResponse!.IsSuccessStatusCode)
+        {
+            _user = await saveUserResponse.Content.ReadFromJsonAsync<UserDto>();
+            _hasMetrics = (_user.UserData != null && _user.UserBodyMetrics.Count != 0);
         }
 
         await base.OnInitializedAsync();
     }
-    //
 
-    //private bool DisplayAlert() => UserMetricsCheck().Result;
-
-    /*private async Task RegisterUserCheck()
+    private void NavigateToData()
     {
-        var isRegisteredResponse = await UserService.Find(ApiKey);
-        var isRegistered = isRegisteredResponse.IsSuccessStatusCode;
-
-        if (!isRegistered)
-        {
-            // SaveUser(Nickname, Email, ApiKey, JoinedOn);
-        }
-
+        Nav.NavigateTo("/personaldata");
     }
 
-    private async Task<bool> UserMetricsCheck()
-    {
-        var isRegisteredResponse = await UserService.Find(ApiKey);
-        var userData = isRegisteredResponse.Content.ReadFromJsonAsync<UserDto>().Result;
-
-        return userData == null ? true : false;
-    }*/
-    
-    
-    
 }
+<style>
+   p {
+       font-size: 1.2rem;
+   }
+       
+   h1, p {
+       color: #545151;
+   }
+   .jumbo-background{
+       display: flex;
+       flex-direction: row;
+       justify-content: space-between;
+       align-items: center;
+       margin-left: 3rem;
+       margin-right: 3rem;
+   }
+   h1 {
+       font-size: 2.9rem;
+   } 
+</style>
