@@ -4,6 +4,7 @@
 @using NutrifoodsFrontend.UtilsFolder.Enums
 @inject DailyMenuState DailyMenuState
 @inject IDailyMenuService DailyMenuService
+@inject AuthenticationStateProvider AuthState
 @implements IDisposable
 
 <MudStack>
@@ -11,7 +12,11 @@
         <MudStack>
             <div Class="d-flex justify-space-between align-center flex-grow-1" Elevation="0">
                 <MudText Class="pl-3" Typo="Typo.h6">@MealType</MudText>
-                <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                <AuthorizeView>
+                    <Authorized>
+                        <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                    </Authorized>
+                </AuthorizeView>
             </div>
         </MudStack>
         <MudList>
@@ -30,7 +35,6 @@
                     </MudListItem>
                 }
             }
-
         </MudList>
     </MudPaper>
 </MudStack>
