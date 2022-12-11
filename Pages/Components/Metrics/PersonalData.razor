@@ -1,10 +1,15 @@
 ﻿@page "/personaldata"
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using UtilsFolder.Enums
+@using NutrifoodsFrontend.Services
+@using NutrifoodsFrontend.Data.Dto
+@using System.ComponentModel
 @inject AuthenticationStateProvider AuthState
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Small">
+<MudContainer Class="mt-6" MaxWidth="MaxWidth.Small">
     <MudPaper>
         <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
             <div class="d-flex flex-column pa-4">
@@ -14,35 +19,50 @@
                     <MudTextField Required="true" Class="px-3" @bind-Value="LastName" Label="Apellido" Variant="Variant.Outlined"></MudTextField>
                 </div>
                 <div class="pl-3 pr-3 mt-3">
-                    <MudSelect Required="true" Dense="true" @bind-Value="GenderValue" Class="pb-4" Label="Género" Variant="Variant.Outlined">
-                        @foreach (GenderEnum item in GenderEnum.List)
+                    <MudSelect Required="true" Dense="true" @bind-Value="GenderValue" Class="pb-4" Label="Género"
+                               Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var item in GenderEnum.NonNullValues)
                         {
                             <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
                         }
                     </MudSelect>
                 </div>
-                <MudDatePicker Required="true" Label="Fecha de Nacimiento" Class="px-3" @ref="_picker" DateFormat="yyyy-MM-dd" @bind-Date="_date">
+                <MudDatePicker Required="true" Label="Fecha de Nacimiento" Class="px-3" @ref="_picker" DateFormat="dd-MM-yyyy" 
+                               @bind-Date="_date">
                     <PickerActions>
                         <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker.Clear())">Limpiar</MudButton>
                         <MudButton OnClick="@(() => _picker.Close(false))">Cancelar</MudButton>
                         <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
                     </PickerActions>
                 </MudDatePicker>
-
+                <div class="pl-3 pr-3 mt-3">
+                    <MudSelect Required="true" Dense="true" @bind-Value="IntendedUseValue" Class="pb-4" Label="Proposito de uso"
+                               Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var item in IntendedUseEnum.NonNullValues)
+                        {
+                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
+                <div class="pl-3 pr-3">
+                    <MudSelect Required="true" Dense="true" @bind-Value="UpdateFrequencyValue" Class="pb-4" Label="Periocidad"
+                               Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var item in UpdateFrequencyEnum.NonNullValues)
+                        {
+                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </div>
                 <div class="pa-3 mt-3">
-                    <MudButton     Class="pa-3" 
-                                   Disabled="@(!_success)" 
-                                   Variant="Variant.Filled" 
-                                   Color="Color.Primary"
-                                   Href="https://localhost:5001/body"
-                                   FullWidth="true"
-                                   OnClick="SaveUserData">
-                                   Siguiente
+                    <MudButton Class="pa-3" Disabled="@(!_success)" Variant="Variant.Filled" Color="Color.Primary"
+                               Href="https://localhost:5001/body" FullWidth="true" OnClick="SaveUserData">
+                        Siguiente
                     </MudButton>
                 </div>
             </div>
         </MudForm>
-    </MudPaper>   
+        
+    </MudPaper>
 </MudContainer>
 
 @code {
@@ -53,8 +73,26 @@
     private MudForm? _form;
     private MudDatePicker? _picker;
     private DateTime? _date = DateTime.Today;
-    private GenderEnum? GenderValue;
+    private GenderEnum? GenderValue { get; set; }
+    private UpdateFrequencyEnum? UpdateFrequencyValue { get; set; }
+    private IntendedUseEnum? IntendedUseValue { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthState.GetAuthenticationStateAsync();
+        var apiKey = authenticationState.User.Claims
+            .Where(c => c.Type.Equals(Claims.NameIdentifier))
+            .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
+        
+        var findUserResponse = await UserService.Find(apiKey);
+        var userContent = findUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+        if (userContent.UserData != null)
+        {
+            NavigationManager.NavigateTo("/body");
+        }
+        
+        await base.OnInitializedAsync();
+    }
 
     private async Task SaveUserData()
     {
@@ -62,9 +100,21 @@
         var apiKey = authenticationState.User.Claims
             .Where(c => c.Type.Equals(Claims.NameIdentifier))
             .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
-            
+
+        var findUserResponse = await UserService.Find(apiKey);
+        if (findUserResponse.IsSuccessStatusCode)
+        {
+            var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
+            if (userContent.UserData != null)
+                return;
+        }
         
-        //SavePersonalData(Name, LastName, date, GenderValue);
+        await UserService.SavePersonalData(
+            apiKey, _date.Value.ToString("yyyy-MM-dd"), GenderEnum.FromValue(GenderValue).Token, Name, 
+            LastName, Diet.None, IntendedUseEnum.FromValue(IntendedUseValue).Token, 
+            UpdateFrequencyEnum.FromValue(UpdateFrequencyValue).Token);
+
+        await Task.CompletedTask;
     }
 
 
