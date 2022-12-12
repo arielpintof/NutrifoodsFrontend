@@ -1,6 +1,7 @@
 ﻿@inject AuthenticationStateProvider AuthState
 @inject IDialogService DialogService
 @using UtilsFolder.ToolTip;
+@using System.Reflection.Metadata
 
 <MudPaper Outlined="true" Class="pa-1 rounded-pill">
     <div class="d-flex pl-3 pr-3 justify-space-between">
@@ -34,6 +35,9 @@
     [Parameter]
     public Dictionary<string, int>? Macronutrients { get; set; }
     
+    [Parameter]
+    public EventCallback OnDailyConfigurationChanged { get; set; }
+    
     private int TotalMacronutrient(string macronutrient) => (Macronutrients ?? throw new InvalidOperationException())
         .Where(c => c.Key.Contains(macronutrient)).Select(c => c.Value).FirstOrDefault();
     
@@ -47,10 +51,14 @@
     
     private bool _isOpen = false;
     
+    
     private void OpenDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        DialogService.Show<DailyConfiguration>("",options);
+        var parameters = new DialogParameters();
+        parameters.Add("OnDailyConfigurationChanged", OnDailyConfigurationChanged);
+        DialogService.Show<DailyConfiguration >("", parameters, options);
+        
     }
 
     private void ToggleOpen()

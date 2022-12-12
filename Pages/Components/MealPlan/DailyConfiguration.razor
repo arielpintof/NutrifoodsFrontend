@@ -1,8 +1,14 @@
 ﻿@page "/dailyconfiguration"
 
 @using Microsoft.AspNetCore.Components
-@using System.Globalization;
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.Data.State
+@using NutrifoodsFrontend.Services
 @using UtilsFolder.Enums;
+@inject DailyConfigurationState DailyConfigurationState
+@inject AuthenticationStateProvider AuthState
+@inject IDailyMealPlanService DailyMealPlanService
+@implements IDisposable
 
 <MudDialog>
     <DialogContent>
@@ -79,7 +85,7 @@
     <DialogActions>
         <div class="px-14 mb-5">
             <MudButton OnClick="Cancel">Cancelar</MudButton>
-            <MudButton OnClick="Submit" Disabled="@(!_success)" Variant="Variant.Filled" Color="Color.Primary">
+            <MudButton @onclick="ChangePropertyValue" Disabled="@(!_success)" Variant="Variant.Filled" Color="Color.Primary">
                 Confirmar
             </MudButton>
         </div>
@@ -100,28 +106,53 @@
     private bool _dinnerCheckBoxDisableValue;
     private bool _snackCheckBoxDisableValue;
     private MealTypeEnum? MealType;
-    private SatietyEnum? _breakfastSatiety;
-    private SatietyEnum? _dinnerSatiety;
+    
     private SnackEnum? _snackSatiety;
-
+    
+    [Parameter]
+    public EventCallback OnDailyConfigurationChanged { get; set; }
+    
     private int _mealsQuantity = 3;
 
     private bool _launchCheck = true;
 
     private static SatietyEnum? LaunchSatiety { get; set; } = SatietyEnum.Filling;
+    
+    private static SatietyEnum? _breakfastSatiety { get; set; } = SatietyEnum.Filling;
+    
+    private static SatietyEnum? _dinnerSatiety { get; set; } = SatietyEnum.Normal;
 
     private static IEnumerable<SatietyEnum> SatietyEnumList => SatietyEnum.NonNullValues;
 
     private static IEnumerable<SatietyEnum> LunchSatietyEnumList => SatietyEnum.NonNullValues.Skip(1);
 
     private static IEnumerable<SnackEnum> SnackEnumList => SnackEnum.NonNullValues;
-
+    
     protected override Task OnInitializedAsync()
     {
         QuantityCheck(_mealsQuantity);
         return base.OnInitializedAsync();
     }
 
+    private async Task ChangePropertyValue()
+    {
+        var isLaunchFilling = LaunchSatiety == SatietyEnum.Filling;
+        var breakfastSatiety = _breakfastCheck ? _breakfastSatiety.Token : Satiety.None;
+        var dinnerSatiety = _dinnerCheck ? _breakfastSatiety.Token : Satiety.None;
+
+        var dailyConfiguration = new DailyConfigurationDto
+        {
+            IsLunchFilling = isLaunchFilling,
+            Breakfast = breakfastSatiety,
+            Dinner = dinnerSatiety
+        };
+        
+        DailyConfigurationState.Property = dailyConfiguration;
+        await OnDailyConfigurationChanged.InvokeAsync();
+        Submit();
+        
+    }
+    
     int QuantityTest
     {
         get => _mealsQuantity;
@@ -248,4 +279,8 @@
 
     private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
     private void Cancel() => MudDialog?.Cancel();
+    
+    protected override void OnInitialized() => DailyConfigurationState.OnChange += StateHasChanged;
+    
+    public void Dispose() => DailyConfigurationState.OnChange -= StateHasChanged;
 }
