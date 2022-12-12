@@ -65,7 +65,7 @@
             EnergyTotal, 
             MealTypeEnum.FromReadableName(MealType)!.Token,
             SatietyEnum.FromReadableName(Satiety)!.Token);
-        var dailyMenuContent = dailyMenuResponse!.Content.ReadFromJsonAsync<DailyMenuDto?>().Result;
+        var dailyMenuContent = await dailyMenuResponse!.Content.ReadFromJsonAsync<DailyMenuDto?>();
         DailyMenuState.Property = dailyMenuContent!;
         await OnDailyMenuChanged.InvokeAsync();
     }

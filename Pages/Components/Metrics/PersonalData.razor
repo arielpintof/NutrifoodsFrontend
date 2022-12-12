@@ -85,7 +85,7 @@
             .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
         
         var findUserResponse = await UserService.Find(apiKey);
-        var userContent = findUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+        var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
         if (userContent.UserData != null)
         {
             NavigationManager.NavigateTo("/body");

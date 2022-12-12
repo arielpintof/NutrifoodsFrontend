@@ -100,7 +100,7 @@ else
         var state = await AuthState.GetAuthenticationStateAsync();
         var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
         var userResponse = await UserService.Find(apiKey);
-        var userContent = userResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+        var userContent = await userResponse.Content.ReadFromJsonAsync<UserDto>();
         userDate = userContent.UserData.Birthdate;
         dateDisplay = DateTime.ParseExact(userContent.UserData.Birthdate, "yyyy-MM-dd", CultureInfo.CurrentCulture).Date;
     //Age = DateOnlyUtils.Difference(DateOnlyUtils.ToDateOnly(userDate), Interval.Years);
@@ -128,7 +128,7 @@ else
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
             userEnergy, true, Satiety.Filling, Satiety.Normal);
 
-        mealPlan = MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>().Result;
+        mealPlan = await MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
         MealMenus = mealPlan?.DailyMenus.ToList();
 
         await base.OnInitializedAsync();
@@ -149,7 +149,7 @@ else
         var dailyConfiguration = DailyConfigurationState.Property;
         var mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
             userEnergy, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner);
-        mealPlan = mealPlanResponse.Content.ReadFromJsonAsync<DailyMealPlanDto>().Result;
+        mealPlan = await mealPlanResponse.Content.ReadFromJsonAsync<DailyMealPlanDto>();
         var temp = mealPlan.DailyMenus;
         MealMenus.Clear();
         MealMenus = temp.ToList();

@@ -58,7 +58,7 @@
         var authenticationState = await AuthState.GetAuthenticationStateAsync();
         var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
         var findUserResponse = await UserService.Find(apiKey);
-        var userContent = findUserResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+        var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
         if (userContent.UserBodyMetrics.Count() != 0)
         {
             NavigationManager.NavigateTo("/mealplan");
