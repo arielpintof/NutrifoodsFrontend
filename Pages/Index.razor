@@ -3,7 +3,9 @@
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using NutrifoodsFrontend.Services
 @using System.Net
+@using NutrifoodsFrontend.Data.State
 @inject AuthenticationStateProvider AuthState
+
 @inject IUserService UserService
 @inject NavigationManager Nav
 
@@ -26,8 +28,8 @@
                         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
                 </Jumbotron>
                 <div class="d-flex mt-6">
-                    <MudButton Style="width: 175px; height: 50px;" Class="rounded-pill pa-3" Size="Size.Large"
-                               Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">
+                    <MudButton Style="width: 175px; height: 50px;" Class="rounded-pill pa-3" Size="Size.Large" Variant="Variant.Filled" 
+                               Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="@ButtonClick">
                         Empezar
                     </MudButton>
                 </div>
@@ -48,9 +50,7 @@
 @code {
     private bool _hasMetrics = true;
     private UserDto? _user { get; set; }
-    private UserDto? _userFromNutrifoods { get; set; }
-
-
+    
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
@@ -81,7 +81,20 @@
 
         await base.OnInitializedAsync();
     }
-
+    
+    private async Task ButtonClick()
+    {
+        var state = await AuthState.GetAuthenticationStateAsync();
+        var isAuthenticated = state.User.Identity!.IsAuthenticated;
+        if (!isAuthenticated)
+        {
+            Nav.NavigateTo("/Invitado");
+        }
+        else
+        {
+            Nav.NavigateTo("/personaldata");
+        }
+    }
     private void NavigateToData()
     {
         Nav.NavigateTo("/personaldata");
