@@ -25,6 +25,7 @@ builder.Services.AddSingleton<DailyMenuService>();
 builder.Services.AddSingleton<DailyMealPlanService>();
 builder.Services.AddScoped<UserEnergyState>();
 builder.Services.AddScoped<DailyMenuState>();
+builder.Services.AddScoped<DailyConfigurationState>();
 builder.Services.AddHttpClient<IIngredientService, IngredientService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7212/");
