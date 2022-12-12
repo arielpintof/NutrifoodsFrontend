@@ -14,15 +14,15 @@
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
                 <div class="d-flex">
-                    <MudTextField @bind-Value="HeightValue" Class="pa-4" Label="Altura" Variant="Variant.Outlined"
+                    <MudTextField @bind-Value="_heightValue" Class="pa-4" Label="Altura" Variant="Variant.Outlined"
                                   Adornment="Adornment.End" AdornmentText="Centímetros" AdornmentColor="Color.Info"
                                   Required="true" RequiredError="La altura es obligatoria"/>
-                    <MudTextField Class="pa-4" @bind-Value="WeightValue" Label="Peso" Variant="Variant.Outlined"
+                    <MudTextField Class="pa-4" @bind-Value="_weightValue" Label="Peso" Variant="Variant.Outlined"
                                   Adornment="Adornment.End" AdornmentText="Kilogramos" AdornmentColor="Color.Info"
                                   Required="true" RequiredError="El peso es obligatorio"/>
                 </div>
                 <div class="pa-4">
-                    <MudSelect Required="true" Dense="true" @bind-Value="PhysicalValue" Class="pb-4" Label="Actividad Física"
+                    <MudSelect Required="true" Dense="true" @bind-Value="_physicalValue" Class="pb-4" Label="Actividad Física"
                                Variant="Variant.Outlined">
                         @foreach (var item in PhysicalActivityList)
                         {
@@ -47,9 +47,10 @@
     private MudForm? _form;
     private bool _success;
     private string[] _errors = { };
-    private double? WeightValue { get; set; }
-    private int? HeightValue { get; set; }
-    private PhysicalActivityEnum? PhysicalValue { get; set; }
+    private double? _weightValue;
+    private int? _heightValue;
+    private PhysicalActivityEnum? _physicalValue;
+    
     private static IEnumerable<PhysicalActivityEnum> PhysicalActivityList => PhysicalActivityEnum.NonNullValues;
     
     protected override async Task OnInitializedAsync()
@@ -79,7 +80,7 @@
         }
         
         await UserService.SaveMetrics(
-            apiKey, (int) HeightValue!, (double) WeightValue!, PhysicalActivityEnum.FromValue(PhysicalValue).Token);
+            apiKey, (int) _heightValue!, (double) _weightValue!, PhysicalActivityEnum.FromValue(_physicalValue).Token);
 
         await Task.CompletedTask;
     }
