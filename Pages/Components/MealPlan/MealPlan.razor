@@ -93,9 +93,7 @@ else
     private int CalculateLipids() => CalculateNutritionValue(e => (int)e.LipidsTotal);
 
     private int CalculateProteins() => CalculateNutritionValue(e => (int)e.ProteinsTotal);
-
-   
-
+    
     private Dictionary<string, int> TotalMacronutrients()
     {
         var nutrients = new Dictionary<string, int>
