@@ -6,6 +6,7 @@
 @using NutrifoodsFrontend.UtilsFolder.Enums
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using System.Globalization
+@using NutrifoodsFrontend.UtilsFolder.Nutrition
 @inject DailyMenuState DailyMenuState
 @inject AuthenticationStateProvider AuthState
 @inject DailyConfigurationState DailyConfigurationState
@@ -79,8 +80,6 @@ else
     private HttpResponseMessage? MealPlanResponse { get; set; }
     private DailyMealPlanDto? mealPlan { get; set; }
     private List<DailyMenuDto>? MealMenus { get; set; }
-    private DateTime dateDisplay;
-    private string userDate;
 
     [Parameter]
     public int GuestEnergy { get; set; }
@@ -95,16 +94,7 @@ else
 
     private int CalculateProteins() => CalculateNutritionValue(e => (int)e.ProteinsTotal);
 
-    private async Task CalculateAge()
-    {
-        var state = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var userResponse = await UserService.Find(apiKey);
-        var userContent = await userResponse.Content.ReadFromJsonAsync<UserDto>();
-        userDate = userContent.UserData.Birthdate;
-        dateDisplay = DateTime.ParseExact(userContent.UserData.Birthdate, "yyyy-MM-dd", CultureInfo.CurrentCulture).Date;
-    //Age = DateOnlyUtils.Difference(DateOnlyUtils.ToDateOnly(userDate), Interval.Years);
-    }
+   
 
     private Dictionary<string, int> TotalMacronutrients()
     {
@@ -122,15 +112,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         var state = await AuthState.GetAuthenticationStateAsync();
+        var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
         var isAuthenticated = state.User.Identity is { IsAuthenticated: true };
-        var userEnergy = isAuthenticated ? 3000 : UserEnergyState.Property;
+        var userEnergy = isAuthenticated ? await CalculateUserEnergy(apiKey) : UserEnergyState.Property;
 
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
             userEnergy, true, Satiety.Filling, Satiety.Normal);
 
         mealPlan = await MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
         MealMenus = mealPlan?.DailyMenus.ToList();
-
+        
         await base.OnInitializedAsync();
     }
 
@@ -155,5 +146,19 @@ else
         MealMenus = temp.ToList();
     }
 
+    private async Task<double> CalculateUserEnergy(string apiKey)
+    {
+        var userResponse = await UserService.Find(apiKey);
+        var userContent = await userResponse.Content.ReadFromJsonAsync<UserDto>();
+        var userDate = DateTime.ParseExact(userContent.UserData.Birthdate, "dd/MM/yyyy", CultureInfo.CurrentCulture);
+        var birthDate = DateOnlyUtils.ToDateOnly(userDate);
+        var userAge = DateOnlyUtils.Difference(birthDate, Interval.Years);
+        var userGender = GenderEnum.FromName(userContent.UserData.Gender);
+        var userWeight = userContent.UserBodyMetrics.Select(x => x.Weight).FirstOrDefault();
+        var userHeight = userContent.UserBodyMetrics.Select(x => x.Height).FirstOrDefault();
+        var userActivity = PhysicalActivityEnum.FromReadableName(userContent.UserBodyMetrics.Select(x => x.PhysicalActivity).FirstOrDefault());
+        
+        return TotalMetabolicRate.Calculate(userGender!, userWeight, userHeight, userAge, userActivity!);
+        
+    }
 }
-
