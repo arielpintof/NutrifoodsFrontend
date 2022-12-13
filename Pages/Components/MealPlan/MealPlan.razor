@@ -70,6 +70,11 @@ else
                     </div>
                 </NotAuthorized>
             </AuthorizeView>
+            
+            @if (PhysicalActivity != null)
+            {
+            <MudChip>@PhysicalActivity</MudChip>              
+            }
         </MudContainer>
     }
 }
@@ -80,6 +85,7 @@ else
     private HttpResponseMessage? MealPlanResponse { get; set; }
     private DailyMealPlanDto? mealPlan { get; set; }
     private List<DailyMenuDto>? MealMenus { get; set; }
+    private PhysicalActivityEnum PhysicalActivity;
 
     [Parameter]
     public int GuestEnergy { get; set; }
@@ -111,7 +117,7 @@ else
     {
         var state = await AuthState.GetAuthenticationStateAsync();
         var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var isAuthenticated = state.User.Identity is { IsAuthenticated: true };
+        var isAuthenticated = state.User.Identity.IsAuthenticated;
         var userEnergy = isAuthenticated ? await CalculateUserEnergy(apiKey) : UserEnergyState.Property;
 
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
@@ -151,12 +157,13 @@ else
         var userDate = DateTime.ParseExact(userContent.UserData.Birthdate, "dd/MM/yyyy", CultureInfo.CurrentCulture);
         var birthDate = DateOnlyUtils.ToDateOnly(userDate);
         var userAge = DateOnlyUtils.Difference(birthDate, Interval.Years);
-        var userGender = GenderEnum.FromName(userContent.UserData.Gender);
-        var userWeight = userContent.UserBodyMetrics.Select(x => x.Weight).FirstOrDefault();
-        var userHeight = userContent.UserBodyMetrics.Select(x => x.Height).FirstOrDefault();
-        var userActivity = PhysicalActivityEnum.FromReadableName(userContent.UserBodyMetrics.Select(x => x.PhysicalActivity).FirstOrDefault());
+        var userGender = GenderEnum.FromReadableName(userContent.UserData.Gender);
+        var bodyMetric = userContent.UserBodyMetrics.OrderByDescending(x => x.AddedOn).First();
+        var userWeight = bodyMetric.Weight;
+        var userHeight = bodyMetric.Height;
+        //var userActivity = PhysicalActivityEnum.FromReadableName(bodyMetric.PhysicalActivity);
         
-        return TotalMetabolicRate.Calculate(userGender!, userWeight, userHeight, userAge, userActivity!);
+        return TotalMetabolicRate.Calculate(userGender!, userWeight, userHeight, userAge, PhysicalActivityEnum.Active);
         
     }
 }
