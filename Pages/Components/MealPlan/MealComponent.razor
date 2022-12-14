@@ -2,6 +2,7 @@
 @using NutrifoodsFrontend.Data.State
 @using NutrifoodsFrontend.Services
 @using NutrifoodsFrontend.UtilsFolder.Enums
+@using NutrifoodsFrontend.UtilsFolder.ToolTip
 @inject DailyMenuState DailyMenuState
 @inject IDailyMenuService DailyMenuService
 @inject AuthenticationStateProvider AuthState
@@ -14,7 +15,9 @@
                 <MudText Class="pl-3" Typo="Typo.h6">@MealType</MudText>
                 <AuthorizeView>
                     <Authorized>
-                        <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                        <MudTooltip Text="@InfoMessage.RegenerateMealMenu(MealType)" Arrow="true" Placement="Placement.Right">
+                            <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                        </MudTooltip>
                     </Authorized>
                 </AuthorizeView>
             </div>
