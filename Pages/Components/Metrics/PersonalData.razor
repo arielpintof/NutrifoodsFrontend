@@ -79,8 +79,8 @@
             .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
 
         var findUserResponse = await UserService.Find(apiKey);
-        var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
-        if (userContent.UserData != null)
+        var userContent = await findUserResponse!.Content.ReadFromJsonAsync<UserDto>();
+        if (userContent!.UserData != null)
         {
             NavigationManager.NavigateTo("/body");
         }
@@ -96,15 +96,15 @@
             .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
 
         var findUserResponse = await UserService.Find(apiKey);
-        if (findUserResponse.IsSuccessStatusCode)
+        if (findUserResponse!.IsSuccessStatusCode)
         {
             var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
-            if (userContent.UserData != null)
+            if (userContent!.UserData != null)
                 return;
         }
 
         await UserService.SavePersonalData(
-            apiKey, _date.Value.ToString("yyyy-MM-dd"), GenderEnum.FromValue(GenderValue).Token, Name,
+            apiKey, _date!.Value.ToString("yyyy-MM-dd"), GenderEnum.FromValue(GenderValue).Token, Name,
             LastName, Diet.None, IntendedUseEnum.FromValue(IntendedUseValue).Token,
             UpdateFrequencyEnum.FromValue(UpdateFrequencyValue).Token);
 
