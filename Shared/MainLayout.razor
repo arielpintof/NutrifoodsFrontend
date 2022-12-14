@@ -6,7 +6,7 @@
 
 <MudLayout>
     <MudAppBar Elevation="0" Class="px-10">
-       <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+       <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(((e) => DrawerToggle()))" />
        <MudSpacer />
        <AccessControl></AccessControl>
        
@@ -18,9 +18,7 @@
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        
-            @Body
-        
+        @Body
     </MudMainContent>
 </MudLayout>
 

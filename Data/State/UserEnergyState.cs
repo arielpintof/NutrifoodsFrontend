@@ -2,14 +2,14 @@
 {
     public class UserEnergyState
     {
-        private double _savedUserData;
+        private double _savedUserEnergy;
 
         public double Property
         {
-            get => _savedUserData;
+            get => _savedUserEnergy;
             set
             {
-                _savedUserData = value;
+                _savedUserEnergy = value;
                 NotifyStateChanged();
             }
         }

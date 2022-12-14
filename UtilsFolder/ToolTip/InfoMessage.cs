@@ -5,6 +5,11 @@
         public const string DailyConfiguration = "Modifica la cantidad de comidas y sus contundencias";
 
         public const string UserWarning = "Tu proceso de registro está incompleto";
+        
+        public static string RegenerateMealMenu(string mealType)
+        {
+            return $"Regenera para obtener nuevas recetas de {mealType}";
+        }
 
 
         public const string IndexImage =
