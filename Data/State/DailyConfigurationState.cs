@@ -5,7 +5,7 @@ namespace NutrifoodsFrontend.Data.State;
 
 public class DailyConfigurationState
 {
-    private DailyConfigurationDto _savedDailyConfiguration;
+    private DailyConfigurationDto _savedDailyConfiguration = null!;
 
     public DailyConfigurationDto Property
     {
