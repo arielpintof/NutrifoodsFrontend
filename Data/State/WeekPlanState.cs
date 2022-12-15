@@ -18,13 +18,15 @@ namespace NutrifoodsFrontend.Data.State
         }
         public void AddDailyMealPlan(DailyMealPlanDto dailyMealPlan)
         {
-            if(_weekPlan.Count >= 7)
+            if (_weekPlan.Count < 7)
+            {
+                _weekPlan.Add(dailyMealPlan);
+                NotifyStateChanged();
+            }
+            else
             {
                 throw new Exception("La lista de planes ya está completa (7 elementos)");
             }
-
-            _weekPlan.Add(dailyMealPlan);
-            NotifyStateChanged();
         }
         public event Action? OnChange;
 

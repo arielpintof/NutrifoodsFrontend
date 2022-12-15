@@ -126,6 +126,7 @@ else
 
         await base.OnInitializedAsync();
         await JsRuntime.InvokeVoidAsync("OnScrollEvent");
+        
     }
 
     private void DailyMenuChanged()
@@ -180,8 +181,13 @@ else
         var nextDay = Date.AddDays(1);
         Date = nextDay;
         await OnInitializedAsync();
+        
         await JsRuntime.InvokeVoidAsync("OnScrollEvent");
         
+        
     }
+    
+    
+    
 
 }
