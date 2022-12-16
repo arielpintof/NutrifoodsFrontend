@@ -6,8 +6,6 @@
 @using NutrifoodsFrontend.Services
 @using UtilsFolder.Enums;
 @inject DailyConfigurationState DailyConfigurationState
-@inject AuthenticationStateProvider AuthState
-@inject IDailyMealPlanService DailyMealPlanService
 @implements IDisposable
 
 <MudDialog>
@@ -29,7 +27,7 @@
                                          UnCheckedColor="Color.Default" Class="mr-3">
                                 Desayuno
                             </MudCheckBox>
-                            <MudSelect Disabled="_breakfastSelectDisableValue" @bind-Value="_breakfastSatiety" Dense="true" Label="Contundencia"
+                            <MudSelect Disabled="_breakfastSelectDisableValue" @bind-Value="BreakfastSatiety" Dense="true" Label="Contundencia"
                                        AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
                                 @foreach (var item in SatietyEnumList)
                                 {
@@ -56,7 +54,7 @@
                                          Class="mr-11">
                                 Cena
                             </MudCheckBox>
-                            <MudSelect Disabled="_dinnerSelectDisableValue" @bind-Value="_dinnerSatiety" Dense="true" Label="Contundencia"
+                            <MudSelect Disabled="_dinnerSelectDisableValue" @bind-Value="DinnerSatiety" Dense="true" Label="Contundencia"
                                        AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
                                 @foreach (var item in SatietyEnumList)
                                 {
@@ -105,8 +103,7 @@
     private bool _breakfastCheckBoxDisableValue;
     private bool _dinnerCheckBoxDisableValue;
     private bool _snackCheckBoxDisableValue;
-    private MealTypeEnum? MealType;
-    
+
     private SnackEnum? _snackSatiety;
     
     [Parameter]
@@ -118,9 +115,9 @@
 
     private static SatietyEnum? LaunchSatiety { get; set; } = SatietyEnum.Filling;
     
-    private static SatietyEnum? _breakfastSatiety { get; set; } = SatietyEnum.Filling;
+    private static SatietyEnum? BreakfastSatiety { get; set; } = SatietyEnum.Filling;
     
-    private static SatietyEnum? _dinnerSatiety { get; set; } = SatietyEnum.Normal;
+    private static SatietyEnum? DinnerSatiety { get; set; } = SatietyEnum.Normal;
 
     private static IEnumerable<SatietyEnum> SatietyEnumList => SatietyEnum.NonNullValues;
 
@@ -137,8 +134,8 @@
     private async Task ChangePropertyValue()
     {
         var isLaunchFilling = LaunchSatiety == SatietyEnum.Filling;
-        var breakfastSatiety = _breakfastCheck ? _breakfastSatiety.Token : Satiety.None;
-        var dinnerSatiety = _dinnerCheck ? _breakfastSatiety.Token : Satiety.None;
+        var breakfastSatiety = _breakfastCheck ? BreakfastSatiety!.Token : Satiety.None;
+        var dinnerSatiety = _dinnerCheck ? BreakfastSatiety!.Token : Satiety.None;
 
         var dailyConfiguration = new DailyConfigurationDto
         {
@@ -187,7 +184,7 @@
     {
         if (!isChecked || _mealsQuantity != 2) return;
         _dinnerCheck = false;
-        _dinnerSatiety = SatietyEnum.Normal;
+        DinnerSatiety = SatietyEnum.Normal;
         _dinnerSelectDisableValue = true;
         _breakfastSelectDisableValue = false;
     }
@@ -198,7 +195,7 @@
         _breakfastCheck = false;
         _breakfastSelectDisableValue = true;
         _dinnerSelectDisableValue = false;
-        _breakfastSatiety = SatietyEnum.Normal;
+        BreakfastSatiety = SatietyEnum.Normal;
     }
 
     void QuantityCheck(int quantity)
