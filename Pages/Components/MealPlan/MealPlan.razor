@@ -11,15 +11,13 @@
 @inject UserEnergyState UserEnergyState
 @inject IDailyMealPlanService MealPlanService
 @inject IUserService UserService
-@inject ISnackbar Snackbar
-@inject WeekPlanState WeekPlanState
 
-@if (MealPlanResponse == null)
+@if (MealPlanResponse is null)
 {
     <MudContainer MaxWidth="MaxWidth.Small">
         <div class="d-flex justify-center align-content-center mt-10">
             <MudProgressCircular Class="mr-2" Color="Color.Primary" Indeterminate="true"/>
-            <MudText Typo="Typo.h6">Estamos generando tu Plan Alimentario</MudText>
+            <MudText Typo="Typo.h6">@InfoMessage.MealPlanLoading</MudText>
         </div>
     </MudContainer>
 }
@@ -32,16 +30,6 @@ else
     else
     {
         <MudContainer Class="mt-3" MaxWidth="MaxWidth.Small">
-            <AuthorizeView>
-                <Authorized>
-                    <div class="d-flex flex-column align-center">
-                        <MudText Typo="Typo.h5" Class="text-center">Plan Alimenticio semanal</MudText>
-                        <MudText Typo="Typo.h5" Class="text-center">@DayOfTheWeek.ReadableName @Date.Day</MudText>
-                    </div>
-
-                </Authorized>
-            </AuthorizeView>
-
             <CaloriesTotal Macronutrients="TotalMacronutrients()" OnDailyConfigurationChanged="DailyConfigurationChanged"/>
             @foreach (var menu in DailyMealPlan!.DailyMenus)
             {
@@ -53,12 +41,12 @@ else
             <AuthorizeView>
                 <Authorized>
                     <div class="d-flex justify-space-between mt-3 mb-3">
-                        <MudButton Style="width: 175px; height: 50px;" Class="pa-3 rounded-pill" Size="Size.Large" Variant="Variant.Filled"
-                                   Color="Color.Primary" @onclick="async () => await DailyMealPlanConfirmation()">
+                        <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
+                                   Color="Color.Primary">
                             Confirmar
                         </MudButton>
                         
-                        <MudButton Style="width: 175px; height: 50px;" Class="pa-3 rounded-pill" Size="Size.Large" Variant="Variant.Filled"
+                        <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
                                    Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="OnInitializedAsync">
                             Regenerar
                         </MudButton>
@@ -66,7 +54,7 @@ else
                 </Authorized>
                 <NotAuthorized>
                     <div class="d-flex justify-end mt-3 mb-3">
-                        <MudButton Style="width: 175px; height: 50px;" Class="pa-3 rounded-pill" Size="Size.Large" Variant="Variant.Filled"
+                        <MudButton Style="width: 175px; height: 50px;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
                                    Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="OnInitializedAsync">
                             Regenerar
                         </MudButton>
@@ -78,14 +66,11 @@ else
 }
 
 
-
 @code {
     private HttpResponseMessage? MealPlanResponse { get; set; }
     private DailyMealPlanDto? DailyMealPlan { get; set; }
     [Parameter]
     public int GuestEnergy { get; set; }
-    private DateTime Date { get; set; } = DateTime.Now;
-    private DayOfTheWeekEnum DayOfTheWeek => DayOfTheWeekEnum.FromName(Date.DayOfWeek.ToString());
 
     private Dictionary<string, int> TotalMacronutrients()
     {
@@ -106,6 +91,7 @@ else
         var state = await AuthState.GetAuthenticationStateAsync();
         var isAuthenticated = state.User.Identity is {IsAuthenticated: true };
         double? userEnergy;
+        
         if (isAuthenticated)
         {
             var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
@@ -118,9 +104,11 @@ else
             userEnergy = UserEnergyState.Property;
         }
 
+        var dailyConfiguration = GetDailyConfiguration();
+        
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            (double)userEnergy!, true, Satiety.Filling, Satiety.Normal);
-
+            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner);
+        
         DailyMealPlan = await MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
 
 
@@ -158,7 +146,7 @@ else
         var state = await AuthState.GetAuthenticationStateAsync();
         var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
         var isAuthenticated = state.User.Identity!.IsAuthenticated;
-        var userEnergy = isAuthenticated ? await CalculateUserEnergy(apiKey!) : UserEnergyState.Property;
+        var userEnergy = isAuthenticated ? await GetUserEnergy(apiKey!) : UserEnergyState.Property;
         var dailyConfiguration = DailyConfigurationState.Property;
         var mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
             userEnergy, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner);
@@ -166,28 +154,25 @@ else
         DailyMealPlan = await mealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
     }
 
-    private async Task<double> CalculateUserEnergy(string apiKey)
+    private async Task<double> GetUserEnergy(string apiKey)
     {
         var userResponse = await UserService.Find(apiKey);
         var userContent = await userResponse!.Content.ReadFromJsonAsync<UserDto>();
         return (double)userContent!.TotalMetabolicRate!;
     }
-
-    [JSInvokable]
-    private async Task DailyMealPlanConfirmation()
+    
+    
+    private DailyConfigurationDto GetDailyConfiguration()
     {
-        DailyMealPlan!.DayOfTheWeek = Date.DayOfWeek.ToString();
-        WeekPlanState.AddDailyMealPlan(DailyMealPlan!);
-        var nextDay = Date.AddDays(1);
-        Date = nextDay;
-        await OnInitializedAsync();
-        
-        await JsRuntime.InvokeVoidAsync("OnScrollEvent");
-        
-        
+        var dailyConfigurationDto = DailyConfigurationState.Property;
+        return dailyConfigurationDto is not null ? dailyConfigurationDto : new DailyConfigurationDto
+        {
+            IsLunchFilling = true,
+            Breakfast = Satiety.Filling,
+            Dinner = Satiety.Filling,
+        };
     }
-    
-    
-    
+
+
 
 }
