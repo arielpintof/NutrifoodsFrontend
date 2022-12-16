@@ -5,6 +5,8 @@
         public const string DailyConfiguration = "Modifica la cantidad de comidas y sus contundencias";
 
         public const string UserWarning = "Tu proceso de registro está incompleto";
+
+        public const string MealPlanLoading = "Estamos generando tu Plan Alimentario";
         
         public static string RegenerateMealMenu(string mealType)
         {
