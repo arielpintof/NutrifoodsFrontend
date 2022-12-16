@@ -2,37 +2,52 @@
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Data
 @using Services
-@inject IMealPlanService mpService
+@inject IMealPlanService MpService
 
 <MudContainer MaxWidth="MaxWidth.Small">
-    @if(Energy != null){
-        InitData();
-    }
     <MudPaper Class="pa-4" Width="100%" Height="90%">
         <div class="d-flex justify-center mb-5">
             <MudText>Distribución de macronutrientes</MudText>
         </div>
-        <MudChart ChartType="ChartType.Pie" InputData="@_data" @bind-SelectedIndex="_index" InputLabels="@_labels" Width="50%" Height="40%" />
+        <MudChart ChartType="ChartType.Pie" InputData="@_data" @bind-SelectedIndex="_index" InputLabels="@_labels"
+                  Width="50%" Height="40%" LegendPosition="Position.Bottom">
+            
+        </MudChart>
         <MudList>
             <MudListItem Class="pl-5 pr-5">
                 <div class="list-items">
-                    <MudText  Class="text" Typo="Typo.body1">Energía</MudText>
-                    <MudText  Class="text" Typo="Typo.body1">@Energy</MudText>
+                    <MudText Class="text" Typo="Typo.body1">Kilocalorias</MudText>
+                    <MudText Class="text" Typo="Typo.body1">@Energy</MudText>
                 </div>
                 <div class="list-items">
                     <MudText Class="text" Typo="Typo.body1">Carbohidratos</MudText>
-                    <MudText Class="text"  Typo="Typo.body1">@Carbs</MudText>
+                    <MudText Class="text" Typo="Typo.body1">
+                        @{
+                            var value = $"{Carbs}g";
+                        }
+                        @value
+                    </MudText>
                 </div>
                 <div class="list-items">
                     <MudText Class="text" Typo="Typo.body1">Proteínas</MudText>
-                    <MudText  Class="text" Typo="Typo.body1">@Proteins</MudText>
+                    <MudText Class="text" Typo="Typo.body1">
+                        @{
+                            var value = $"{Proteins}g";
+                        }
+                        @value
+                    </MudText>
                 </div>
                 <div class="list-items">
                     <MudText Class="text" Typo="Typo.body1">Lípidos</MudText>
-                    <MudText  Class="text" Typo="Typo.body1">@Lipids</MudText>
+                    <MudText Class="text" Typo="Typo.body1">
+                        @{
+                            var value = $"{Lipids}g";
+                        }
+                        @value
+                    </MudText>
                 </div>
             </MudListItem>
-            
+
         </MudList>
     </MudPaper>
 
@@ -43,44 +58,34 @@
 
     [Parameter]
     public int Energy { get; set; }
+
     [Parameter]
     public int Carbs { get; set; }
+
     [Parameter]
     public int Proteins { get; set; }
+
     [Parameter]
     public int Lipids { get; set; }
+
     private int _index = -1;
     private int _dataSize = 3;
     private double[] _data = new double[3];
     string[] _labels = { "Proteínas", "Carbohidratos", "Lípidos" };
-    private double TotalEnergy { get; set; }
-    private double TotalCarbs { get; set; }
-    private double TotalLipids { get; set; }
-    private double TotalProteins { get; set; }
-
-    [Parameter]
-    public IEnumerable<DailyMenuDto>? MealMenus { get; set; }
-
-    private void CalculateTotals()
+    protected override Task OnInitializedAsync()
     {
-        if (MealMenus == null) return;
-        foreach (var meal in MealMenus)
-        {
-            TotalEnergy += meal.EnergyTotal;
-            TotalCarbs += meal.CarbohydratesTotal;
-            TotalLipids += meal.LipidsTotal;
-            TotalProteins += meal.ProteinsTotal;
-        }
+        InitData();
+        return base.OnInitializedAsync();
     }
+    
 
     private void InitData()
     {
         _data[0] = Convert.ToDouble(Proteins);
         _data[1] = Convert.ToDouble(Carbs);
         _data[2] = Convert.ToDouble(Lipids);
-        
     }
-    
+
 }
 
 <style>

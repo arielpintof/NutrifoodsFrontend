@@ -57,9 +57,9 @@
     {
         var authenticationState = await AuthState.GetAuthenticationStateAsync();
         var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var findUserResponse = await UserService.Find(apiKey);
-        var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
-        if (userContent.UserBodyMetrics.Count() != 0)
+        var findUserResponse = await UserService.Find(apiKey!);
+        var userContent = await findUserResponse!.Content.ReadFromJsonAsync<UserDto>();
+        if (userContent!.UserBodyMetrics.Count() != 0)
         {
             NavigationManager.NavigateTo("/mealplan");
         }
@@ -71,16 +71,16 @@
     {
         var authenticationState = await AuthState.GetAuthenticationStateAsync();
         var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var findUserResponse = await UserService.Find(apiKey);
-        if (findUserResponse.IsSuccessStatusCode)
+        var findUserResponse = await UserService.Find(apiKey!);
+        if (findUserResponse!.IsSuccessStatusCode)
         {
             var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
-            if (userContent.UserBodyMetrics.Count != 0) return;
+            if (userContent!.UserBodyMetrics.Count != 0) return;
             
         }
         
         await UserService.SaveMetrics(
-            apiKey, (int) _heightValue!, (double) _weightValue!, PhysicalActivityEnum.FromValue(_physicalValue).Token);
+            apiKey!, (int) _heightValue!, (double) _weightValue!, PhysicalActivityEnum.FromValue(_physicalValue).Token);
 
    
     }
