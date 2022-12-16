@@ -106,6 +106,7 @@ else
         var userResponse = await UserService.Find(apiKey!);
         var userContent = await userResponse!.Content.ReadFromJsonAsync<UserDto>();
         var userEnergy = userContent!.TotalMetabolicRate;
+        
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
             (double)userEnergy!, true, Satiety.Filling, Satiety.Normal);
 
@@ -168,14 +169,16 @@ else
         var nextDay = Date.AddDays(1);
         Date = nextDay;
         
-        if (TotalDays != 7)
-        {
-            await OnInitializedAsync();
-        }
-        else
+        TotalDays++;
+        if (TotalDays == 7)
         {
             NavigationManager.NavigateTo("/week-plan/confirmation");
         }
+        else
+        {
+            await OnInitializedAsync();
+        }
+        
         await ConfirmationSnackBar();
 
     //await JsRuntime.InvokeVoidAsync("OnScrollEvent");
@@ -183,9 +186,8 @@ else
 
     private Task ConfirmationSnackBar()
     {
-        TotalDays++;
+        
         SnackbarService.Add($"{TotalDays} de 7 días confirmados", Severity.Success, config => { config.SuccessIcon = "check_circle"; });
-
         return Task.CompletedTask;
     }
 
