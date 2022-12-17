@@ -103,34 +103,37 @@
    h1, p {
        color: #545151;
    }
-   .jumbo-background{
-       display: flex;
-       flex-direction: row;
-       justify-content: space-between;
-       align-items: center;
-       margin-left: 3rem;
-       margin-right: 3rem;
-       margin-bottom: auto;
-   }
    @@media screen and (min-width: 601px) {
       h1 {
-          font-size: 2.9rem;
+          font-size: 2.5rem;
       } 
       p {
-          font-size: 1.3rem;
-      }      
+          font-size: 1.5rem;
+      }
       .rounded-pill {
           width: 195px;
           height: 60px;
           font-size: 1rem;
       }
+      .jumbo-background{
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-left: 3rem;
+          margin-right: 3rem;
+          margin-bottom: auto;
+      }
    }
    @@media screen and (max-width: 600px) {
       h1 {
-          font-size: 2.7rem;
+          font-size: 3rem;
       } 
       p {
-          font-size: 1.15rem;
+          font-size: 1.0rem;
+      }
+      .jumbo-background{
+          flex-flow: column wrap;
       }
       .rounded-pill {
           width: 205px;
@@ -139,7 +142,6 @@
       }
    }
    img {
-        display: grid;
         width: 100%;
         height: auto;
    }
