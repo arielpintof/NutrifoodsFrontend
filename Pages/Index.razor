@@ -26,7 +26,7 @@
                         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
                 </Jumbotron>
                 <div class="d-flex mt-6 ">
-                    <MudButton  Style="width: 175px; height: 50px;" Class="rounded-pill pa-3 mud-elevation-10" Size="Size.Large" Variant="Variant.Filled" 
+                    <MudButton Class="rounded-pill pa-3 mud-elevation-10" Size="Size.Large" Variant="Variant.Filled" 
                                Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="@ButtonClick">
                         Empezar
                     </MudButton>
@@ -100,10 +100,6 @@
 
 }
 <style>
-   p {
-       font-size: 1.2rem;
-   }
-       
    h1, p {
        color: #545151;
    }
@@ -114,8 +110,37 @@
        align-items: center;
        margin-left: 3rem;
        margin-right: 3rem;
+       margin-bottom: auto;
    }
-   h1 {
-       font-size: 2.9rem;
-   } 
+   @@media screen and (min-width: 601px) {
+      h1 {
+          font-size: 2.9rem;
+      } 
+      p {
+          font-size: 1.3rem;
+      }      
+      .rounded-pill {
+          width: 195px;
+          height: 60px;
+          font-size: 1rem;
+      }
+   }
+   @@media screen and (max-width: 600px) {
+      h1 {
+          font-size: 2.7rem;
+      } 
+      p {
+          font-size: 1.15rem;
+      }
+      .rounded-pill {
+          width: 205px;
+          height: 90px;
+          font-size: 1.5rem;
+      }
+   }
+   img {
+        display: grid;
+        width: 100%;
+        height: auto;
+   }
 </style>
