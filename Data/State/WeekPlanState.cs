@@ -4,29 +4,13 @@ namespace NutrifoodsFrontend.Data.State
 {
     public class WeekPlanState
     {
-        private List<DailyMealPlanDto> _weekPlan = new();
-
-        public List<DailyMealPlanDto> Property
-        {
-            get => _weekPlan;
-            set
-            {
-                _weekPlan = value;
-                
-                NotifyStateChanged();
-            }
-        }
+        public List<DailyMealPlanDto> WeekPlan { get; } = new();
+        
         public void AddDailyMealPlan(DailyMealPlanDto dailyMealPlan)
         {
-            if (_weekPlan.Count < 7)
-            {
-                _weekPlan.Add(dailyMealPlan);
-                NotifyStateChanged();
-            }
-            else
-            {
-                throw new Exception("La lista de planes ya está completa (7 elementos)");
-            }
+            WeekPlan.Add(dailyMealPlan);
+            NotifyStateChanged();
+
         }
         public event Action? OnChange;
 

@@ -1,0 +1,48 @@
+﻿@page "/week-plan/confirmation"
+@using NutrifoodsFrontend.UtilsFolder.ToolTip
+@using NutrifoodsFrontend.Services
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.Data.State
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthState
+@inject WeekPlanState WeekPlanState
+
+
+@if (UserDto is not null)
+{
+    <MudContainer MaxWidth="MaxWidth.Medium">
+        <h3>@UserDto.UserData!.Name , Este es tu plan semanal</h3>
+
+        <MudCarousel Class="mud-width-full" @ref="_carousel" ItemsSource="@WeekPlanState.WeekPlan" Style="height: 1000px;"
+                     ShowArrows="true" ShowBullets="false" AutoCycle="false">
+            <ItemTemplate>
+                <MudContainer MaxWidth="MaxWidth.ExtraSmall">
+                    @foreach (var menu in context.DailyMenus)
+                    {
+                        <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
+                                       EnergyTotal=@menu.EnergyTotal>
+                        </MealComponent>
+                    }
+
+                </MudContainer>
+            </ItemTemplate>
+        </MudCarousel>
+    </MudContainer>
+}
+
+
+@code {
+    private UserDto? UserDto { get; set; }
+    private MudCarousel<DailyMealPlanDto> _carousel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthState.GetAuthenticationStateAsync();
+        var apiKey = authState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
+        var userResponse = await UserService.Find(apiKey!);
+        UserDto = await userResponse!.Content.ReadFromJsonAsync<UserDto>();
+
+        await base.OnInitializedAsync();
+    }
+
+}

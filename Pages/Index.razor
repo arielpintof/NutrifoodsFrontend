@@ -47,7 +47,7 @@
 
 @code {
     private bool _hasMetrics = true;
-    private UserDto? _user { get; set; }
+    private UserDto? User { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
@@ -60,21 +60,21 @@
         }
 
         var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var findUserResponse = await UserService.Find(apiKey);
-        if (findUserResponse.StatusCode != HttpStatusCode.NotFound)
+        var findUserResponse = await UserService.Find(apiKey!);
+        if (findUserResponse!.StatusCode != HttpStatusCode.NotFound)
         {
-            _user = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
-            _hasMetrics = (_user.UserData != null && _user.UserBodyMetrics.Count != 0);
+            User = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
+            _hasMetrics = (User!.UserData != null && User.UserBodyMetrics.Count != 0);
             return;
         }
 
         var nickName = state.User.Claims.FirstOrDefault(c => c.Type == "nickname")?.Value;
         var email = state.User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-        var saveUserResponse = await UserService.SaveUser(nickName!, email!, apiKey);
+        var saveUserResponse = await UserService.SaveUser(nickName!, email!, apiKey!);
         if (saveUserResponse!.IsSuccessStatusCode)
         {
-            _user = await saveUserResponse.Content.ReadFromJsonAsync<UserDto>();
-            _hasMetrics = (_user.UserData != null && _user.UserBodyMetrics.Count != 0);
+            User = await saveUserResponse.Content.ReadFromJsonAsync<UserDto>();
+            _hasMetrics = (User!.UserData != null && User.UserBodyMetrics.Count != 0);
         }
 
         await base.OnInitializedAsync();

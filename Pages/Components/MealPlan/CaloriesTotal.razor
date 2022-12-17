@@ -55,8 +55,10 @@
     private void OpenDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        var parameters = new DialogParameters();
-        parameters.Add("OnDailyConfigurationChanged", OnDailyConfigurationChanged);
+        var parameters = new DialogParameters
+        {
+            { "OnDailyConfigurationChanged", OnDailyConfigurationChanged }
+        };
         DialogService.Show<DailyConfiguration >("", parameters, options);
         
     }
