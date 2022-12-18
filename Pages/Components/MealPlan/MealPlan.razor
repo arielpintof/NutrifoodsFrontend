@@ -35,7 +35,8 @@ else
             {
                 <div class="mt-3">
                     <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
-                                   EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"/>
+                                   EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"
+                                   IconIsVisible=@IconIsVisible />
                 </div>
             }
             <AuthorizeView>
@@ -71,6 +72,7 @@ else
     private DailyMealPlanDto? DailyMealPlan { get; set; }
     [Parameter]
     public int GuestEnergy { get; set; }
+    private bool IconIsVisible { get; set; } = true;
 
     private Dictionary<string, int> TotalMacronutrients()
     {
@@ -172,7 +174,8 @@ else
             Dinner = Satiety.Filling,
         };
     }
-
+    
+    
 
 
 }
