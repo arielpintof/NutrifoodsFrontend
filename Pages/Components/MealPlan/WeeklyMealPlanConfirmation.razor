@@ -10,23 +10,31 @@
 
 @if (UserDto is not null)
 {
-    <MudContainer MaxWidth="MaxWidth.Medium">
-        <h3>@UserDto.UserData!.Name , Este es tu plan semanal</h3>
+    <MudContainer Class="mt-3" MaxWidth="MaxWidth.Medium">
+        <div class="d-flex flex-column">
+            <div class="d-flex justify-center">
+                <h3>@UserDto.UserData!.Name, este es tu plan semanal</h3>
+            </div>
+            <div>
+                <MudCarousel Class="d-flex mud-width-full" @ref="_carousel" ItemsSource="@WeekPlanState.WeekPlan" Style="height: 1000px;"
+                             ShowArrows="true" ShowBullets="false" AutoCycle="false">
+                    <ItemTemplate >
+                        <MudContainer Class="align-self-center" MaxWidth="MaxWidth.ExtraSmall">
+                            @foreach (var menu in context.DailyMenus)
+                            {
+                                <div class="mt-1">
+                                    <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
+                                                   EnergyTotal=@menu.EnergyTotal IconIsVisible=@IconIsVisible>
+                                    </MealComponent>
+                                </div>
+                            }
+                        </MudContainer>
+                    </ItemTemplate>
+                </MudCarousel>
+            </div>
 
-        <MudCarousel Class="mud-width-full" @ref="_carousel" ItemsSource="@WeekPlanState.WeekPlan" Style="height: 1000px;"
-                     ShowArrows="true" ShowBullets="false" AutoCycle="false">
-            <ItemTemplate>
-                <MudContainer MaxWidth="MaxWidth.ExtraSmall">
-                    @foreach (var menu in context.DailyMenus)
-                    {
-                        <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
-                                       EnergyTotal=@menu.EnergyTotal IconIsVisible=@IconIsVisible>
-                        </MealComponent>
-                    }
+        </div>
 
-                </MudContainer>
-            </ItemTemplate>
-        </MudCarousel>
     </MudContainer>
 }
 
