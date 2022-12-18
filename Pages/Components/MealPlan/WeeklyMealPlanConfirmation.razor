@@ -20,7 +20,7 @@
                     @foreach (var menu in context.DailyMenus)
                     {
                         <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
-                                       EnergyTotal=@menu.EnergyTotal>
+                                       EnergyTotal=@menu.EnergyTotal IconIsVisible=@IconIsVisible>
                         </MealComponent>
                     }
 
@@ -34,6 +34,7 @@
 @code {
     private UserDto? UserDto { get; set; }
     private MudCarousel<DailyMealPlanDto> _carousel;
+    private bool IconIsVisible { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
