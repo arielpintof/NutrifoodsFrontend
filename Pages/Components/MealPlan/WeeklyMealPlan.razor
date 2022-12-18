@@ -114,7 +114,8 @@ else
         var dailyConfiguration = GetDailyConfiguration();
         
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner);
+            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
+            dailyConfiguration.Brunch,dailyConfiguration.Linner);
 
         DailyMealPlan = await MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
 
@@ -155,7 +156,8 @@ else
         var userEnergy = isAuthenticated ? await CalculateUserEnergy(apiKey!) : UserEnergyState.Property;
         var dailyConfiguration = DailyConfigurationState.Property;
         var mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            userEnergy, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner);
+            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
+            dailyConfiguration.Brunch,dailyConfiguration.Linner);
 
         DailyMealPlan = await mealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
     }
@@ -196,8 +198,10 @@ else
         return dailyConfigurationDto is not null ? dailyConfigurationDto : new DailyConfigurationDto
         {
             IsLunchFilling = true,
-            Breakfast = Satiety.Filling,
-            Dinner = Satiety.Filling,
+            Breakfast = Satiety.Normal,
+            Dinner = Satiety.Normal,
+            Brunch = false,
+            Linner = false
         };
     }
 

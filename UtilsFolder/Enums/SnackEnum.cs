@@ -13,13 +13,17 @@ public class SnackEnum : SmartEnum<SnackEnum>
 
     public static readonly SnackEnum Linner =
         new(nameof(Linner), (int) Snack.Linner, Snack.Linner, "Después de almuerzo");
+    
+    public static readonly SnackEnum Both =
+        new(nameof(Both), (int) Snack.Both, Snack.Both, "Antes y después de almuerzo");
 
     private static readonly IDictionary<Snack, SnackEnum> TokenDictionary =
         new Dictionary<Snack, SnackEnum>
         {
             {Snack.None, None},
             {Snack.Brunch, Brunch},
-            {Snack.Linner, Linner}
+            {Snack.Linner, Linner},
+            {Snack.Both, Both}
         }.ToImmutableDictionary();
 
     private static readonly IDictionary<string, SnackEnum> ReadableNameDictionary = TokenDictionary
@@ -50,5 +54,6 @@ public enum Snack
 {
     None = 0,
     Brunch = 1,
-    Linner = 2
+    Linner = 2,
+    Both = 3
 }

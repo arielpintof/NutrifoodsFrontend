@@ -113,7 +113,7 @@
 
     private bool _launchCheck = true;
 
-    private static SatietyEnum? LaunchSatiety { get; set; } = SatietyEnum.Filling;
+    private static SatietyEnum? LaunchSatiety { get; set; } = SatietyEnum.Normal;
     
     private static SatietyEnum? BreakfastSatiety { get; set; } = SatietyEnum.Filling;
     
@@ -123,8 +123,9 @@
 
     private static IEnumerable<SatietyEnum> LunchSatietyEnumList => SatietyEnum.NonNullValues.Skip(1);
 
-    private static IEnumerable<SnackEnum> SnackEnumList => SnackEnum.NonNullValues;
+    public IEnumerable<SnackEnum> SnackEnumList = SnackEnum.NonNullValues;
     
+
     protected override Task OnInitializedAsync()
     {
         QuantityCheck(_mealsQuantity);
@@ -136,18 +137,30 @@
         var isLaunchFilling = LaunchSatiety == SatietyEnum.Filling;
         var breakfastSatiety = _breakfastCheck ? BreakfastSatiety!.Token : Satiety.None;
         var dinnerSatiety = _dinnerCheck ? BreakfastSatiety!.Token : Satiety.None;
-
+        bool brunch, linner;
+        if (_snackSatiety!.Token == Snack.Both)
+        {
+            brunch = true;
+            linner = true;
+        }
+        else
+        {
+            brunch = _snackCheck && _snackSatiety!.Token == Snack.Brunch;
+            linner = _snackCheck && _snackSatiety!.Token == Snack.Linner;
+        }
+        
         var dailyConfiguration = new DailyConfigurationDto
         {
             IsLunchFilling = isLaunchFilling,
             Breakfast = breakfastSatiety,
-            Dinner = dinnerSatiety
+            Dinner = dinnerSatiety,
+            Brunch = brunch,
+            Linner = linner
         };
         
         DailyConfigurationState.Property = dailyConfiguration;
         await OnDailyConfigurationChanged.InvokeAsync();
         Submit();
-        
     }
     
     int QuantityTest
@@ -255,6 +268,8 @@
         _breakfastSelectDisableValue = false;
         _dinnerSelectDisableValue = false;
         _snackSelectDisableValue = false;
+        _snackSatiety = SnackEnum.Brunch;
+        SnackEnumList = SnackEnum.NonNullValues.Take(2);
     }
 
     private void FiveMealsConfiguration()
@@ -267,7 +282,8 @@
         _snackCheckBoxDisableValue = true;
         _breakfastSelectDisableValue = false;
         _dinnerSelectDisableValue = false;
-        _snackSelectDisableValue = false;
+        _snackSelectDisableValue = true;
+        _snackSatiety = SnackEnum.Both;
     }
 
 
@@ -275,6 +291,7 @@
     MudDialogInstance? MudDialog { get; set; }
 
     private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+    
     private void Cancel() => MudDialog?.Cancel();
     
     protected override void OnInitialized() => DailyConfigurationState.OnChange += StateHasChanged;
