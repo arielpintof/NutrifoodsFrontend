@@ -9,15 +9,19 @@
 @implements IDisposable
 
 <MudStack>
-    <MudPaper Class="pa-4" Style="background-color: #F8F4F4" Width="100%" Height="50%">
+    <MudPaper Class="pa-4" Style="background-color: #FFFFFF" Width="100%" Height="50%">
         <MudStack>
             <div Class="d-flex justify-space-between align-center flex-grow-1" Elevation="0">
                 <MudText Class="pl-3" Typo="Typo.h6">@MealType</MudText>
                 <AuthorizeView>
                     <Authorized>
-                        <MudTooltip Text="@InfoMessage.RegenerateMealMenu(MealType)" Arrow="true" Placement="Placement.Right">
-                            <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
-                        </MudTooltip>
+                        @if (IconIsVisible)
+                        {
+                            <MudTooltip Text="@InfoMessage.RegenerateMealMenu(MealType)" Arrow="true" Placement="Placement.Right">
+                                <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                            </MudTooltip> 
+                        }
+                        
                     </Authorized>
                 </AuthorizeView>
             </div>
@@ -58,6 +62,9 @@
 
     [Parameter]
     public EventCallback OnDailyMenuChanged { get; set; }
+    
+    [Parameter]
+    public bool IconIsVisible { get; set; }
 
     protected override void OnInitialized() => DailyMenuState.OnChange += StateHasChanged;
 
