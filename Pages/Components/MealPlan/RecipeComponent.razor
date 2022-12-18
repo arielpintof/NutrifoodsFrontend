@@ -1,24 +1,69 @@
 ﻿@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.UtilsFolder.Csv
+@inject IWebHostEnvironment HostingEnvironment
 
-<div class="justify-content-start d-flex mr-0">
+<div class="justify-content-start d-flex mr-0 mt-1 mb-1">
     <div class="d-flex mr-3">
-        <MudAvatar Square="true" Variant="Variant.Outlined">
-            <MudIcon Icon="@Icons.Filled.Image" />
-        </MudAvatar>
+        <MudImage Width="50" Height="50" Src="@GetImage(Name!)" Class="rounded-lg  align-self-start"/>
     </div>
 
-    <MudStack Spacing="0">
-        <MudText Color="Color.Dark" Typo="Typo.body2"><b>@Name</b></MudText>
-        <MudText Typo="Typo.body2">Porciones: @Quantity</MudText>
+    <MudStack Class="align-self-center" Spacing="0">
+        <MudText Color="Color.Dark" Class="food-font">
+            <b>@Name</b>
+        </MudText>
+        <MudText Class="portion-font">Porciones: @Quantity</MudText>
     </MudStack>
 
 </div>
 
 @code {
 
-    [Parameter] 
+    [Parameter]
     public string? Name { get; set; }
-    [Parameter] 
+
+    [Parameter]
     public int Quantity { get; set; }
 
+
+    private static readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data","Recipes", "ImgCsv.csv");
+    
+    private string? GetImage(string key)
+    {
+        return Recipes.TryGetValue(key, out var value) ? value : null;
+    }
+
+    private static Dictionary<string, string> Recipes => InitializeDictionary();
+
+    private static Dictionary<string, string> InitializeDictionary()
+    {
+        var dictionary = new Dictionary<string, string>();
+        using var reader = new StreamReader(FilePath);
+        while (!reader.EndOfStream)
+        {
+            var line = reader.ReadLine();
+            var parts = line.Split(';');
+            var key = parts[0];
+            var value = parts[1];
+            dictionary.TryAdd(key, value);
+        }
+
+        return dictionary;
+    }
+    
 }
+
+<style>
+    .food-font{
+        font-size: 14px;
+        line-height: 15px;
+        font-weight: 600;
+        color: #2d303c;
+    }
+    
+    .portion-font{
+        font-size: 13px;
+        line-height: 15px;
+        font-weight: 400;
+        color: #2d303c;
+    }
+</style>

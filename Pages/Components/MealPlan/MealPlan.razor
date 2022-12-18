@@ -14,7 +14,7 @@
 
 @if (MealPlanResponse is null)
 {
-    <MudContainer MaxWidth="MaxWidth.Small">
+    <MudContainer>
         <div class="d-flex justify-center align-content-center mt-10">
             <MudProgressCircular Class="mr-2" Color="Color.Primary" Indeterminate="true"/>
             <MudText Typo="Typo.h6">@InfoMessage.MealPlanLoading</MudText>
@@ -33,9 +33,10 @@ else
             <CaloriesTotal Macronutrients="TotalMacronutrients()" OnDailyConfigurationChanged="DailyConfigurationChanged"/>
             @foreach (var menu in DailyMealPlan!.DailyMenus)
             {
-                <div class="mt-3">
+                <div class="mt-1">
                     <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
-                                   EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"/>
+                                   EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"
+                                   IconIsVisible=@IconIsVisible />
                 </div>
             }
             <AuthorizeView>
@@ -71,6 +72,7 @@ else
     private DailyMealPlanDto? DailyMealPlan { get; set; }
     [Parameter]
     public int GuestEnergy { get; set; }
+    private bool IconIsVisible { get; set; } = true;
 
     private Dictionary<string, int> TotalMacronutrients()
     {
@@ -107,7 +109,8 @@ else
         var dailyConfiguration = GetDailyConfiguration();
         
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner);
+            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
+            dailyConfiguration.Brunch,dailyConfiguration.Linner);
         
         DailyMealPlan = await MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
 
@@ -149,7 +152,8 @@ else
         var userEnergy = isAuthenticated ? await GetUserEnergy(apiKey!) : UserEnergyState.Property;
         var dailyConfiguration = DailyConfigurationState.Property;
         var mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            userEnergy, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner);
+            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
+            dailyConfiguration.Brunch,dailyConfiguration.Linner);
 
         DailyMealPlan = await mealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
     }
@@ -168,11 +172,14 @@ else
         return dailyConfigurationDto is not null ? dailyConfigurationDto : new DailyConfigurationDto
         {
             IsLunchFilling = true,
-            Breakfast = Satiety.Filling,
-            Dinner = Satiety.Filling,
+            Breakfast = Satiety.Normal,
+            Dinner = Satiety.Normal,
+            Brunch = false,
+            Linner = false
         };
     }
-
+    
+    
 
 
 }

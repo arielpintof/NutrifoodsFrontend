@@ -1,6 +1,7 @@
 ﻿@page "/Body"
 @using UtilsFolder.Enums
 @using UtilsFolder.ToolTip
+@using UtilsFolder.Nutrition
 @using NutrifoodsFrontend.Services
 @using NutrifoodsFrontend.Data.Dto
 @inject AuthenticationStateProvider AuthState
@@ -8,7 +9,7 @@
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 
-<MudContainer MaxWidth="MaxWidth.Small">
+<MudContainer Class="mt-6" MaxWidth="MaxWidth.Small">
     <MudPaper>
         <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
             <div class="d-flex flex-column pa-4">
@@ -29,7 +30,20 @@
                             <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
                         }
                     </MudSelect>
-
+                    
+                    @if(_heightValue is not null && _weightValue is not null)
+                    {
+                        <div class="pa-4 d-flex flex-column">
+                            <div class="d-flex justify-center">
+                                <MudText Typo="Typo.h6">Tú IMC es</MudText>
+                            </div>
+                            <div class="d-flex justify-center">
+                                <MudChip Size="Size.Large" Color="GetColorFromBmi(BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_weightValue, (int)_heightValue))">
+                                    @BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_weightValue, (int)_heightValue)
+                                </MudChip>
+                            </div>
+                        </div>
+                    }
                     <div class="mt-5">
                         <MudButton Class="pa-3" Disabled="@(!_success)" Variant="Variant.Filled" Color="Color.Primary"
                                    Href="https://localhost:5001/mealplan" OnClick="async () => await SaveBodyMeasures()" FullWidth="true">
@@ -39,7 +53,6 @@
                 </div>
             </div>
         </MudForm>
-
     </MudPaper>
 </MudContainer>
 
@@ -81,9 +94,19 @@
         
         await UserService.SaveMetrics(
             apiKey!, (int) _heightValue!, (double) _weightValue!, PhysicalActivityEnum.FromValue(_physicalValue).Token);
-
-   
+        
     }
 
+    private static Color GetColorFromBmi(double bmi)
+    {
+        return bmi switch
+        {
+            >= 16 and < 18.5 => Color.Warning,
+            >= 18.5 and < 25 => Color.Success,
+            >= 25 and < 30 => Color.Warning,
+            _ => Color.Error
+            };
+    }
+    
 
 }
