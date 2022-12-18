@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.SmartEnum" Version="2.1.0" />
     <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.0.4" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="MudBlazor" Version="6.0.13" />
   </ItemGroup>
 
