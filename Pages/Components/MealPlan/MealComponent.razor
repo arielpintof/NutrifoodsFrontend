@@ -8,25 +8,23 @@
 @inject AuthenticationStateProvider AuthState
 @implements IDisposable
 
-<MudStack>
-    <MudPaper Class="pa-4" Style="background-color: #FFFFFF" Width="100%" Height="50%">
-        <MudStack>
-            <div Class="d-flex justify-space-between align-center flex-grow-1" Elevation="0">
-                <MudText Class="pl-3" Typo="Typo.h6">@MealType</MudText>
-                <AuthorizeView>
-                    <Authorized>
-                        @if (IconIsVisible)
-                        {
-                            <MudTooltip Text="@InfoMessage.RegenerateMealMenu(MealType)" Arrow="true" Placement="Placement.Right">
-                                <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
-                            </MudTooltip> 
-                        }
-                        
-                    </Authorized>
-                </AuthorizeView>
-            </div>
-        </MudStack>
-        <MudList>
+<div class="d-flex flex-column">
+    <MudPaper Class="pl-6 pr-4 pt-2 pb-3" Style="background-color: #FFFFFF" Width="100%" Height="50%">
+        <div Class="d-flex justify-space-between align-center flex-grow-1" Elevation="0">
+            <MudText Class="" Typo="Typo.h6">@MealType</MudText>
+            <AuthorizeView>
+                <Authorized>
+                    @if (IconIsVisible)
+                    {
+                        <MudTooltip Text="@InfoMessage.RegenerateMealMenu(MealType)" Arrow="true" Placement="Placement.Right">
+                            <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                        </MudTooltip>
+                    }
+                </Authorized>
+            </AuthorizeView>
+        </div>
+
+        <div class="d-flex flex-column">
             @if (MenuRecipes == null)
             {
                 <div class="d-flex justify-center">
@@ -37,14 +35,14 @@
             {
                 foreach (var menu in MenuRecipes)
                 {
-                    <MudListItem>
+                    <div>
                         <RecipeComponent Quantity=@menu.Portions Name=@menu.Recipe.Name></RecipeComponent>
-                    </MudListItem>
+                    </div>
                 }
             }
-        </MudList>
+        </div>
     </MudPaper>
-</MudStack>
+</div>
 
 @code {
 
@@ -62,7 +60,7 @@
 
     [Parameter]
     public EventCallback OnDailyMenuChanged { get; set; }
-    
+
     [Parameter]
     public bool IconIsVisible { get; set; }
 
@@ -72,9 +70,7 @@
     {
         MenuRecipes = null;
         var dailyMenuResponse = await DailyMenuService.GenerateDailyMenu(
-            EnergyTotal, 
-            MealTypeEnum.FromReadableName(MealType)!.Token,
-            SatietyEnum.FromReadableName(Satiety)!.Token);
+            EnergyTotal, MealTypeEnum.FromReadableName(MealType)!.Token, SatietyEnum.FromReadableName(Satiety)!.Token);
         var dailyMenuContent = await dailyMenuResponse!.Content.ReadFromJsonAsync<DailyMenuDto?>();
         DailyMenuState.Property = dailyMenuContent!;
         await OnDailyMenuChanged.InvokeAsync();
@@ -82,6 +78,14 @@
 
     public void Dispose() => DailyMenuState.OnChange -= StateHasChanged;
 
-
-
 }
+
+<style>
+    .meal-type-text{
+        font-size: 16px;
+        line-height: 15px;
+        font-weight: 700;
+        color: #2d303c;
+    }
+    
+</style>
