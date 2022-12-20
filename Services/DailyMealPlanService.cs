@@ -15,8 +15,9 @@ public class DailyMealPlanService : IDailyMealPlanService
         bool isLunchFilling, Satiety breakfast, Satiety dinner,
         bool? includeBrunch = false, bool? includeLinner = false, DayOfTheWeek? dayOfWeek = DayOfTheWeek.None)
     {
+        var energy = energyTarget.ToString().Replace(",", ".");
         return await _httpClient.GetAsync(
-            $"api/v1/daily-menus/default-parameters?energyTarget={energyTarget}&isLunchFilling={isLunchFilling}&breakfast={breakfast}&dinner={dinner}&includeBrunch={includeBrunch}&includeLinner={includeLinner}&dayOfWeek={dayOfWeek}");
+            $"api/v1/daily-menus/default-parameters?energyTarget={energy}&isLunchFilling={isLunchFilling}&breakfast={breakfast}&dinner={dinner}&includeBrunch={includeBrunch}&includeLinner={includeLinner}&dayOfWeek={dayOfWeek}");
     }
 
     
