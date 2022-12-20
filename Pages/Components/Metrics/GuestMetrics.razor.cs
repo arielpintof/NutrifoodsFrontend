@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using NutrifoodsFrontend.Data.Dto;
 using NutrifoodsFrontend.UtilsFolder.Enums;
 using NutrifoodsFrontend.UtilsFolder.Nutrition;
@@ -8,7 +9,7 @@ namespace NutrifoodsFrontend.Pages.Components.Metrics;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 // ReSharper disable once FieldCanBeMadeReadOnly.Local
-public partial class GuestMetrics
+public partial class GuestMetrics 
 {
     private MudForm? _form;
     private bool _success;

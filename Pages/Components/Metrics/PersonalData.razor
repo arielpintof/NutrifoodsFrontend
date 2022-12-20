@@ -1,9 +1,6 @@
 ﻿@page "/personaldata"
-@using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using UtilsFolder.Enums
 @using NutrifoodsFrontend.Services
-@using NutrifoodsFrontend.Data.Dto
-@using NutrifoodsFrontend.UtilsFolder.Validation
 @inject AuthenticationStateProvider AuthState
 @inject IUserService UserService
 @inject NavigationManager NavigationManager
@@ -24,9 +21,8 @@
                 <MudDatePicker Required="true" Label="Fecha de Nacimiento" Class="px-3 mt-3" IconSize="Size.Medium" @ref="_picker" DateFormat="dd-MM-yyyy"
                                @bind-Date="_date" DisableToolbar="true" AnchorOrigin="Origin.TopLeft"
                                For="@(() => _date)">
-                    
-                    
                 </MudDatePicker>
+                
                 <div class="pl-3 pr-3 mt-3">
                     <MudSelect Required="true" Dense="true" @bind-Value="_userDataModel.Gender" Class="pb-4" Label="Género"
                                Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" For="@(() => _userDataModel.Gender)">
@@ -65,57 +61,3 @@
 
     </MudPaper>
 </MudContainer>
-
-@code {
-    private bool _success;
-    private string[] _errors = { };
-    private MudForm? _form;
-    private MudDatePicker? _picker;
-    private DateTime? _date = DateTime.Today;
-    private UserDataValidator _userDataValidator = new();
-    // ReSharper disable once FieldCanBeMadeReadOnly.Local
-    private UserDataDto _userDataModel = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authenticationState = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = authenticationState.User.Claims
-            .Where(c => c.Type.Equals(Claims.NameIdentifier))
-            .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
-
-        var findUserResponse = await UserService.Find(apiKey);
-        var userContent = await findUserResponse!.Content.ReadFromJsonAsync<UserDto>();
-        if (userContent!.UserData != null)
-        {
-            NavigationManager.NavigateTo("/body");
-        }
-
-        await base.OnInitializedAsync();
-    }
-
-    private async Task SaveUserData()
-    {
-        var authenticationState = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = authenticationState.User.Claims
-            .Where(c => c.Type.Equals(Claims.NameIdentifier))
-            .Select(c => c.Value).FirstOrDefault() ?? string.Empty;
-
-        var findUserResponse = await UserService.Find(apiKey);
-
-        if (findUserResponse!.IsSuccessStatusCode)
-        {
-            var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
-            if (userContent!.UserData != null)
-                return;
-        }
-
-        await UserService.SavePersonalData(
-            apiKey, _date!.Value.ToString("yyyy-MM-dd"), GenderEnum.FromReadableName(
-                _userDataModel.Gender)!.Token, _userDataModel.Name, _userDataModel.LastName, Diet.None, 
-            IntendedUseEnum.FromReadableName(_userDataModel.IntendedUse!)!.Token,
-            UpdateFrequencyEnum.FromReadableName(_userDataModel.UpdateFrequency!)!.Token);
-    }
-
-
-
-}

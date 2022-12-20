@@ -36,7 +36,7 @@ else
                 <div class="mt-1">
                     <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
                                    EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"
-                                   IconIsVisible=@IconIsVisible />
+                                   IconIsVisible=@IconIsVisible></MealComponent>
                 </div>
             }
             <AuthorizeView>
@@ -46,10 +46,17 @@ else
                                    Color="Color.Primary">
                             Confirmar
                         </MudButton>
-                        
+
                         <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
                                    Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="OnInitializedAsync">
                             Regenerar
+                            <div class="ml-1">
+                                @if (IsLoading)
+                                {
+                                    <MudProgressCircular Size="Size.Small" Color="Color.Success" Indeterminate="true"/>
+                                }
+                            </div>
+
                         </MudButton>
                     </div>
                 </Authorized>
@@ -62,10 +69,11 @@ else
 @code {
     private HttpResponseMessage? MealPlanResponse { get; set; }
     private DailyMealPlanDto? DailyMealPlan { get; set; }
+    private bool IconIsVisible { get; set; } = true;
+    private bool IsLoading { get; set; }
     [Parameter]
     public int GuestEnergy { get; set; }
-    private bool IconIsVisible { get; set; } = true;
-
+    
     private Dictionary<string, int> TotalMacronutrients()
     {
         var nutrients = new Dictionary<string, int>
@@ -81,11 +89,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        IsLoading = true;
         await Task.Delay(2000);
         var state = await AuthState.GetAuthenticationStateAsync();
         var isAuthenticated = state.User.Identity is {IsAuthenticated: true };
         double? userEnergy;
-        
+
         if (isAuthenticated)
         {
             var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
@@ -99,17 +108,18 @@ else
         }
 
         var dailyConfiguration = GetDailyConfiguration();
-        
+
         MealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
-            dailyConfiguration.Brunch,dailyConfiguration.Linner);
-        
+            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner,
+            dailyConfiguration.Brunch, dailyConfiguration.Linner);
+
         DailyMealPlan = await MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
 
 
         await base.OnInitializedAsync();
         await JsRuntime.InvokeVoidAsync("OnScrollEvent");
         
+        IsLoading = false;
     }
 
     private void DailyMenuChanged()
@@ -144,8 +154,8 @@ else
         var userEnergy = isAuthenticated ? await GetUserEnergy(apiKey!) : UserEnergyState.Property;
         var dailyConfiguration = DailyConfigurationState.Property;
         var mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
-            dailyConfiguration.Brunch,dailyConfiguration.Linner);
+            userEnergy, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner,
+            dailyConfiguration.Brunch, dailyConfiguration.Linner);
 
         DailyMealPlan = await mealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
     }
@@ -156,8 +166,8 @@ else
         var userContent = await userResponse!.Content.ReadFromJsonAsync<UserDto>();
         return (double)userContent!.TotalMetabolicRate!;
     }
-    
-    
+
+
     private DailyConfigurationDto GetDailyConfiguration()
     {
         var dailyConfigurationDto = DailyConfigurationState.Property;
@@ -170,8 +180,8 @@ else
             Linner = false
         };
     }
-    
-    
+
+
 
 
 }

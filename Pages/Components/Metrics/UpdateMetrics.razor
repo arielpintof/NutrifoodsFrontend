@@ -64,8 +64,6 @@
     private MudForm? _form;
     private bool _success;
     private string[] _errors = { };
-    private double? _weightValue;
-    private int? _heightValue;
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
     private UserBodyMetricValidator _metricValidator = new();
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
@@ -76,6 +74,7 @@
     {
         var apiKey = await GetApiKey();
         var findUserResponse = await UserService.Find(apiKey!);
+        
         if (findUserResponse!.IsSuccessStatusCode)
         {
             var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
