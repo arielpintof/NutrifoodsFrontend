@@ -4,6 +4,7 @@
 @using UtilsFolder.Nutrition
 @using NutrifoodsFrontend.Services
 @using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.UtilsFolder.Validation
 @inject AuthenticationStateProvider AuthState
 @inject IUserService UserService
 @inject NavigationManager NavigationManager
@@ -11,36 +12,46 @@
 
 <MudContainer Class="mt-6" MaxWidth="MaxWidth.Small">
     <MudPaper>
-        <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
+        <MudForm @ref="_form" Validation="_metricValidator.ValidateValue" @bind-IsValid="@_success" @bind-Errors="@_errors"
+                 Model="_metricModel">
             <div class="d-flex flex-column pa-4">
                 <MudText Typo="Typo.h5" Class="pa-4">Métricas Corporales</MudText>
                 <div class="d-flex">
-                    <MudTextField @bind-Value="_heightValue" Class="pa-4" Label="Altura" Variant="Variant.Outlined"
+                    <MudTextField @bind-Value="_metricModel.Height" Class="pa-4" Label="Altura" Variant="Variant.Outlined"
                                   Adornment="Adornment.End" AdornmentText="Centímetros" AdornmentColor="Color.Info"
-                                  Required="true" RequiredError="La altura es obligatoria"/>
-                    <MudTextField Class="pa-4" @bind-Value="_weightValue" Label="Peso" Variant="Variant.Outlined"
+                                  Required="true" RequiredError="La altura es obligatoria" For="@(() => _metricModel.Height)"/>
+                    <MudTextField Class="pa-4" @bind-Value="_metricModel.Weight" Label="Peso" Variant="Variant.Outlined"
                                   Adornment="Adornment.End" AdornmentText="Kilogramos" AdornmentColor="Color.Info"
-                                  Required="true" RequiredError="El peso es obligatorio"/>
+                                  Required="true" RequiredError="El peso es obligatorio" For="@(() => _metricModel.Weight)"/>
                 </div>
                 <div class="pa-4">
-                    <MudSelect Required="true" Dense="true" @bind-Value="_physicalValue" Class="pb-4" Label="Actividad Física"
-                               Variant="Variant.Outlined">
+                    <MudSelect Required="true" Dense="true" @bind-Value="_metricModel.PhysicalActivity" Class="pb-4"
+                               Label="Actividad Física" Variant="Variant.Outlined" For="@(() => _metricModel.PhysicalActivity)"
+                               AnchorOrigin="Origin.BottomCenter">
                         @foreach (var item in PhysicalActivityList)
                         {
-                            <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                            <MudSelectItem Value="@item.ReadableName">@item.ReadableName</MudSelectItem>
                         }
                     </MudSelect>
-                    
-                    @if(_heightValue is not null && _weightValue is not null)
+
+                    @if (_metricModel.Height is not null && _metricModel.Weight is not null)
                     {
                         <div class="pa-4 d-flex flex-column">
                             <div class="d-flex justify-center">
                                 <MudText Typo="Typo.h6">Tú IMC es</MudText>
                             </div>
-                            <div class="d-flex justify-center">
-                                <MudChip Size="Size.Large" Color="GetColorFromBmi(BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_weightValue, (int)_heightValue))">
-                                    @BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_weightValue, (int)_heightValue)
+                            <div class="d-flex flex-column justify-center">
+                                <MudChip Size="Size.Large" Color="GetColorFromBmi(BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_metricModel.Weight, (int)_metricModel.Height))">
+                                    @BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_metricModel.Weight, (int)_metricModel.Height)
                                 </MudChip>
+                                @{ var bmi = BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_metricModel.Weight, (int)_metricModel.Height); }
+                                @if (bmi is < 16 or > 35)
+                                {
+                                    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" Dense="true" Class="my-2">
+                                        Debido a tus medidas, Nutrifoods no te tiene contemplado como usuario final,
+                                        te recomendamos buscar asesoría de un profesional de la salud
+                                    </MudAlert>
+                                }
                             </div>
                         </div>
                     }
@@ -60,23 +71,24 @@
     private MudForm? _form;
     private bool _success;
     private string[] _errors = { };
-    private double? _weightValue;
-    private int? _heightValue;
-    private PhysicalActivityEnum? _physicalValue;
-    
+    // ReSharper disable once FieldCanBeMadeReadOnly.Local
+    private UserBodyMetricValidator _metricValidator = new();
+    // ReSharper disable once FieldCanBeMadeReadOnly.Local
+    private UserBodyMetricDto _metricModel = new();
+
     private static IEnumerable<PhysicalActivityEnum> PhysicalActivityList => PhysicalActivityEnum.NonNullValues;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var authenticationState = await AuthState.GetAuthenticationStateAsync();
         var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
         var findUserResponse = await UserService.Find(apiKey!);
         var userContent = await findUserResponse!.Content.ReadFromJsonAsync<UserDto>();
-        if (userContent!.UserBodyMetrics.Count() != 0)
+        if (userContent!.UserBodyMetrics.Count != 0)
         {
             NavigationManager.NavigateTo("/mealplan");
         }
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -89,12 +101,11 @@
         {
             var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
             if (userContent!.UserBodyMetrics.Count != 0) return;
-            
         }
-        
+
         await UserService.SaveMetrics(
-            apiKey!, (int) _heightValue!, (double) _weightValue!, PhysicalActivityEnum.FromValue(_physicalValue).Token);
-        
+            apiKey!, (int)_metricModel.Height!, (double)_metricModel.Weight!,
+            PhysicalActivityEnum.FromReadableName(_metricModel.PhysicalActivity)!.Token);
     }
 
     private static Color GetColorFromBmi(double bmi)
@@ -103,10 +114,10 @@
         {
             >= 16 and < 18.5 => Color.Warning,
             >= 18.5 and < 25 => Color.Success,
-            >= 25 and < 30 => Color.Warning,
+            >= 25 and < 35 => Color.Warning,
             _ => Color.Error
             };
     }
-    
+
 
 }
