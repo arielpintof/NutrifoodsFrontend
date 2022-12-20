@@ -11,7 +11,7 @@
         </div>
         <MudChart ChartType="ChartType.Pie" InputData="@_data" @bind-SelectedIndex="_index" InputLabels="@_labels"
                   Width="50%" Height="40%" LegendPosition="Position.Bottom">
-            
+
         </MudChart>
         <MudList>
             <MudListItem Class="pl-5 pr-5">
@@ -47,8 +47,17 @@
                     </MudText>
                 </div>
             </MudListItem>
-
         </MudList>
+        <MudExpansionPanels Elevation="0">
+            <MudExpansionPanel MaxHeight="150">
+                <TitleContent>
+                    <div class="d-flex justify-center">
+                        <MudIcon Icon="@Icons.Filled.Menu" class="mr-3"></MudIcon>
+                        <MudText>Ver más detalles</MudText>
+                    </div>
+                </TitleContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
     </MudPaper>
 
 </MudContainer>
@@ -72,12 +81,13 @@
     private int _dataSize = 3;
     private double[] _data = new double[3];
     string[] _labels = { "Proteínas", "Carbohidratos", "Lípidos" };
+
     protected override Task OnInitializedAsync()
     {
         InitData();
         return base.OnInitializedAsync();
     }
-    
+
 
     private void InitData()
     {

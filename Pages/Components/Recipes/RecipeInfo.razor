@@ -1,0 +1,17 @@
+﻿@using NutrifoodsFrontend.Data.Dto
+<div class="d-flex flex-column">
+    <MudText>@Recipe!.Name</MudText>
+    <MudText>@Recipe!.PreparationTime</MudText>
+    <MudDivider></MudDivider>
+    <div class="d-flex flex-column">
+        
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public RecipeDto? Recipe { get; set; }
+    
+
+}
