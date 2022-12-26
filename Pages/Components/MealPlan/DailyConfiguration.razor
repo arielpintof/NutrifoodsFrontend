@@ -240,6 +240,7 @@
         _dinnerCheckBoxDisableValue = false;
         _snackCheckBoxDisableValue = true;
         _snackSelectDisableValue = true;
+        SnackEnumList = SnackEnum.List;
         _snackSatiety = SnackEnum.None;
     }
 
@@ -254,7 +255,8 @@
         _snackCheck = false;
         _snackCheckBoxDisableValue = true;
         _snackSelectDisableValue = true;
-        _snackSatiety = SnackEnum.FromToken(Snack.None);
+        SnackEnumList = SnackEnum.List;
+        _snackSatiety = SnackEnum.None;
     }
 
     private void FourMealsConfiguration()
@@ -268,8 +270,10 @@
         _breakfastSelectDisableValue = false;
         _dinnerSelectDisableValue = false;
         _snackSelectDisableValue = false;
-        _snackSatiety = SnackEnum.Brunch;
         SnackEnumList = SnackEnum.NonNullValues.Take(2);
+        _snackSatiety = SnackEnum.Brunch;
+       
+        
     }
 
     private void FiveMealsConfiguration()
@@ -283,8 +287,10 @@
         _breakfastSelectDisableValue = false;
         _dinnerSelectDisableValue = false;
         _snackSelectDisableValue = true;
-        _snackSatiety = SnackEnum.Both;
         SnackEnumList = SnackEnum.NonNullValues.Take(3);
+        _snackSatiety = SnackEnum.Both;
+        
+        
         
     }
 
