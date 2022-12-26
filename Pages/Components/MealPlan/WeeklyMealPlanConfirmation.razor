@@ -41,7 +41,7 @@
 
 @code {
     private UserDto? UserDto { get; set; }
-    private MudCarousel<DailyMealPlanDto> _carousel;
+    private MudCarousel<DailyMealPlanDto> _carousel = null!;
     private bool IconIsVisible { get; set; } = false;
 
     protected override async Task OnInitializedAsync()

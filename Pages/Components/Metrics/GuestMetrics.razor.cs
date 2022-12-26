@@ -13,7 +13,7 @@ public partial class GuestMetrics
 {
     private MudForm? _form;
     private bool _success;
-    private string[] _errors = { };
+    private string[] _errors = Array.Empty<string>();
     private GuestUserBodyMetricValidator _metricValidator = new();
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
     private GuestUserDto _metricModel= new();
