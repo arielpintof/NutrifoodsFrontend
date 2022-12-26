@@ -127,7 +127,8 @@ else
     private void DailyMenuChanged()
     {
         var dailyMenu = DailyMenuState.Property;
-        var mealMenus = DailyMealPlan!.DailyMenus.Select(x => x.MealType == dailyMenu.MealType ? dailyMenu : x).ToList();
+        var mealMenus = DailyMealPlan!.DailyMenus
+            .Select(x => x.MealType == dailyMenu.MealType ? dailyMenu : x).ToList();
         var totalMacronutrients = mealMenus.Aggregate(
             new { Energy = 0.0, Carbohydrates = 0.0, Lipids = 0.0, Proteins = 0.0 },
             (acc, x) => new
@@ -180,16 +181,13 @@ else
         TotalDays++;
         if (TotalDays == 7)
         {
+            await Task.Delay(2000);
             NavigationManager.NavigateTo("/week-plan/confirmation");
         }
-        else
-        {
-            await OnInitializedAsync();
-        }
         
+        await OnInitializedAsync();
         await ConfirmationSnackBar();
-
-    //await JsRuntime.InvokeVoidAsync("OnScrollEvent");
+        
     }
     
     private DailyConfigurationDto GetDailyConfiguration()
@@ -207,7 +205,6 @@ else
 
     private Task ConfirmationSnackBar()
     {
-        
         SnackbarService.Add($"{TotalDays} de 7 días confirmados", Severity.Success, config => { config.SuccessIcon = "check_circle"; });
         return Task.CompletedTask;
     }
