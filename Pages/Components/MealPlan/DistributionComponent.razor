@@ -9,7 +9,7 @@
         <div class="d-flex justify-center mb-5">
             <MudText>Distribución de macronutrientes</MudText>
         </div>
-        <MudChart ChartType="ChartType.Pie" InputData="@_data" @bind-SelectedIndex="_index" InputLabels="@_labels"
+        <MudChart ChartType="ChartType.Pie" InputData="@Data" @bind-SelectedIndex="_index" InputLabels="@_labels"
                   Width="50%" Height="40%" LegendPosition="Position.Bottom">
 
         </MudChart>
@@ -19,33 +19,18 @@
                     <MudText Class="text" Typo="Typo.body1">Kilocalorias</MudText>
                     <MudText Class="text" Typo="Typo.body1">@Energy</MudText>
                 </div>
-                <div class="list-items">
-                    <MudText Class="text" Typo="Typo.body1">Carbohidratos</MudText>
-                    <MudText Class="text" Typo="Typo.body1">
-                        @{
-                            var value = $"{Carbs}g";
-                        }
-                        @value
-                    </MudText>
-                </div>
-                <div class="list-items">
-                    <MudText Class="text" Typo="Typo.body1">Proteínas</MudText>
-                    <MudText Class="text" Typo="Typo.body1">
-                        @{
-                            var value = $"{Proteins}g";
-                        }
-                        @value
-                    </MudText>
-                </div>
-                <div class="list-items">
-                    <MudText Class="text" Typo="Typo.body1">Lípidos</MudText>
-                    <MudText Class="text" Typo="Typo.body1">
-                        @{
-                            var value = $"{Lipids}g";
-                        }
-                        @value
-                    </MudText>
-                </div>
+                @foreach(var item in NutrientValues)
+                {
+                    <div class="list-items">
+                        <MudText Class="text" Typo="Typo.body1">@item.Key</MudText>
+                        <MudText Class="text" Typo="Typo.body1">
+                            @{
+                                var value = $"{item.Value}g";
+                            }
+                            @value
+                        </MudText>
+                    </div>
+                }
             </MudListItem>
         </MudList>
         <MudExpansionPanels Elevation="0">
@@ -78,33 +63,28 @@
     public int Lipids { get; set; }
 
     private int _index = -1;
-    private int _dataSize = 3;
-    private double[] _data = new double[3];
-    string[] _labels = { "Proteínas", "Carbohidratos", "Lípidos" };
 
-    protected override Task OnInitializedAsync()
+    private int DataSize => Data.Length;
+
+    private double[] Data => new double[] { Carbs, Proteins,  Lipids };
+
+    private string[] _labels = { "Carbohidratos", "Proteínas", "Lípidos" };
+
+    Dictionary<string, double> NutrientValues => InitializeDataDictionary();
+    private Dictionary<string, double> InitializeDataDictionary()
     {
-        InitData();
-        return base.OnInitializedAsync();
+        var dictionary = new Dictionary<string, double>();
+        for (var i = 0; i < Data.Length; i++)
+        {
+            dictionary.Add(_labels[i], Data[i]);
+        }
+
+        return dictionary;
     }
 
 
-    private void InitData()
-    {
-        _data[0] = Convert.ToDouble(Proteins);
-        _data[1] = Convert.ToDouble(Carbs);
-        _data[2] = Convert.ToDouble(Lipids);
-    }
+
+
+
 
 }
-
-<style>
-    .list-items {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .text {
-        font-size: 1.8vh;
-    }
-</style>
