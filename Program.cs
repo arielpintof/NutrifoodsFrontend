@@ -52,6 +52,7 @@ builder.Services.AddHttpClient<IDailyMealPlanService, DailyMealPlanService>(clie
     client.BaseAddress = new Uri("https://localhost:7212/");
 });
 builder.Services.AddMudServices();
+builder.WebHost.UseStaticWebAssets();
 
 var app = builder.Build();
 
