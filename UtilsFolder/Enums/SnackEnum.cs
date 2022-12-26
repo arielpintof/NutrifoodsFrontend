@@ -6,7 +6,7 @@ namespace NutrifoodsFrontend.UtilsFolder.Enums;
 public class SnackEnum : SmartEnum<SnackEnum>
 {
     public static readonly SnackEnum None =
-        new(nameof(None), (int) Snack.None, Snack.None, string.Empty);
+        new(nameof(None), (int) Snack.None, Snack.None, "Ninguno");
 
     public static readonly SnackEnum Brunch =
         new(nameof(Brunch), (int) Snack.Brunch, Snack.Brunch, "Antes de almuerzo");
