@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
 using NutrifoodsFrontend.Data.State;
 using NutrifoodsFrontend.Services;
+using NutrifoodsFrontend.UtilsFolder.AuthConnection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,7 @@ builder.Services
         options.Domain = builder.Configuration["Auth0:Domain"];
         options.ClientId = builder.Configuration["Auth0:ClientId"];
     });
-
+builder.WebHost.UseStaticWebAssets();
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 // Add services to the container.
@@ -27,6 +28,7 @@ builder.Services.AddScoped<UserEnergyState>();
 builder.Services.AddScoped<DailyMenuState>();
 builder.Services.AddScoped<DailyConfigurationState>();
 builder.Services.AddScoped<WeekPlanState>();
+builder.Services.AddScoped<Connection>();
 builder.Services.AddHttpClient<IIngredientService, IngredientService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7212/");
@@ -52,7 +54,7 @@ builder.Services.AddHttpClient<IDailyMealPlanService, DailyMealPlanService>(clie
     client.BaseAddress = new Uri("https://localhost:7212/");
 });
 builder.Services.AddMudServices();
-builder.WebHost.UseStaticWebAssets();
+
 
 var app = builder.Build();
 
