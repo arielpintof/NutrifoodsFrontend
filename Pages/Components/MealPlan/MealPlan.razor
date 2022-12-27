@@ -2,6 +2,7 @@
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Data.State
 @using NutrifoodsFrontend.Services
+@using NutrifoodsFrontend.UtilsFolder.AuthConnection
 @using NutrifoodsFrontend.UtilsFolder.Enums
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @inject IJSRuntime JsRuntime
@@ -11,6 +12,7 @@
 @inject UserEnergyState UserEnergyState
 @inject IDailyMealPlanService MealPlanService
 @inject IUserService UserService
+@inject Connection Connection
 
 @if (MealPlanResponse is null)
 {
@@ -23,57 +25,51 @@
 }
 else
 {
-    @if (!MealPlanResponse.IsSuccessStatusCode)
-    {
-        <MudText>Error @MealPlanResponse.ReasonPhrase</MudText>
-    }
-    else
-    {
-        <MudContainer Class="mt-3" MaxWidth="MaxWidth.Small">
-            <CaloriesTotal Macronutrients="TotalMacronutrients()" OnDailyConfigurationChanged="DailyConfigurationChanged"/>
-            @foreach (var menu in DailyMealPlan!.DailyMenus)
-            {
-                <div class="mt-1">
-                    <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
-                                   EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"
-                                   IconIsVisible=@IconIsVisible></MealComponent>
+    <MudContainer Class="mt-3" MaxWidth="MaxWidth.Small">
+        <CaloriesTotal Macronutrients="TotalMacronutrients()" OnDailyConfigurationChanged="DailyConfigurationChanged"/>
+        @foreach (var menu in DailyMealPlan!.DailyMenus)
+        {
+            <div class="mt-1">
+                <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
+                               EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"
+                               IconIsVisible=@IconIsVisible>
+                </MealComponent>
+            </div>
+        }
+        <AuthorizeView>
+            <Authorized>
+                <div class="d-flex justify-space-between mt-3 mb-3">
+                    <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
+                               Color="Color.Primary">
+                        Confirmar
+                    </MudButton>
+
+                    <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
+                               Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="OnInitializedAsync">
+                        Regenerar
+                        <div class="ml-1">
+                            @if (IsLoading)
+                            {
+                                <MudProgressCircular Size="Size.Small" Color="Color.Success" Indeterminate="true"/>
+                            }
+                        </div>
+
+                    </MudButton>
                 </div>
-            }
-            <AuthorizeView>
-                <Authorized>
-                    <div class="d-flex justify-space-between mt-3 mb-3">
-                        <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
-                                   Color="Color.Primary">
-                            Confirmar
-                        </MudButton>
-
-                        <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
-                                   Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="OnInitializedAsync">
-                            Regenerar
-                            <div class="ml-1">
-                                @if (IsLoading)
-                                {
-                                    <MudProgressCircular Size="Size.Small" Color="Color.Success" Indeterminate="true"/>
-                                }
-                            </div>
-
-                        </MudButton>
-                    </div>
-                </Authorized>
-            </AuthorizeView>
-        </MudContainer>
-    }
+            </Authorized>
+        </AuthorizeView>
+    </MudContainer>
 }
-
 
 @code {
     private HttpResponseMessage? MealPlanResponse { get; set; }
     private DailyMealPlanDto? DailyMealPlan { get; set; }
     private bool IconIsVisible { get; set; } = true;
     private bool IsLoading { get; set; }
+
     [Parameter]
     public int GuestEnergy { get; set; }
-    
+
     private Dictionary<string, int> TotalMacronutrients()
     {
         var nutrients = new Dictionary<string, int>
@@ -91,14 +87,14 @@ else
     {
         IsLoading = true;
         await Task.Delay(2000);
-        var state = await AuthState.GetAuthenticationStateAsync();
-        var isAuthenticated = state.User.Identity is {IsAuthenticated: true };
+        var state = new Connection(AuthState);
+        var isAuthenticated = await state.IsAuthenticated();
         double? userEnergy;
 
         if (isAuthenticated)
         {
-            var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-            var userResponse = await UserService.Find(apiKey!);
+            var apiKey = await state.GetApiKey();
+            var userResponse = await UserService.Find(apiKey);
             var userContent = await userResponse!.Content.ReadFromJsonAsync<UserDto>();
             userEnergy = userContent!.TotalMetabolicRate;
         }
@@ -118,7 +114,7 @@ else
 
         await base.OnInitializedAsync();
         await JsRuntime.InvokeVoidAsync("OnScrollEvent");
-        
+
         IsLoading = false;
     }
 
@@ -148,10 +144,8 @@ else
 
     private async Task DailyConfigurationChanged()
     {
-        var state = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var isAuthenticated = state.User.Identity!.IsAuthenticated;
-        var userEnergy = isAuthenticated ? await GetUserEnergy(apiKey!) : UserEnergyState.Property;
+        var state = new Connection(AuthState);
+        var userEnergy = await state.IsAuthenticated() ? await GetUserEnergy(await state.GetApiKey()) : UserEnergyState.Property;
         var dailyConfiguration = DailyConfigurationState.Property;
         var mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
             userEnergy, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner,
@@ -180,8 +174,4 @@ else
             Linner = false
         };
     }
-
-
-
-
 }

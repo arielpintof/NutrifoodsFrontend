@@ -2,6 +2,7 @@
 @using NutrifoodsFrontend.Data.Dto
 @using NutrifoodsFrontend.Data.State
 @using NutrifoodsFrontend.Services
+@using NutrifoodsFrontend.UtilsFolder.AuthConnection
 @using NutrifoodsFrontend.UtilsFolder.Enums
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @inject IJSRuntime JsRuntime
@@ -105,9 +106,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(2000);
-        var state = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var userResponse = await UserService.Find(apiKey!);
+        var state = new Connection(AuthState);
+        var userResponse = await UserService.Find(await state.GetApiKey());
         var userContent = await userResponse!.Content.ReadFromJsonAsync<UserDto>();
         var userEnergy = userContent!.TotalMetabolicRate;
         
@@ -151,13 +151,12 @@ else
 
     private async Task DailyConfigurationChanged()
     {
-        var state = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var isAuthenticated = state.User.Identity!.IsAuthenticated;
-        var userEnergy = isAuthenticated ? await CalculateUserEnergy(apiKey!) : UserEnergyState.Property;
+        var state = new Connection(AuthState);
+        var userEnergy = 
+            await state.IsAuthenticated() ? await CalculateUserEnergy(await state.GetApiKey()) : UserEnergyState.Property;
         var dailyConfiguration = DailyConfigurationState.Property;
         var mealPlanResponse = await MealPlanService.GenerateDailyMealPlan(
-            (double)userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
+            userEnergy!, dailyConfiguration.IsLunchFilling, dailyConfiguration.Breakfast, dailyConfiguration.Dinner, 
             dailyConfiguration.Brunch,dailyConfiguration.Linner);
 
         DailyMealPlan = await mealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
@@ -205,7 +204,9 @@ else
 
     private Task ConfirmationSnackBar()
     {
-        SnackbarService.Add($"{TotalDays} de 7 días confirmados", Severity.Success, config => { config.SuccessIcon = "check_circle"; });
+        SnackbarService.Add(
+            $"{TotalDays} de 7 días confirmados", Severity.Success, 
+            config => { config.SuccessIcon = "check_circle"; });
         return Task.CompletedTask;
     }
 
