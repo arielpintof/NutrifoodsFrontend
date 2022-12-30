@@ -6,12 +6,12 @@
 
 <MudLayout >
     <MudAppBar Elevation="0" Class="px-10">
-       <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(((e) => DrawerToggle()))" />
+       <MudIconButton Icon="@Icons.Material.Filled.Menu" Size="Size.Medium" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(((e) => DrawerToggle()))" />
        <MudSpacer />
        <AccessControl></AccessControl>
        
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Class="mud-drawer" Variant="@DrawerVariant.Temporary">
         <MudDrawerHeader>
             <MudText Typo="Typo.h6">NutrifoodsFrontend</MudText>
         </MudDrawerHeader>
@@ -21,6 +21,17 @@
         @Body
     </MudMainContent>
 </MudLayout>
+
+<style>
+    @@media screen and (max-width: 600px) {
+        .px-10{
+            background-size: auto;
+        }
+        .mud-drawer{
+            font-size: larger;
+        }
+    }
+</style>
 
 @code {
     bool _drawerOpen = false;
