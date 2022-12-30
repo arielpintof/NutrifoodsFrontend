@@ -1,4 +1,4 @@
-﻿@page "/Body"
+﻿@page "/update-metrics"
 @using UtilsFolder.Enums
 @using UtilsFolder.ToolTip
 @using UtilsFolder.Nutrition
@@ -26,34 +26,25 @@
                 </div>
                 <div class="pa-4">
                     <MudSelect Required="true" Dense="true" @bind-Value="_metricModel.PhysicalActivity" Class="pb-4"
-                               Label="Actividad Física" Variant="Variant.Outlined" For="@(() => _metricModel.PhysicalActivity)"
+                               Label="Actividad Física" Variant="Variant.Outlined" For="@(() => _metricModel.PhysicalActivity)" 
                                AnchorOrigin="Origin.BottomCenter">
                         @foreach (var item in PhysicalActivityList)
                         {
                             <MudSelectItem Value="@item.ReadableName">@item.ReadableName</MudSelectItem>
                         }
                     </MudSelect>
-
-                    @if (_metricModel.Height is not null && _metricModel.Weight is not null)
+                    
+                    @if(_metricModel.Height is not null && _metricModel.Weight is not null)
                     {
                         <div class="pa-4 d-flex flex-column">
                             <div class="d-flex justify-center">
-                                <MudText Class="imc-text">Tú IMC es</MudText>
+                                <MudText Typo="Typo.h6">Tú IMC es</MudText>
                             </div>
                             <div class="d-flex justify-center">
-                                <MudChip Size="Size.Large" Color="GetColorFromBmi(BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_metricModel.Weight, (int)_metricModel.Height))">
+                                <MudChip Size="Size.Large" Color="GetColorFromBmi(
+                                BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_metricModel.Weight, (int)_metricModel.Height))">
                                     @BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_metricModel.Weight, (int)_metricModel.Height)
                                 </MudChip>
-                            </div>
-                             <div class="justify-center">
-                                @{ var bmi = BodyMassIndex.Calculate(BmiMethod.Proposed, (double)_metricModel.Weight, (int)_metricModel.Height); }
-                                @if (bmi is < 16 or > 35)
-                                {
-                                    <MudAlert Severity="Severity.Warning" Dense="true" Class="my-2">
-                                        Debido a tus medidas, Nutrifoods no te tiene contemplado como usuario final.
-                                        Te recomendamos buscar asesoría de un profesional de la salud
-                                    </MudAlert>
-                                }
                             </div>
                         </div>
                     }
@@ -76,58 +67,42 @@
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
     private UserBodyMetricValidator _metricValidator = new();
     // ReSharper disable once FieldCanBeMadeReadOnly.Local
-    private UserBodyMetricDto _metricModel = new();
-
+    private UserBodyMetricDto _metricModel= new();
+    
     private static IEnumerable<PhysicalActivityEnum> PhysicalActivityList => PhysicalActivityEnum.NonNullValues;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authenticationState = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
-        var findUserResponse = await UserService.Find(apiKey!);
-        var userContent = await findUserResponse!.Content.ReadFromJsonAsync<UserDto>();
-        if (userContent!.UserBodyMetrics.Count != 0)
-        {
-            NavigationManager.NavigateTo("/mealplan");
-        }
-
-        await base.OnInitializedAsync();
-    }
-
     private async Task SaveBodyMeasures()
     {
-        var authenticationState = await AuthState.GetAuthenticationStateAsync();
-        var apiKey = authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
+        var apiKey = await GetApiKey();
         var findUserResponse = await UserService.Find(apiKey!);
+        
         if (findUserResponse!.IsSuccessStatusCode)
         {
             var userContent = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
             if (userContent!.UserBodyMetrics.Count != 0) return;
+            
         }
-
+        
         await UserService.SaveMetrics(
-            apiKey!, (int)_metricModel.Height!, (double)_metricModel.Weight!,
+            apiKey!, (int) _metricModel.Height!, (double) _metricModel.Weight!, 
             PhysicalActivityEnum.FromReadableName(_metricModel.PhysicalActivity)!.Token);
     }
 
     private static Color GetColorFromBmi(double bmi)
     {
-
         return bmi switch
         {
             >= 16 and < 18.5 => Color.Warning,
             >= 18.5 and < 25 => Color.Success,
-            >= 25 and < 35 => Color.Warning,
+            >= 25 and < 30 => Color.Warning,
             _ => Color.Error
             };
     }
-}
+    
+    private async Task<string> GetApiKey()
+    {
+        var authenticationState = await AuthState.GetAuthenticationStateAsync();
+        return authenticationState.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value!;
+    }
 
-<style>
-     .imc-text{
-            font-size: 15px;
-            line-height: 15px;
-            font-weight: 450;
-            color: #2d303c;
-        }
-</style>
+
+}

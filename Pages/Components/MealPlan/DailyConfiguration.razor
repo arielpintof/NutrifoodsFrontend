@@ -13,7 +13,7 @@
         <MudContainer Class="px-10 py-5" MaxWidth="MaxWidth.Medium">
             <MudForm @ref="_form" @bind-IsValid="@_success" @bind-Errors="@_errors">
                 <MudText Class="d-flex justify-center" Typo="Typo.h5">Configuración del día</MudText>
-                <div class="flex-sm-column mt-5">
+                <div class="d-flex flex-sm-column mt-5">
                     <MudSelect Required="true" @bind-Value="QuantityTest" T="int" Label="Cantidad de comidas" Variant="Variant.Outlined"
                                AnchorOrigin="Origin.BottomCenter">
                         <MudSelectItem T="int" Value="2"/>
@@ -21,10 +21,10 @@
                         <MudSelectItem T="int" Value="4"/>
                         <MudSelectItem T="int" Value="5"/>
                     </MudSelect>
-                    <MudStack>
+                    <div class="flex-sm-column mt-5">
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="_breakfastCheckBoxDisableValue" @bind-Checked="BreakfastCheckTest" Color="Color.Primary"
-                                         UnCheckedColor="Color.Default" Class="mr-3">
+                                         UnCheckedColor="Color.Default" Class="mr-3" Dense="true">
                                 Desayuno
                             </MudCheckBox>
                             <MudSelect Disabled="_breakfastSelectDisableValue" @bind-Value="BreakfastSatiety" Dense="true" Label="Contundencia"
@@ -37,11 +37,11 @@
                         </div>
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="true" @bind-Checked="_launchCheck" Color="Color.Primary" UnCheckedColor="Color.Default"
-                                         Class="mr-3">
+                                         Class="mr-3" Dense="true">
                                 Almuerzo
                             </MudCheckBox>
                             <MudSelect @bind-Value="LaunchSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined"
-                                       AnchorOrigin="Origin.BottomCenter">
+                                       AnchorOrigin="Origin.BottomCenter" Style="width: 265px">
                                 @foreach (var item in LunchSatietyEnumList)
                                 {
                                     <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
@@ -51,11 +51,11 @@
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="_dinnerCheckBoxDisableValue" @bind-Checked="DinnerCheckTest" Color="Color.Primary"
                                          UnCheckedColor="Color.Default"
-                                         Class="mr-11">
+                                         Class="mr-11" Dense="true">
                                 Cena
                             </MudCheckBox>
                             <MudSelect Disabled="_dinnerSelectDisableValue" @bind-Value="DinnerSatiety" Dense="true" Label="Contundencia"
-                                       AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                                       AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined" FullWidth="true">
                                 @foreach (var item in SatietyEnumList)
                                 {
                                     <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
@@ -64,7 +64,7 @@
                         </div>
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="_snackCheckBoxDisableValue" @bind-Checked="_snackCheck" Color="Color.Primary"
-                                         UnCheckedColor="Color.Default" Class="mr-3">
+                                         UnCheckedColor="Color.Default" Class="mr-3" Dense="true">
                                 Merienda
                             </MudCheckBox>
                             <MudSelect Disabled="_snackSelectDisableValue" @bind-Value="_snackSatiety" Dense="true" Label="Hora"
@@ -75,7 +75,7 @@
                                 }
                             </MudSelect>
                         </div>
-                    </MudStack>
+                     </div>
                 </div>
             </MudForm>
         </MudContainer>
@@ -115,7 +115,7 @@
 
     private static SatietyEnum? LaunchSatiety { get; set; } = SatietyEnum.Filling;
     
-    private static SatietyEnum? BreakfastSatiety { get; set; } = SatietyEnum.Filling;
+    private static SatietyEnum? BreakfastSatiety { get; set; } = SatietyEnum.Normal;
     
     private static SatietyEnum? DinnerSatiety { get; set; } = SatietyEnum.Normal;
 
@@ -123,8 +123,9 @@
 
     private static IEnumerable<SatietyEnum> LunchSatietyEnumList => SatietyEnum.NonNullValues.Skip(1);
 
-    private static IEnumerable<SnackEnum> SnackEnumList => SnackEnum.NonNullValues;
+    public IEnumerable<SnackEnum> SnackEnumList = SnackEnum.List;
     
+
     protected override Task OnInitializedAsync()
     {
         QuantityCheck(_mealsQuantity);
@@ -136,18 +137,30 @@
         var isLaunchFilling = LaunchSatiety == SatietyEnum.Filling;
         var breakfastSatiety = _breakfastCheck ? BreakfastSatiety!.Token : Satiety.None;
         var dinnerSatiety = _dinnerCheck ? BreakfastSatiety!.Token : Satiety.None;
-
+        bool brunch, linner;
+        if (_snackSatiety!.Token == Snack.Both)
+        {
+            brunch = true;
+            linner = true;
+        }
+        else
+        {
+            brunch = _snackCheck && _snackSatiety!.Token == Snack.Brunch;
+            linner = _snackCheck && _snackSatiety!.Token == Snack.Linner;
+        }
+        
         var dailyConfiguration = new DailyConfigurationDto
         {
             IsLunchFilling = isLaunchFilling,
             Breakfast = breakfastSatiety,
-            Dinner = dinnerSatiety
+            Dinner = dinnerSatiety,
+            Brunch = brunch,
+            Linner = linner
         };
         
         DailyConfigurationState.Property = dailyConfiguration;
         await OnDailyConfigurationChanged.InvokeAsync();
         Submit();
-        
     }
     
     int QuantityTest
@@ -227,7 +240,8 @@
         _dinnerCheckBoxDisableValue = false;
         _snackCheckBoxDisableValue = true;
         _snackSelectDisableValue = true;
-        _snackSatiety = SnackEnum.FromToken(Snack.None);
+        SnackEnumList = SnackEnum.List;
+        _snackSatiety = SnackEnum.None;
     }
 
     private void ThreeMealsConfiguration()
@@ -241,7 +255,8 @@
         _snackCheck = false;
         _snackCheckBoxDisableValue = true;
         _snackSelectDisableValue = true;
-        _snackSatiety = SnackEnum.FromToken(Snack.None);
+        SnackEnumList = SnackEnum.List;
+        _snackSatiety = SnackEnum.None;
     }
 
     private void FourMealsConfiguration()
@@ -255,6 +270,10 @@
         _breakfastSelectDisableValue = false;
         _dinnerSelectDisableValue = false;
         _snackSelectDisableValue = false;
+        SnackEnumList = SnackEnum.NonNullValues.Take(2);
+        _snackSatiety = SnackEnum.Brunch;
+       
+        
     }
 
     private void FiveMealsConfiguration()
@@ -267,7 +286,12 @@
         _snackCheckBoxDisableValue = true;
         _breakfastSelectDisableValue = false;
         _dinnerSelectDisableValue = false;
-        _snackSelectDisableValue = false;
+        _snackSelectDisableValue = true;
+        SnackEnumList = SnackEnum.NonNullValues.Take(3);
+        _snackSatiety = SnackEnum.Both;
+        
+        
+        
     }
 
 
@@ -275,6 +299,7 @@
     MudDialogInstance? MudDialog { get; set; }
 
     private void Submit() => MudDialog?.Close(DialogResult.Ok(true));
+    
     private void Cancel() => MudDialog?.Cancel();
     
     protected override void OnInitialized() => DailyConfigurationState.OnChange += StateHasChanged;

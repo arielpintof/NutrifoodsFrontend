@@ -3,6 +3,7 @@
 @using NutrifoodsFrontend.UtilsFolder.ToolTip
 @using NutrifoodsFrontend.Services
 @using System.Net
+@using NutrifoodsFrontend.UtilsFolder.AuthConnection
 @inject AuthenticationStateProvider AuthState
 @inject IUserService UserService
 @inject NavigationManager Nav
@@ -26,7 +27,7 @@
                         sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
                 </Jumbotron>
                 <div class="d-flex mt-6 ">
-                    <MudButton Class="rounded-pill pa-3 mud-elevation-10" Size="Size.Large" Variant="Variant.Filled" 
+                    <MudButton  Style="width: 175px; height: 50px;" Class="rounded-pill pa-3 mud-elevation-10" Size="Size.Large" Variant="Variant.Filled" 
                                Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="@ButtonClick">
                         Empezar
                     </MudButton>
@@ -51,15 +52,15 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var state = await AuthState.GetAuthenticationStateAsync();
-        var isAuthenticated = state.User.Identity!.IsAuthenticated;
+        var state = new Connection(AuthState);
+        var isAuthenticated = await state.IsAuthenticated();
         if (!isAuthenticated)
         {
             await base.OnInitializedAsync();
             return;
         }
 
-        var apiKey = state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)?.Value;
+        var apiKey = await state.GetApiKey();
         var findUserResponse = await UserService.Find(apiKey!);
         if (findUserResponse!.StatusCode != HttpStatusCode.NotFound)
         {
@@ -68,9 +69,9 @@
             return;
         }
 
-        var nickName = state.User.Claims.FirstOrDefault(c => c.Type == "nickname")?.Value;
-        var email = state.User.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
-        var saveUserResponse = await UserService.SaveUser(nickName!, email!, apiKey!);
+        var nickName = await state.GetNickName();
+        var email = await state.GetEmail();
+        var saveUserResponse = await UserService.SaveUser(nickName, email, apiKey);
         if (saveUserResponse!.IsSuccessStatusCode)
         {
             User = await saveUserResponse.Content.ReadFromJsonAsync<UserDto>();
@@ -82,16 +83,8 @@
     
     private async Task ButtonClick()
     {
-        var state = await AuthState.GetAuthenticationStateAsync();
-        var isAuthenticated = state.User.Identity!.IsAuthenticated;
-        if (!isAuthenticated)
-        {
-            Nav.NavigateTo("/Invitado");
-        }
-        else
-        {
-            Nav.NavigateTo("/personaldata");
-        }
+        var isAuthenticated = await new Connection(AuthState).IsAuthenticated();
+        Nav.NavigateTo(!isAuthenticated ? "/Invitado" : "/personaldata");
     }
     private void NavigateToData()
     {
@@ -99,50 +92,3 @@
     }
 
 }
-<style>
-   h1, p {
-       color: #545151;
-   }
-   @@media screen and (min-width: 601px) {
-      h1 {
-          font-size: 2.5rem;
-      } 
-      p {
-          font-size: 1.5rem;
-      }
-      .rounded-pill {
-          width: 195px;
-          height: 60px;
-          font-size: 1rem;
-      }
-      .jumbo-background{
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          align-items: center;
-          margin-left: 3rem;
-          margin-right: 3rem;
-          margin-bottom: auto;
-      }
-   }
-   @@media screen and (max-width: 600px) {
-      h1 {
-          font-size: 3rem;
-      } 
-      p {
-          font-size: 1.0rem;
-      }
-      .jumbo-background{
-          flex-flow: column wrap;
-      }
-      .rounded-pill {
-          width: 205px;
-          height: 90px;
-          font-size: 1.5rem;
-      }
-   }
-   img {
-        width: 100%;
-        height: auto;
-   }
-</style>
