@@ -24,7 +24,7 @@
                     <div class="flex-sm-column mt-5">
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="_breakfastCheckBoxDisableValue" @bind-Checked="BreakfastCheckTest" Color="Color.Primary"
-                                         UnCheckedColor="Color.Default" Class="mr-3">
+                                         UnCheckedColor="Color.Default" Class="mr-3" Dense="true">
                                 Desayuno
                             </MudCheckBox>
                             <MudSelect Disabled="_breakfastSelectDisableValue" @bind-Value="BreakfastSatiety" Dense="true" Label="Contundencia"
@@ -37,11 +37,11 @@
                         </div>
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="true" @bind-Checked="_launchCheck" Color="Color.Primary" UnCheckedColor="Color.Default"
-                                         Class="mr-3">
+                                         Class="mr-3" Dense="true">
                                 Almuerzo
                             </MudCheckBox>
                             <MudSelect @bind-Value="LaunchSatiety" Dense="true" Label="Contundencia" Variant="Variant.Outlined"
-                                       AnchorOrigin="Origin.BottomCenter">
+                                       AnchorOrigin="Origin.BottomCenter" Style="width: 265px">
                                 @foreach (var item in LunchSatietyEnumList)
                                 {
                                     <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
@@ -51,11 +51,11 @@
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="_dinnerCheckBoxDisableValue" @bind-Checked="DinnerCheckTest" Color="Color.Primary"
                                          UnCheckedColor="Color.Default"
-                                         Class="mr-11">
+                                         Class="mr-11" Dense="true">
                                 Cena
                             </MudCheckBox>
                             <MudSelect Disabled="_dinnerSelectDisableValue" @bind-Value="DinnerSatiety" Dense="true" Label="Contundencia"
-                                       AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined">
+                                       AnchorOrigin="Origin.BottomCenter" Variant="Variant.Outlined" FullWidth="true">
                                 @foreach (var item in SatietyEnumList)
                                 {
                                     <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
@@ -64,7 +64,7 @@
                         </div>
                         <div class="row d-flex align-center mt-2">
                             <MudCheckBox Disabled="_snackCheckBoxDisableValue" @bind-Checked="_snackCheck" Color="Color.Primary"
-                                         UnCheckedColor="Color.Default" Class="mr-3">
+                                         UnCheckedColor="Color.Default" Class="mr-3" Dense="true">
                                 Merienda
                             </MudCheckBox>
                             <MudSelect Disabled="_snackSelectDisableValue" @bind-Value="_snackSatiety" Dense="true" Label="Hora"
