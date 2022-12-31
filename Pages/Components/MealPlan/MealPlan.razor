@@ -41,25 +41,28 @@ else
                 <div class="d-flex justify-space-between mt-3 mb-3">
                     <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
                                Color="Color.Primary">
-                        Confirmar
+                        <MudText Class="ms-2">GUARDAR</MudText>
                     </MudButton>
 
-                    <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill flex-shrink-1" Size="Size.Large" Variant="Variant.Filled"
-                               Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="OnInitializedAsync">
-                        Regenerar
-                        <div class="ml-1">
-                            @if (IsLoading)
-                            {
-                                <MudProgressCircular Size="Size.Small" Color="Color.Success" Indeterminate="true"/>
-                            }
-                        </div>
+                    <MudButton Style="width: 35%; height: 50%;" Class="pa-3 rounded-pill" Size="Size.Large" Variant="Variant.Filled"
+                               Color="Color.Primary" ButtonType="ButtonType.Submit" OnClick="OnProcessing" Disabled="@IsLoading">
 
+                        @if (IsLoading)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Color="Color.Success" Indeterminate="true"/>
+                            <MudText Class="ms-2">PROCESANDO</MudText>
+                        }
+                        else
+                        {
+                            <MudText Class="ms-2">REGENERAR</MudText>
+                        }
                     </MudButton>
                 </div>
             </Authorized>
         </AuthorizeView>
     </MudContainer>
 }
+
 
 @code {
     private HttpResponseMessage? MealPlanResponse { get; set; }
@@ -69,7 +72,7 @@ else
 
     [Parameter]
     public int GuestEnergy { get; set; }
-
+    
     private Dictionary<string, int> TotalMacronutrients()
     {
         var nutrients = new Dictionary<string, int>
@@ -85,15 +88,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        IsLoading = true;
         await Task.Delay(2000);
-        var state = new Connection(AuthState);
-        var isAuthenticated = await state.IsAuthenticated();
+        var isAuthenticated = await Connection.IsAuthenticated();
         double? userEnergy;
 
         if (isAuthenticated)
         {
-            var apiKey = await state.GetApiKey();
+            var apiKey = await Connection.GetApiKey();
             var userResponse = await UserService.Find(apiKey);
             var userContent = await userResponse!.Content.ReadFromJsonAsync<UserDto>();
             userEnergy = userContent!.TotalMetabolicRate;
@@ -115,7 +116,7 @@ else
         await base.OnInitializedAsync();
         await JsRuntime.InvokeVoidAsync("OnScrollEvent");
 
-        IsLoading = false;
+       
     }
 
     private void DailyMenuChanged()
@@ -174,4 +175,13 @@ else
             Linner = false
         };
     }
+
+    private async Task OnProcessing()
+    {
+        IsLoading = true;
+        await OnInitializedAsync();
+        IsLoading = false;
+    }
+
 }
+
