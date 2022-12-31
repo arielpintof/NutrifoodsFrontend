@@ -17,7 +17,8 @@
                     @if (IconIsVisible)
                     {
                         <MudTooltip Text="@InfoMessage.RegenerateMealMenu(MealType)" Arrow="true" Placement="Placement.Right">
-                            <MudIconButton @onclick="ChangePropertyValue" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"/>
+                            <MudIconButton Class="@(IsLoading ? "circular-loader" : "")" @onclick="OnProcessing" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"
+                                           Disabled="IsLoading"/>
                         </MudTooltip>
                     }
                 </Authorized>
@@ -65,7 +66,18 @@
     public bool IconIsVisible { get; set; }
 
     protected override void OnInitialized() => DailyMenuState.OnChange += StateHasChanged;
+    
+    private bool IsLoading { get; set; }
+    private string Cursor { get; set; } = string.Empty;
 
+    private async Task OnProcessing()
+    {
+        IsLoading = true;
+        Cursor = "cursor-progress";
+        await ChangePropertyValue();
+        IsLoading = false;
+        Cursor = string.Empty;
+    }
     private async Task ChangePropertyValue()
     {
         MenuRecipes = null;
@@ -87,5 +99,19 @@
         font-weight: 700;
         color: #2d303c;
     }
+     @@keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to { 
+            transform: rotate(360deg);
+        }
+    }
+    .circular-loader {
+        animation: rotate 2s linear infinite;
+    }
+     
+    
+    
     
 </style>
