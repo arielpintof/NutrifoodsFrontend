@@ -8,7 +8,10 @@
 @inject IUserService UserService
 @inject NavigationManager Nav
 
-<div style="background-color: #f9f9f9">
+
+<PageTitle>Inicio - Nutrifoods</PageTitle>
+
+<div style="background-color: #FFFFFF">
     <MudContainer>
         @if (!_hasMetrics)
             {
@@ -42,7 +45,7 @@
 
 
 
-<PageTitle>Inicio - Nutrifoods</PageTitle>
+
 
 
 
@@ -104,6 +107,28 @@
            margin-left: 3rem;
            margin-right: 3rem;
            margin-bottom: auto;
+       }
+       @@keyframes jumbo-animation{
+         from {
+           transform: translateX(-100%);
+         }
+         to {
+           transform: translateX(0);
+         }
+       }
+       @@keyframes jumbo-img-animation{
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+       }
+       .jumbo-background div{
+            animation: jumbo-animation 1s ease-in-out;
+       }
+       .jumbo-background img{
+            animation: jumbo-img-animation 1s ease-in-out;
        }
        @@media screen and (min-width: 601px) {
           h1 {
