@@ -10,7 +10,7 @@
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="container">
-    <MudText GutterBottom="true" Align="Align.Center" Typo="Typo.h4">datos</MudText>
+    <MudText GutterBottom="true" Align="Align.Center" Typo="Typo.h5">Formulario de Datos</MudText>
     <div class="progress-bar">
         <div class="step"> 
             <p class="@(_addActive[1] ? "active" : "")">Métricas</p>
@@ -47,13 +47,14 @@
             <div class="page slide-page" style="margin-left: @MarginLeft">
                 <MudTextField @bind-Value="_metricModel.Height" Label="Altura" Variant="Variant.Outlined"
                               AdornmentText="Centímetros" Adornment="Adornment.End" Required="true"
-                              RequiredError="La altura es obligatoria" For="@(() => _metricModel.Height)"/>
+                              RequiredError="La altura es obligatoria" For="@(() => _metricModel.Height)"
+                              Class="mb-3"/>
 
                 <MudTextField @bind-Value="_metricModel.Weight" Label="Peso" Variant="Variant.Outlined"
                               Adornment="Adornment.End" AdornmentText="Kilogramos" Required="true"
                               RequiredError="El peso es obligatorio" For="@(() => _metricModel.Weight)"/>
                 <MudButton FullWidth="true" OnClick="() => ButtonOnClick(1)" Variant="Variant.Filled" Color="Color.Primary"
-                           DisableElevation="true" Class="mt-8">
+                           DisableElevation="true" Class="mt-8 mb-3">
                     Siguiente
                 </MudButton>
             </div>
@@ -107,6 +108,7 @@
                         Volver
                     </MudButton>
                     <MudButton FullWidth="true" Class="next-3" Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="ChangePropertyValue" Href="https://localhost:5001/mealplan" Disabled="@(!_success)"
                                DisableElevation="true">
                         Enviar
                     </MudButton>
@@ -160,6 +162,8 @@
         border-radius: 5px;
         text-align: center;
         padding: 50px 35px 10px 35px;
+        margin-top: 50px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     }
     .container .progress-bar{
         display: flex;
@@ -178,6 +182,7 @@
         margin-bottom: 8px;
         transition: 0.2s;
     }
+   
     .progress-bar .step .bullet{
         position: relative;
         height: 25px;
@@ -230,7 +235,7 @@
         display: none;
     }
     .progress-bar .step p.active{
-        font-weight: 500;
+        font-weight: 600 !important;
         color: #35A14B;
     }
         
@@ -268,5 +273,6 @@
         display: inline-flex;
         width: 100%;
         margin-top: 40px !important;
+   
     }
 </style>
