@@ -148,24 +148,32 @@
           }
        }
        @@media screen and (max-width: 600px) {
-          h1 {
-              font-size: 3rem;
-          } 
-          p {
-              font-size: 1.0rem;
-          }
+          
           .jumbo-background{
               flex-flow: column wrap;
+              text-align: center;
           }
+          .jumbo-background h1 {
+              font-size: 2rem;
+              
+          } 
+          .jumbo-background p {
+              font-size: 1.0rem;
+          }          
+          
+          
           .rounded-pill {
               width: 205px;
    
+          }
+          img{
+            display: none;
           }
        }
        img {
             display: grid;
             width: 100%;
-            height: auto;
+            height: auto;         
        }
     
 </style>
