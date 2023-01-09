@@ -7,6 +7,7 @@
 @inject AuthenticationStateProvider AuthState
 @inject IUserService UserService
 @inject NavigationManager Nav
+@inject Connection Connection
 
 
 <PageTitle>Inicio - Nutrifoods</PageTitle>
@@ -49,25 +50,21 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var state = new Connection(AuthState);
-        var isAuthenticated = await state.IsAuthenticated();
+        var isAuthenticated = await Connection.IsAuthenticated();
         if (!isAuthenticated)
         {
-            await base.OnInitializedAsync();
             return;
         }
-
-        var apiKey = await state.GetApiKey();
-        var findUserResponse = await UserService.Find(apiKey!);
+        
+        var (apiKey, nickName, email) = await Connection.GetAllCredentials();
+        var findUserResponse = await UserService.Find(apiKey);
         if (findUserResponse!.StatusCode != HttpStatusCode.NotFound)
         {
             User = await findUserResponse.Content.ReadFromJsonAsync<UserDto>();
             _hasMetrics = (User!.UserData != null && User.UserBodyMetrics.Count != 0);
             return;
         }
-
-        var nickName = await state.GetNickName();
-        var email = await state.GetEmail();
+        
         var saveUserResponse = await UserService.SaveUser(nickName, email, apiKey);
         if (saveUserResponse!.IsSuccessStatusCode)
         {
