@@ -1,0 +1,70 @@
+﻿@page "/title"
+@inject IDialogService DialogService
+
+<div class="container-title-section px-4">
+    <MudText Typo="Typo.h4" class="title">Plan alimenticio </MudText>
+    <div class="icon-section">
+        <MudTooltip Text="Regenerar menú del día" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton Class="@(IsLoading ? "circular-loader" : "")" @onclick="OnProcessing" Size="Size.Small" 
+                           Icon="@Icons.Filled.Autorenew" Disabled="IsLoading"/>
+        </MudTooltip>
+        <MudTooltip Text="" Arrow="true" Placement="Placement.Bottom"> 
+            <MudIconButton @onclick="OpenDialog" Size="Size.Small" Icon="@Icons.Material.Filled.Settings"/>
+        </MudTooltip>
+        <MudTooltip Text="" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton  @onclick="OnProcessing" Size="Size.Small" 
+                           Icon="@Icons.Material.Filled.SaveAlt" Disabled="IsLoading"/>
+        </MudTooltip>
+    </div>
+</div>
+
+
+@code {
+    private bool IsLoading { get; set; }
+    private async Task OnProcessing()
+    {
+        IsLoading = true;
+        await Task.Delay(2000);
+        //await ChangePropertyValue();
+        IsLoading = false;
+    }
+    
+    [Parameter]
+    public EventCallback OnDailyConfigurationChanged { get; set; }
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters
+        {
+            { "OnDailyConfigurationChanged", OnDailyConfigurationChanged }
+        };
+        DialogService.Show<DailyConfiguration >("", parameters, options);
+        
+    }
+}
+
+
+<style>
+    .container-title-section{
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .title{
+        color: #605F5E;
+        font-size: 32px;
+        font-weight: bold;
+    }
+    .circular-loader{
+        animation: rotate 2s linear infinite;
+    }
+    @@keyframes rotate {
+        from{
+            transform: rotate(0deg);
+        }
+        to{
+            transform: rotate(360deg);
+        }
+    }
+</style>
