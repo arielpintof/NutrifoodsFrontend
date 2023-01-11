@@ -4,16 +4,15 @@
 <div class="container-title-section px-4">
     <MudText Typo="Typo.h4" class="title">Plan alimenticio </MudText>
     <div class="icon-section">
-        <MudTooltip Text="Regenerar menú del día" Arrow="true" Placement="Placement.Bottom">
+        <MudTooltip Text="Regenerar Plan" Arrow="true" Placement="Placement.Bottom">
             <MudIconButton Class="@(IsLoading ? "circular-loader" : "")" @onclick="OnProcessing" Size="Size.Small" 
                            Icon="@Icons.Filled.Autorenew" Disabled="IsLoading"/>
         </MudTooltip>
-        <MudTooltip Text="" Arrow="true" Placement="Placement.Bottom"> 
+        <MudTooltip Text="Configuración de menús" Arrow="true" Placement="Placement.Bottom"> 
             <MudIconButton @onclick="OpenDialog" Size="Size.Small" Icon="@Icons.Material.Filled.Settings"/>
         </MudTooltip>
-        <MudTooltip Text="" Arrow="true" Placement="Placement.Bottom">
-            <MudIconButton  @onclick="OnProcessing" Size="Size.Small" 
-                           Icon="@Icons.Material.Filled.SaveAlt" Disabled="IsLoading"/>
+        <MudTooltip Text="Guarder plan" Arrow="true" Placement="Placement.Bottom">
+            <MudIconButton  @onclick="OnProcessing" Size="Size.Small" Icon="@Icons.Material.Filled.SaveAlt"/>
         </MudTooltip>
     </div>
 </div>
@@ -24,13 +23,15 @@
     private async Task OnProcessing()
     {
         IsLoading = true;
-        await Task.Delay(2000);
-        //await ChangePropertyValue();
+        await RegenerateRequest.InvokeAsync();
         IsLoading = false;
     }
-    
+
     [Parameter]
     public EventCallback OnDailyConfigurationChanged { get; set; }
+    
+    [Parameter]
+    public EventCallback RegenerateRequest { get; set; }
     private void OpenDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
