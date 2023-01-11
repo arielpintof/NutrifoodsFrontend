@@ -1,14 +1,15 @@
 ﻿@page "/card"
 @using NutrifoodsFrontend.UtilsFolder.Nutrition
 
+
 <div class="container">
     <div class="card-section">
         <div class="card">
             <div class="column-card">
                 <MudText Class="text-section">Energía</MudText>
                 <div class="d-flex align-end">
-                    <MudText Class="text-value mr-1">@TotalMacronutrient("Energy")</MudText>
-                    <MudText Class="text-section mb-1">kcal</MudText>
+                    <MudText Class="text-value mr-1 value-animation">@InitialEnergy</MudText>
+                    <MudText  Class="text-section mb-1">kcal</MudText>
                 </div>
 
             </div>
@@ -19,40 +20,63 @@
             <div class="column-card">
                 <MudText Class="text-section">Carbs</MudText>
                 <div class="d-flex align-end">
-                    <MudText Class="text-value mr-1">@TotalMacronutrient("Carbohydrates")</MudText>
+                    <MudText Class="text-value mr-1">@InitialCarbs</MudText>
                     <MudText Class="text-section mb-1">g</MudText>
-                </div>
 
+                </div>
+                @{
+                    var lipidsValue = @Percentage(TotalMacronutrient("Lipids"));
+                    var carbohydratesValue = @Percentage(TotalMacronutrient("Carbohydrates"));
+                    var proteinsValue = @Percentage(TotalMacronutrient("Proteins"));
+                }
             </div>
-            <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="@Percentage(TotalMacronutrient("Carbohydrates"))"/>
+            <div>
+                <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="carbohydratesValue"/>
+                <MudText class="percentage-text">@PercentageToInt(carbohydratesValue)%</MudText>
+            </div>
+
         </div>
         <div class="card">
             <div class="column-card">
                 <MudText Class="text-section">Lípidos</MudText>
                 <div class="d-flex align-end">
-                    <MudText Class="text-value mr-1">@TotalMacronutrient("Lipids")</MudText>
+                    <MudText Class="text-value mr-1">@InitialLipids</MudText>
                     <MudText Class="text-section mb-1">g</MudText>
                 </div>
 
             </div>
-            <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="@Percentage(TotalMacronutrient("Lipids"))"/>
+            <div>
+
+                <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="lipidsValue"/>
+                <MudText class="percentage-text">@PercentageToInt(lipidsValue)%</MudText>
+            </div>
+
         </div>
         <div class="card">
             <div class="column-card">
                 <MudText Class="text-section">Proteínas</MudText>
                 <div class="d-flex align-end">
-                    <MudText Class="text-value mr-1">@TotalMacronutrient("Proteins")</MudText>
+                    <MudText Class="text-value mr-1">@InitialProteins</MudText>
                     <MudText Class="text-section mb-1">g</MudText>
                 </div>
             </div>
-            <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="@Percentage(TotalMacronutrient("Proteins"))"/>
+            <div >
+                <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="proteinsValue"/>
+                <MudText class="percentage-text">@PercentageToInt(proteinsValue)%</MudText>
+            </div>
+
         </div>
 
     </div>
 </div>
 
 @code {
-
+    private int InitialEnergy { get; set; }
+    private int InitialCarbs { get; set; }
+    private int InitialLipids { get; set; }
+    private int InitialProteins { get; set; }
+    private int Total { get; set; }
+    
     [Parameter]
     public Dictionary<string, int> Macronutrients { get; set; } = new();
 
@@ -61,18 +85,72 @@
             .Where(c => c.Key.Contains(macronutrient))
             .Select(c => c.Value)
             .FirstOrDefault();
+    
 
-    private int Total { get; set; }
-
-    protected override Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         Total = Macronutrients.Skip(1).Sum(e => e.Value);
-        return base.OnInitializedAsync();
+        await Task.WhenAll(IncreaseEnergy(), IncreaseCarbs(), IncreaseLipids(), IncreaseProteins());
+        
+        foreach (var macro in Macronutrients)
+        {
+            Console.WriteLine($"The value of {macro.Key} is now: {macro.Value}");
+        }
+        
     }
-
     private double Percentage(int value)
     {
-        return (100 * (double)value / (double)Total);
+        return (100 * (double)value / Total);
+    }
+
+    private int PercentageToInt(double value)
+    {
+        return Convert.ToInt32(value);
+    }
+
+    private async Task IncreaseEnergy()
+    {
+        while (InitialEnergy < TotalMacronutrient("Energy"))
+        {
+            InitialEnergy+=30;
+            await Task.Delay(1);
+            StateHasChanged();
+        }
+        InitialEnergy = TotalMacronutrient("Energy");
+
+    }
+    private async Task IncreaseCarbs()
+    {
+        while (InitialCarbs < TotalMacronutrient("Carbohydrates"))
+        {
+            InitialCarbs+=3;
+            await Task.Delay(1);
+            StateHasChanged();
+        }
+        InitialCarbs = TotalMacronutrient("Carbohydrates");
+
+    }
+    private async Task IncreaseLipids()
+    {
+        while (InitialLipids < TotalMacronutrient("Lipids"))
+        {
+            InitialLipids+=1;
+            await Task.Delay(1);
+            StateHasChanged();
+        }
+        InitialLipids = TotalMacronutrient("Lipids");
+
+    }
+    private async Task IncreaseProteins()
+    {
+        while (InitialProteins < TotalMacronutrient("Proteins"))
+        {
+            InitialProteins+=1;
+            await Task.Delay(1);
+            StateHasChanged();
+        }
+        InitialProteins = TotalMacronutrient("Proteins");
+
     }
 
 
@@ -120,4 +198,54 @@
         font-size: 22px;
         font-weight: 600;
     }
+    .mud-progress-circular{
+        margin-top: 5px;
+    
+    }
+    .percentage-text{
+        display: flex;
+        font-size: 14px;
+        color: #92959E;
+        position: absolute;
+        transform: translate(30%, -160%);
+    }
+    
+    @@media (max-width: 581px){
+        .mud-progress-circular{
+                width: 30px !important;
+                height: 30px !important;
+         
+        }
+        .percentage-text{
+            font-size: 10px;
+            transform: translate(30%, -180%);
+        }
+        .text-value{
+            font-size: 17px;
+        }
+        .text-section{
+            font-size: 12px;
+        }
+        .mud-icon-size-large {
+             font-size: 2rem !important;
+         }
+    }
+     @@media (max-width: 500px){
+        .mud-icon-size-large {
+            display: none;
+        }
+        .mud-progress-circular{
+            display: none;
+        }
+        .percentage-text{
+            display: none;
+        }
+        .text-section{
+            font-size: 14px;
+        }
+        .text-value{
+            font-size: 18px;
+        }
+        
+     }
 </style>
