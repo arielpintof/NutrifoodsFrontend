@@ -54,10 +54,10 @@
         justify-content: space-between;
     }
     .text {
-        font-size: 1.8vh;
+        font-size: 15px;
     }
     .details-text{
-        font-size: 20px;
+        font-size: 15px;
     }
 </style>
 
@@ -83,16 +83,6 @@
 
     private string[] _labels = { "Carbohidratos", "Proteínas", "Lípidos" };
 
-    private List<(string name, double value)> MacroNutrients => InitializeDataTuples();
-    private List<(string, double)> InitializeDataTuples()
-    {
-        return Data.Select((t, i) => ((string, double))(_labels[i], t)).ToList();
-    }
+    private IEnumerable<(string name, double value)> MacroNutrients => _labels.Zip(Data);
     
-
-
-
-
-
-
 }
