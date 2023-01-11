@@ -1,0 +1,282 @@
+﻿@page "/guest-form"
+@using NutrifoodsFrontend.UtilsFolder.Validation
+@using NutrifoodsFrontend.Data.Dto
+@using NutrifoodsFrontend.Data.State
+@using NutrifoodsFrontend.UtilsFolder.Nutrition
+@using NutrifoodsFrontend.UtilsFolder.Enums
+@inject UserEnergyState UserEnergyState
+@implements IDisposable
+
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
+
+<Title>Formulario de invitado - Nutrifoods</Title>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="container">
+    <MudText GutterBottom="true" Align="Align.Center" Typo="Typo.h5">Formulario de Datos</MudText>
+    <div class="progress-bar">
+        <div class="step"> 
+            <p class="@(_addActive[1] ? "active" : "")">Métricas</p>
+            <div class="bullet @(_addActive[1] ? "active" : "")">
+                <span>1</span>
+            </div>
+            <div class="check fas fa-check @(_addActive[1] ? "active" : "")"></div>
+        </div>
+        <div class="step">
+            <p class="@(_addActive[2] ? "active" : "")">Edad</p>
+            <div class="bullet @(_addActive[2] ? "active" : "")">
+                <span>2</span>
+            </div>
+            <div class="check fas fa-check @(_addActive[2] ? "active" : "")"></div>
+        </div>
+        <div class="step">
+            <p class="@(_addActive[3] ? "active" : "")">Actividad</p>
+            <div class="bullet @(_addActive[3] ? "active" : "")">
+                <span>3</span>
+            </div>
+            <div class="check fas fa-check @(_addActive[3] ? "active" : "")"></div>
+        </div>
+        <div class="step">
+            <p>Género</p>
+            <div class="bullet ">
+                <span>4</span>
+            </div>
+            <div class="check fas fa-check "></div>
+        </div>
+    </div>
+    <div Class="form-outer">
+        <MudForm Class="form" @ref="_form" Validation="@(_metricValidator.ValidateValue)" @bind-IsValid="@_success"
+                 @bind-Errors="@_errors" Model="@_metricModel">
+            <div class="page" style="margin-left: @MarginLeft">
+                <MudTextField @bind-Value="_metricModel.Height" Label="Altura" Variant="Variant.Outlined"
+                              AdornmentText="Centímetros" Adornment="Adornment.End" Required="true"
+                              RequiredError="La altura es obligatoria" For="@(() => _metricModel.Height)"
+                              Class="mb-3"/>
+
+                <MudTextField @bind-Value="_metricModel.Weight" Label="Peso" Variant="Variant.Outlined"
+                              Adornment="Adornment.End" AdornmentText="Kilogramos" Required="true"
+                              RequiredError="El peso es obligatorio" For="@(() => _metricModel.Weight)"/>
+                <MudButton FullWidth="true" OnClick="() => ButtonOnClick(1)" Variant="Variant.Filled" Color="Color.Primary"
+                           DisableElevation="true" Class="mt-8 mb-3">
+                    Siguiente
+                </MudButton>
+            </div>
+            <div class="page">
+                <MudTextField @bind-Value="_metricModel.Age" Label="Edad" Variant="Variant.Outlined"
+                              Adornment="Adornment.End" AdornmentText="Años" Required="true"
+                              RequiredError="La edad es obligatoria" For="@(() => _metricModel.Age)"/>
+                <div class="d-flex button-section">
+                    <MudButton FullWidth="true" Class="prev-1 mr-2" Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="() => ButtonOnClick(0, false)" DisableElevation="true">
+                        Volver
+                    </MudButton>
+                    <MudButton FullWidth="true" Class="next-1 " Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="() => ButtonOnClick(2)" DisableElevation="true">
+                        
+                        Siguiente
+                    </MudButton>
+                </div>
+            </div>
+            <div class="page">
+                <MudSelect Required="true" Dense="true" @bind-Value="_metricModel.PhysicalActivity" Label="Actividad Física"
+                           Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter"
+                           For="@(() => _metricModel.PhysicalActivity)">
+                    @foreach (var item in PhysicalActivityEnumList)
+                    {
+                        <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                    }
+                </MudSelect>
+                <div class="d-flex button-section">
+                    <MudButton FullWidth="true" Class="prev-2 mr-2" Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="() => ButtonOnClick(1, false)" DisableElevation="true">
+                        Volver
+                    </MudButton>
+                    <MudButton FullWidth="true" Class="next-2" Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="() => ButtonOnClick(3)" DisableElevation="true">
+                        Siguiente
+                    </MudButton>
+                </div>
+            </div>
+            <div class="page">
+                <MudSelect Required="true" Dense="true" @bind-Value="_metricModel.Gender" Label="Genero"
+                           Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" For="@(() => _metricModel.Gender)">
+                    @foreach (var item in GenderEnumList)
+                    {
+                        <MudSelectItem Value="@item">@item.ReadableName</MudSelectItem>
+                    }
+                </MudSelect>
+                <div class="d-flex button-section">
+                    <MudButton FullWidth="true" Class="prev-3 mr-3" Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="() => ButtonOnClick(2, false)" DisableElevation="true">
+                        Volver
+                    </MudButton>
+                    <MudButton FullWidth="true" Class="next-3" Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="ChangePropertyValue" Href="https://localhost:5001/mealplan" Disabled="@(!_success)"
+                               DisableElevation="true">
+                        Enviar
+                    </MudButton>
+                </div>
+            </div>
+        </MudForm>
+    </div>
+
+</MudContainer>
+
+@code {
+    private MudForm? _form;
+    private bool _success;
+    private string[] _errors = Array.Empty<string>();
+    private readonly GuestUserBodyMetricValidator _metricValidator = new();
+    private readonly List<bool> _addActive = new() { false, false, false, false };
+    private readonly GuestUserDto _metricModel = new();
+    private string MarginLeft { get; set; } = string.Empty;
+    
+
+    private void ButtonOnClick(int value, bool next = true)
+    {
+        MarginLeft = value switch
+        {
+            0 => "0%", 
+            1 => "-25%",
+            2 => "-50%",
+            3 => "-75%",
+            _ => MarginLeft
+            };
+
+        _addActive[next ? value : value + 1] = next;
+    }
+
+    
+
+    protected override void OnInitialized() => UserEnergyState.OnChange += StateHasChanged;
+
+    private void ChangePropertyValue() => UserEnergyState.Property = TotalMetabolicRate.Calculate(_metricModel.Gender!,
+        (double)_metricModel.Weight!, (int)_metricModel.Height!, (int)_metricModel.Age!, _metricModel.PhysicalActivity);
+
+    private static IEnumerable<GenderEnum> GenderEnumList => GenderEnum.NonNullValues;
+
+    private static IEnumerable<PhysicalActivityEnum> PhysicalActivityEnumList => PhysicalActivityEnum.NonNullValues;
+
+    void IDisposable.Dispose() => UserEnergyState.OnChange -= StateHasChanged;
+}
+
+<style>
+    .container{
+        width: 370px;
+        background-color: #FFFFFF;
+        border-radius: 5px;
+        text-align: center;
+        padding: 50px 35px 10px 35px;
+        margin-top: 50px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+    .container .progress-bar{
+        display: flex;
+        margin: 40px 0;
+    }
+    .container .progress-bar .step{
+        position: relative;
+        text-align: center;
+        width: 100%;
+    }
+    .progress-bar .step p{
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        width: 75px;
+        font-weight: 400;
+        margin-bottom: 8px;
+        transition: 0.2s;
+    }
+   
+    .progress-bar .step .bullet{
+        position: relative;
+        height: 25px;
+        width: 25px;
+        border: 2px solid #000;
+        display: inline-block;
+        border-radius: 50%;
+        transition: 0.2s;
+       
+    }
+    .progress-bar .step .bullet.active{
+        border-color: #35A14B;
+        background: #35A14B;
+    }
+    .progress-bar .step:last-child .bullet:before,
+    .progress-bar .step:last-child .bullet:after{
+        display: none;
+    }
+    .progress-bar .step .bullet:before,
+    .progress-bar .step .bullet:after{
+        position: absolute;
+        content: '';
+        bottom: 11px;
+        right: -51px;
+        height: 3px;
+        width: 48px;
+        background: #262626;
+    }
+    .progress-bar .step .bullet.active:after{
+        background: #35A14B;
+        transform: scaleX(0);
+        transform-origin: left;
+        animation: animate 0.3s linear forwards;
+    }
+    @@keyframes animate{
+        100%{
+            transform: scaleX(1);
+        }
+    }
+    
+    .progress-bar .step .bullet span{
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 25px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .progress-bar .step .bullet.active span{
+        display: none;
+    }
+    .progress-bar .step p.active{
+        font-weight: 600 !important;
+        color: #35A14B;
+    }
+        
+    .progress-bar .step .check{
+       position: absolute;
+       left: 50%;
+       top: 70%;
+       font-size: 15px;
+       transform: translate(-50%, -50%);
+       display: none;
+    }
+    .progress-bar .step .check.active{
+        display: block;
+        color: #FFFFFF;
+      
+    }
+    .container .form-outer{
+        width: 100%;
+        overflow: hidden;
+    }
+    .form-outer .form{
+        display: flex;
+        width: 400%;
+    }
+    .form-outer .form .page{
+        width: 25%;
+        transition: margin-left 0.2s ease-in-out;
+    }
+   
+    .form-outer .form .page .mud-input-control{
+        width: 325px;  
+        text-align: start;
+    }
+    .form-outer .form .page .button-section{
+        display: inline-flex;
+        width: 100%;
+        margin-top: 40px !important;
+   
+    }
+</style>
