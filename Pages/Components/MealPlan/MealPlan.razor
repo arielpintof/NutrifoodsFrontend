@@ -26,7 +26,14 @@
 else
 {
     <MudContainer Class="mt-3" MaxWidth="MaxWidth.Small">
-        <CaloriesTotal Macronutrients="TotalMacronutrients()" OnDailyConfigurationChanged="DailyConfigurationChanged"/>
+        <div>
+            <TitleSection  OnDailyConfigurationChanged="DailyConfigurationChanged"></TitleSection>
+        </div>
+
+        <div class="mt-1">
+            <MacronutrientsCard Macronutrients="TotalMacronutrients()"></MacronutrientsCard>
+        </div>
+        
         @foreach (var menu in DailyMealPlan!.DailyMenus)
         {
             <div class="mt-1">
@@ -72,7 +79,7 @@ else
 
     [Parameter]
     public int GuestEnergy { get; set; }
-    
+
     private Dictionary<string, int> TotalMacronutrients()
     {
         var nutrients = new Dictionary<string, int>
@@ -115,8 +122,6 @@ else
 
         await base.OnInitializedAsync();
         await JsRuntime.InvokeVoidAsync("OnScrollEvent");
-
-       
     }
 
     private void DailyMenuChanged()
@@ -184,4 +189,3 @@ else
     }
 
 }
-
