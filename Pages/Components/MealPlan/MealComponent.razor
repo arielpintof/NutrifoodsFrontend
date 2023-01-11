@@ -9,7 +9,7 @@
 @implements IDisposable
 
 <div class="d-flex flex-column">
-    <MudPaper Class="pl-6 pr-4 pt-0 pb-3" Style="background-color: #FFFFFF" Width="100%" Height="50%" Elevation="0">
+    <MudPaper Class="pl-6 pr-4 pt-2 pb-3" Style="background-color: #FFFFFF" Width="100%" Height="50%" Elevation="0">
         <div Class="d-flex justify-space-between align-center flex-grow-1" Elevation="0">
             <MudText Typo="Typo.h6">@MealType</MudText>
             <AuthorizeView>
@@ -17,8 +17,8 @@
                     @if (IconIsVisible)
                     {
                         <MudTooltip Text="@InfoMessage.RegenerateMealMenu(MealType)" Arrow="true" Placement="Placement.Right">
-                            <MudIconButton Class="@(IsLoading ? "circular-loader" : "")" @onclick="OnProcessing" Size="Size.Medium" Icon="@Icons.Filled.Autorenew"
-                                           Disabled="IsLoading"/>
+                            <MudIconButton Class="@(IsLoading ? "circular-loader" : "")" @onclick="OnProcessing" 
+                                           Size="Size.Small" Icon="@Icons.Filled.Autorenew" Disabled="IsLoading"/>
                         </MudTooltip>
                     }
                 </Authorized>
