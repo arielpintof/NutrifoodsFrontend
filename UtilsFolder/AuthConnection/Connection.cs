@@ -11,7 +11,7 @@ public class Connection : IConnection
     {
         _authenticationStateProvider = authenticationStateProvider;
     }
-
+    
     public async Task<AuthenticationState> GetAuthenticationState()
     {
        return await _authenticationStateProvider.GetAuthenticationStateAsync();
@@ -38,5 +38,15 @@ public class Connection : IConnection
     {
         var state = await GetAuthenticationState();
         return state.User.Claims.FirstOrDefault(c => c.Type == "name")!.Value;
+    }
+
+    public async Task<(string apiKey, string nickName, string email)> GetAllCredentials()
+    {
+        var state = await GetAuthenticationState();
+        return (
+            state.User.Claims.FirstOrDefault(c => c.Type == Claims.NameIdentifier)!.Value,
+            state.User.Claims.FirstOrDefault(c => c.Type == "nickname")!.Value, 
+            state.User.Claims.FirstOrDefault(c => c.Type == "name")!.Value
+            );
     }
 }
