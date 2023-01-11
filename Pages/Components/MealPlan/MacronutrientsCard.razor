@@ -1,0 +1,123 @@
+﻿@page "/card"
+@using NutrifoodsFrontend.UtilsFolder.Nutrition
+
+<div class="container">
+    <div class="card-section">
+        <div class="card">
+            <div class="column-card">
+                <MudText Class="text-section">Energía</MudText>
+                <div class="d-flex align-end">
+                    <MudText Class="text-value mr-1">@TotalMacronutrient("Energy")</MudText>
+                    <MudText Class="text-section mb-1">kcal</MudText>
+                </div>
+
+            </div>
+            <MudIcon Icon="@Icons.Material.Filled.LocalFireDepartment" Color="Color.Primary" Size="Size.Large"></MudIcon>
+        </div>
+
+        <div class="card">
+            <div class="column-card">
+                <MudText Class="text-section">Carbs</MudText>
+                <div class="d-flex align-end">
+                    <MudText Class="text-value mr-1">@TotalMacronutrient("Carbohydrates")</MudText>
+                    <MudText Class="text-section mb-1">g</MudText>
+                </div>
+
+            </div>
+            <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="@Percentage(TotalMacronutrient("Carbohydrates"))"/>
+        </div>
+        <div class="card">
+            <div class="column-card">
+                <MudText Class="text-section">Lípidos</MudText>
+                <div class="d-flex align-end">
+                    <MudText Class="text-value mr-1">@TotalMacronutrient("Lipids")</MudText>
+                    <MudText Class="text-section mb-1">g</MudText>
+                </div>
+
+            </div>
+            <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="@Percentage(TotalMacronutrient("Lipids"))"/>
+        </div>
+        <div class="card">
+            <div class="column-card">
+                <MudText Class="text-section">Proteínas</MudText>
+                <div class="d-flex align-end">
+                    <MudText Class="text-value mr-1">@TotalMacronutrient("Proteins")</MudText>
+                    <MudText Class="text-section mb-1">g</MudText>
+                </div>
+            </div>
+            <MudProgressCircular Size="Size.Medium" Color="Color.Primary" Value="@Percentage(TotalMacronutrient("Proteins"))"/>
+        </div>
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public Dictionary<string, int> Macronutrients { get; set; } = new();
+
+    private int TotalMacronutrient(string macronutrient) =>
+        Macronutrients
+            .Where(c => c.Key.Contains(macronutrient))
+            .Select(c => c.Value)
+            .FirstOrDefault();
+
+    private int Total { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Total = Macronutrients.Skip(1).Sum(e => e.Value);
+        return base.OnInitializedAsync();
+    }
+
+    private double Percentage(int value)
+    {
+        return (100 * (double)value / (double)Total);
+    }
+
+
+}
+
+<style>
+    .container{
+        background-color: #FFFFFF;
+        width: 100%;
+        padding: 10px 35px 10px 35px;
+        border-radius: 10px;
+    }
+    .container .card-section{
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    .card-section .card{
+        display: flex;
+        gap: inherit;
+        align-items: center;
+        flex-direction: row;
+    }
+    .card:after{
+        content: '';
+        height: 30px;
+        border-width: 1px;
+        border-style: inset;
+        background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(236,236,238,1) 51%, rgba(255,255,255,1) 100%);
+    }
+    .card:last-child:after{
+        display: none;
+    }
+    
+    .column-card{
+        display: flex;
+        flex-direction: column;
+    }
+    .text-section{
+        font-size: 15px;
+        color: #92959E;
+        font-weight: 300;
+    }
+    .text-value{
+        font-size: 22px;
+        font-weight: 600;
+    }
+</style>
