@@ -5,8 +5,9 @@
 <MudSnackbarProvider />
 
 <MudLayout >
-    <MudAppBar Elevation="0" Class="px-10">
-       <MudIconButton Icon="@Icons.Material.Filled.Menu" Size="Size.Medium" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(((e) => DrawerToggle()))" />
+    <MudAppBar Elevation="0" Class="resize padding-sides">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Size="Size.Medium" Color="Color.Inherit" 
+                       Edge="Edge.Start" OnClick="@(((e) => DrawerToggle()))" Class="margin-left" />
        <MudSpacer />
        <AccessControl></AccessControl>
        
@@ -24,13 +25,18 @@
 
 <style>
     @@media screen and (max-width: 600px) {
-        .px-10{
+        .resize{
             background-size: auto;
+           
         }
         .mud-drawer{
             font-size: larger;
         }
     }
+   .padding-sides{
+        padding-left: 10%;
+        padding-right: 10%;
+   }
 </style>
 
 @code {
