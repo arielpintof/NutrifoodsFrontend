@@ -46,7 +46,7 @@
     <div Class="form-outer">
         <MudForm Class="form" @ref="_form" Validation="@(_metricValidator.ValidateValue)" @bind-IsValid="@_success"
                  @bind-Errors="@_errors" Model="@_metricModel">
-            <div class="page slide-page" style="margin-left: @MarginLeft">
+            <div class="page" style="margin-left: @MarginLeft">
                 <MudTextField @bind-Value="_metricModel.Height" Label="Altura" Variant="Variant.Outlined"
                               AdornmentText="Centímetros" Adornment="Adornment.End" Required="true"
                               RequiredError="La altura es obligatoria" For="@(() => _metricModel.Height)"
@@ -125,9 +125,11 @@
     private MudForm? _form;
     private bool _success;
     private string[] _errors = Array.Empty<string>();
-    private GuestUserBodyMetricValidator _metricValidator = new();
+    private readonly GuestUserBodyMetricValidator _metricValidator = new();
+    private readonly List<bool> _addActive = new() { false, false, false, false };
+    private readonly GuestUserDto _metricModel = new();
     private string MarginLeft { get; set; } = string.Empty;
-    private readonly List<bool> _addActive = new(){ false, false, false, false };
+    
 
     private void ButtonOnClick(int value, bool next = true)
     {
@@ -143,7 +145,7 @@
         _addActive[next ? value : value + 1] = next;
     }
 
-    private GuestUserDto _metricModel = new();
+    
 
     protected override void OnInitialized() => UserEnergyState.OnChange += StateHasChanged;
 
