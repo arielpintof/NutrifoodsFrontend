@@ -24,23 +24,28 @@
     [Parameter]
     public int Quantity { get; set; }
 
+    private static readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Recipes", "ImgCsv.csv");
 
-    private static readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data","Recipes", "ImgCsv.csv");
-    
-    private string? GetImage(string key)
+    private string GetImage(string key)
     {
-        return Recipes.TryGetValue(key, out var value) ? value : null;
+        return Recipes.TryGetValue(key, out var value) ? value : string.Empty;
     }
 
-    private static Dictionary<string, string> Recipes => InitializeDictionary();
+    private Dictionary<string, string> Recipes { get; set; } = new();
 
-    private static Dictionary<string, string> InitializeDictionary()
+    protected override Task OnInitializedAsync()
+    {
+        Recipes = InitializeDictionary();
+        return base.OnInitializedAsync();
+    }
+
+    private Dictionary<string, string> InitializeDictionary()
     {
         var dictionary = new Dictionary<string, string>();
         using var reader = new StreamReader(FilePath);
         while (!reader.EndOfStream)
         {
-            var line = reader.ReadLine();
+            var line = reader.ReadLine()!;
             var parts = line.Split(';');
             var key = parts[0];
             var value = parts[1];
@@ -49,7 +54,7 @@
 
         return dictionary;
     }
-    
+
 }
 
 <style>
