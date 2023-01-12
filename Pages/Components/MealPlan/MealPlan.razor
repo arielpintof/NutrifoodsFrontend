@@ -36,6 +36,7 @@ else
         
         @foreach (var menu in DailyMealPlan!.DailyMenus)
         {
+            
             <div class="mt-1">
                 <MealComponent MenuRecipes=@menu.MenuRecipes MealType=@menu.MealType Satiety=@menu.Satiety
                                EnergyTotal=@menu.EnergyTotal OnDailyMenuChanged="DailyMenuChanged"
@@ -96,7 +97,6 @@ else
 
         DailyMealPlan = await MealPlanResponse!.Content.ReadFromJsonAsync<DailyMealPlanDto>();
         
-        await JsRuntime.InvokeVoidAsync("OnScrollEvent");
     }
 
     private void DailyMenuChanged()
